@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,49 +7,43 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Search, Plus, Eye, Edit, Trash2 } from "lucide-react";
 
 // Mock customer data
-const mockCustomers = [
-  {
-    id: 1,
-    name: "Anna Andersson",
-    company: "TechFlow AB",
-    email: "anna@techflow.se",
-    phone: "+46 70 123 4567",
-    status: "Aktiv",
-    lastActivity: "2024-06-27",
-    value: "125 000 kr"
-  },
-  {
-    id: 2,
-    name: "Erik Johansson",
-    company: "Design Studio Nordic",
-    email: "erik@dsn.se",
-    phone: "+46 70 234 5678",
-    status: "Potentiell",
-    lastActivity: "2024-06-25",
-    value: "85 000 kr"
-  },
-  {
-    id: 3,
-    name: "Maria Larsson",
-    company: "Green Energy Solutions",
-    email: "maria@greenenergy.se",
-    phone: "+46 70 345 6789",
-    status: "Aktiv",
-    lastActivity: "2024-06-28",
-    value: "250 000 kr"
-  },
-  {
-    id: 4,
-    name: "Johan Petersson",
-    company: "StartupHub",
-    email: "johan@startuphub.se",
-    phone: "+46 70 456 7890",
-    status: "Inaktiv",
-    lastActivity: "2024-06-20",
-    value: "45 000 kr"
-  }
-];
-
+const mockCustomers = [{
+  id: 1,
+  name: "Anna Andersson",
+  company: "TechFlow AB",
+  email: "anna@techflow.se",
+  phone: "+46 70 123 4567",
+  status: "Aktiv",
+  lastActivity: "2024-06-27",
+  value: "125 000 kr"
+}, {
+  id: 2,
+  name: "Erik Johansson",
+  company: "Design Studio Nordic",
+  email: "erik@dsn.se",
+  phone: "+46 70 234 5678",
+  status: "Potentiell",
+  lastActivity: "2024-06-25",
+  value: "85 000 kr"
+}, {
+  id: 3,
+  name: "Maria Larsson",
+  company: "Green Energy Solutions",
+  email: "maria@greenenergy.se",
+  phone: "+46 70 345 6789",
+  status: "Aktiv",
+  lastActivity: "2024-06-28",
+  value: "250 000 kr"
+}, {
+  id: 4,
+  name: "Johan Petersson",
+  company: "StartupHub",
+  email: "johan@startuphub.se",
+  phone: "+46 70 456 7890",
+  status: "Inaktiv",
+  lastActivity: "2024-06-20",
+  value: "45 000 kr"
+}];
 const Customers = () => {
   const [customers] = useState(mockCustomers);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,13 +55,7 @@ const Customers = () => {
     email: "",
     phone: ""
   });
-
-  const filteredCustomers = customers.filter(customer =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  const filteredCustomers = customers.filter(customer => customer.name.toLowerCase().includes(searchTerm.toLowerCase()) || customer.company.toLowerCase().includes(searchTerm.toLowerCase()) || customer.email.toLowerCase().includes(searchTerm.toLowerCase()));
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Aktiv":
@@ -81,7 +68,6 @@ const Customers = () => {
         return "text-gray-600 bg-gray-100";
     }
   };
-
   const handlePersonnummerSearch = () => {
     // Mock data för personnummer-sökning
     const mockPersonData = {
@@ -98,7 +84,6 @@ const Customers = () => {
         phone: "+46 70 555 5678"
       }
     };
-
     const foundPerson = mockPersonData[newCustomer.personnummer];
     if (foundPerson) {
       setNewCustomer(prev => ({
@@ -110,16 +95,13 @@ const Customers = () => {
       console.log("Ingen information hittades för detta personnummer");
     }
   };
-
   const handleInputChange = (field: string, value: string) => {
     setNewCustomer(prev => ({
       ...prev,
       [field]: value
     }));
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Kunder</h1>
@@ -141,41 +123,16 @@ const Customers = () => {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="flex gap-2">
-                <Input 
-                  placeholder="Personnummer (YYYYMMDD-XXXX)" 
-                  value={newCustomer.personnummer}
-                  onChange={(e) => handleInputChange("personnummer", e.target.value)}
-                  className="flex-1"
-                />
-                <Button 
-                  variant="outline" 
-                  onClick={handlePersonnummerSearch}
-                  className="flex items-center gap-2"
-                >
+                <Input placeholder="Personnummer (YYYYMMDD-XXXX)" value={newCustomer.personnummer} onChange={e => handleInputChange("personnummer", e.target.value)} className="flex-1" />
+                <Button variant="outline" onClick={handlePersonnummerSearch} className="flex items-center gap-2">
                   <Search className="h-4 w-4" />
                   Sök
                 </Button>
               </div>
-              <Input 
-                placeholder="Namn" 
-                value={newCustomer.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-              />
-              <Input 
-                placeholder="Företag" 
-                value={newCustomer.company}
-                onChange={(e) => handleInputChange("company", e.target.value)}
-              />
-              <Input 
-                placeholder="E-post" 
-                value={newCustomer.email}
-                onChange={(e) => handleInputChange("e-post", e.target.value)}
-              />
-              <Input 
-                placeholder="Telefon" 
-                value={newCustomer.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-              />
+              <Input placeholder="Namn" value={newCustomer.name} onChange={e => handleInputChange("name", e.target.value)} />
+              
+              <Input placeholder="E-post" value={newCustomer.email} onChange={e => handleInputChange("e-post", e.target.value)} />
+              <Input placeholder="Telefon" value={newCustomer.phone} onChange={e => handleInputChange("phone", e.target.value)} />
             </div>
             <Button className="w-full">Skapa kund</Button>
           </DialogContent>
@@ -233,12 +190,7 @@ const Customers = () => {
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Sök kunder..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-64"
-              />
+              <Input placeholder="Sök kunder..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 w-64" />
             </div>
           </div>
         </CardHeader>
@@ -256,8 +208,7 @@ const Customers = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCustomers.map((customer) => (
-                <TableRow key={customer.id}>
+              {filteredCustomers.map(customer => <TableRow key={customer.id}>
                   <TableCell className="font-medium">{customer.name}</TableCell>
                   <TableCell>{customer.company}</TableCell>
                   <TableCell>{customer.email}</TableCell>
@@ -280,8 +231,7 @@ const Customers = () => {
                           <DialogHeader>
                             <DialogTitle>Kunddetaljer</DialogTitle>
                           </DialogHeader>
-                          {selectedCustomer && (
-                            <div className="space-y-4">
+                          {selectedCustomer && <div className="space-y-4">
                               <div>
                                 <label className="font-medium">Namn:</label>
                                 <p>{selectedCustomer.name}</p>
@@ -302,8 +252,7 @@ const Customers = () => {
                                 <label className="font-medium">Status:</label>
                                 <p>{selectedCustomer.status}</p>
                               </div>
-                            </div>
-                          )}
+                            </div>}
                         </DialogContent>
                       </Dialog>
                       <Button variant="ghost" size="sm">
@@ -314,14 +263,11 @@ const Customers = () => {
                       </Button>
                     </div>
                   </TableCell>
-                </TableRow>
-              ))}
+                </TableRow>)}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default Customers;
