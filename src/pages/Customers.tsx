@@ -199,7 +199,7 @@ const Customers = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Namn</TableHead>
-                <TableHead>Företag</TableHead>
+                
                 <TableHead>E-post</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Värde</TableHead>
@@ -210,7 +210,7 @@ const Customers = () => {
             <TableBody>
               {filteredCustomers.map(customer => <TableRow key={customer.id}>
                   <TableCell className="font-medium">{customer.name}</TableCell>
-                  <TableCell>{customer.company}</TableCell>
+                  
                   <TableCell>{customer.email}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(customer.status)}`}>
@@ -258,9 +258,7 @@ const Customers = () => {
                       <Button variant="ghost" size="sm">
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      
                     </div>
                   </TableCell>
                 </TableRow>)}
