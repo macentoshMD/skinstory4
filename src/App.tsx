@@ -8,6 +8,9 @@ import { Layout } from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
 import Companies from "./pages/Companies";
+import Treatments from "./pages/Treatments";
+import Bookings from "./pages/Bookings";
+import Staff from "./pages/Staff";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +26,9 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/kunder" element={<Customers />} />
             <Route path="/foretag" element={<Companies />} />
+            <Route path="/behandlingar" element={<Treatments />} />
+            <Route path="/bokningar" element={<Bookings />} />
+            <Route path="/personal" element={<Staff />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

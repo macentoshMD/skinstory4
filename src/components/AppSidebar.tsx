@@ -1,5 +1,5 @@
 
-import { Home, Users, ShoppingCart, Calendar, Building, Hospital, BarChart3, User, Calendar as CalendarIcon, DollarSign, Settings } from "lucide-react";
+import { Home, Users, ShoppingCart, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -14,29 +14,29 @@ import {
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
-  { name: "Kunder", href: "/kunder", icon: Users },
-  { name: "Beställningar", href: "/bestallningar", icon: ShoppingCart },
   { name: "Bokningar", href: "/bokningar", icon: Calendar },
+  { name: "Kunder", href: "/kunder", icon: Users },
+  { name: "Behandlingar", href: "/behandlingar", icon: Sparkles },
+  { name: "Personal", href: "/personal", icon: User },
   { name: "Företag", href: "/foretag", icon: Building },
-  { name: "Kliniker", href: "/kliniker", icon: Hospital },
+  { name: "Beställningar", href: "/bestallningar", icon: ShoppingCart },
   { name: "Statistik", href: "/statistik", icon: BarChart3 },
-  { name: "Användare", href: "/anvandare", icon: User },
-  { name: "Kalender", href: "/kalender", icon: CalendarIcon },
-  { name: "Löner", href: "/loner", icon: DollarSign },
-  { name: "Systeminställningar", href: "/systeminstallningar", icon: Settings },
+  { name: "Kalender", href: "/kalender", icon: Clock },
+  { name: "Inställningar", href: "/installningar", icon: Settings },
 ];
 
 export function AppSidebar() {
   return (
     <Sidebar className="border-r border-gray-200">
       <div className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-semibold text-gray-900">SaaS MVP</h1>
+        <h1 className="text-xl font-semibold text-gray-900">SkinStory</h1>
+        <p className="text-sm text-gray-500">Hudvårdsklinik</p>
       </div>
       
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium px-3 py-2">
-            Navigation
+            Huvudmeny
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -48,7 +48,7 @@ export function AppSidebar() {
                       className={({ isActive }) =>
                         `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           isActive
-                            ? "bg-gray-100 text-gray-900"
+                            ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
                             : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                         }`
                       }
