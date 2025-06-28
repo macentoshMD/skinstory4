@@ -1,5 +1,5 @@
 
-import { Home } from "lucide-react";
+import { Home, Users } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -14,6 +14,7 @@ import {
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
+  { name: "Kunder", href: "/kunder", icon: Users },
 ];
 
 export function AppSidebar() {
