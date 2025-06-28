@@ -1,5 +1,5 @@
 
-import { Home, Users, ShoppingCart, Calendar, Building, Hospital, BarChart3, User } from "lucide-react";
+import { Home, Users, ShoppingCart, Calendar, Building, Hospital, BarChart3, User, Calendar as CalendarIcon, DollarSign, Settings } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -21,6 +21,9 @@ const navigation = [
   { name: "Kliniker", href: "/kliniker", icon: Hospital },
   { name: "Statistik", href: "/statistik", icon: BarChart3 },
   { name: "Användare", href: "/anvandare", icon: User },
+  { name: "Kalender", href: "/kalender", icon: CalendarIcon },
+  { name: "Löner", href: "/loner", icon: DollarSign },
+  { name: "Systeminställningar", href: "/systeminstallningar", icon: Settings },
 ];
 
 export function AppSidebar() {
