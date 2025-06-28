@@ -1,5 +1,5 @@
 
-import { Home, Users } from "lucide-react";
+import { Home, Users, ShoppingCart, Calendar, Building, Hospital, BarChart3, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -15,6 +15,12 @@ import {
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
   { name: "Kunder", href: "/kunder", icon: Users },
+  { name: "Beställningar", href: "/bestallningar", icon: ShoppingCart },
+  { name: "Bokningar", href: "/bokningar", icon: Calendar },
+  { name: "Företag", href: "/foretag", icon: Building },
+  { name: "Kliniker", href: "/kliniker", icon: Hospital },
+  { name: "Statistik", href: "/statistik", icon: BarChart3 },
+  { name: "Användare", href: "/anvandare", icon: User },
 ];
 
 export function AppSidebar() {
