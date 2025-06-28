@@ -55,6 +55,13 @@ const Customers = () => {
   const [customers] = useState(mockCustomers);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [newCustomer, setNewCustomer] = useState({
+    personnummer: "",
+    name: "",
+    company: "",
+    email: "",
+    phone: ""
+  });
 
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,6 +80,42 @@ const Customers = () => {
       default:
         return "text-gray-600 bg-gray-100";
     }
+  };
+
+  const handlePersonnummerSearch = () => {
+    // Mock data för personnummer-sökning
+    const mockPersonData = {
+      "19850315-1234": {
+        name: "Lisa Svensson",
+        company: "Svensson Consulting AB",
+        email: "lisa@svenssonconsulting.se",
+        phone: "+46 70 555 1234"
+      },
+      "19780920-5678": {
+        name: "Anders Nilsson",
+        company: "Nilsson Tech Solutions",
+        email: "anders@nilssontech.se",
+        phone: "+46 70 555 5678"
+      }
+    };
+
+    const foundPerson = mockPersonData[newCustomer.personnummer];
+    if (foundPerson) {
+      setNewCustomer(prev => ({
+        ...prev,
+        ...foundPerson
+      }));
+    } else {
+      // Visa att ingen information hittades (i en riktig app skulle detta vara en toast)
+      console.log("Ingen information hittades för detta personnummer");
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setNewCustomer(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -97,10 +140,42 @@ const Customers = () => {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <Input placeholder="Namn" />
-              <Input placeholder="Företag" />
-              <Input placeholder="E-post" />
-              <Input placeholder="Telefon" />
+              <div className="flex gap-2">
+                <Input 
+                  placeholder="Personnummer (YYYYMMDD-XXXX)" 
+                  value={newCustomer.personnummer}
+                  onChange={(e) => handleInputChange("personnummer", e.target.value)}
+                  className="flex-1"
+                />
+                <Button 
+                  variant="outline" 
+                  onClick={handlePersonnummerSearch}
+                  className="flex items-center gap-2"
+                >
+                  <Search className="h-4 w-4" />
+                  Sök
+                </Button>
+              </div>
+              <Input 
+                placeholder="Namn" 
+                value={newCustomer.name}
+                onChange={(e) => handleInputChange("name", e.target.value)}
+              />
+              <Input 
+                placeholder="Företag" 
+                value={newCustomer.company}
+                onChange={(e) => handleInputChange("company", e.target.value)}
+              />
+              <Input 
+                placeholder="E-post" 
+                value={newCustomer.email}
+                onChange={(e) => handleInputChange("e-post", e.target.value)}
+              />
+              <Input 
+                placeholder="Telefon" 
+                value={newCustomer.phone}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
+              />
             </div>
             <Button className="w-full">Skapa kund</Button>
           </DialogContent>
