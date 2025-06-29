@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SERVICES } from "@/data/services";
 import { EQUIPMENT } from "@/types/services";
+import { Service } from "@/types/services";
+import { ServiceDialog } from "@/components/services/ServiceDialog";
 import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag } from "lucide-react";
 
 // Base service categories (no pricing)
@@ -42,6 +44,9 @@ export default function Services() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedEquipmentType, setSelectedEquipmentType] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
+  const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
+  const [editingService, setEditingService] = useState<Service | undefined>();
+  
   const filteredServices = SERVICES.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || service.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || service.categoryId === selectedCategory;
@@ -148,7 +153,25 @@ export default function Services() {
     const estimatedCost = price * 0.4;
     return ((price - estimatedCost) / price * 100).toFixed(1);
   };
-  return <div className="space-y-6">
+
+  const handleNewService = () => {
+    setEditingService(undefined);
+    setServiceDialogOpen(true);
+  };
+
+  const handleEditService = (service: Service) => {
+    setEditingService(service);
+    setServiceDialogOpen(true);
+  };
+
+  const handleSaveService = (serviceData: Partial<Service>) => {
+    console.log("Saving service:", serviceData);
+    // Here you would typically update your services data
+    // For now, just log the data
+  };
+
+  return (
+    <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Tjänster</h1>
         <p className="text-muted-foreground">
@@ -202,7 +225,7 @@ export default function Services() {
                 <Download className="h-4 w-4 mr-2" />
                 Exportera
               </Button>
-              <Button>
+              <Button onClick={handleNewService}>
                 <Plus className="h-4 w-4 mr-2" />
                 Ny tjänst
               </Button>
@@ -227,12 +250,12 @@ export default function Services() {
                       <TableHead>Tidsgång</TableHead>
                       <TableHead>Pris</TableHead>
                       <TableHead>Taggar</TableHead>
-                      
                       <TableHead>Åtgärder</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredServices.map(service => <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
+                    {filteredServices.map(service => (
+                      <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
                         <TableCell className="font-medium">
                           <div>
                             <div className="font-medium">{service.name}</div>
@@ -278,10 +301,13 @@ export default function Services() {
                               </Badge>}
                           </div>
                         </TableCell>
-                        
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleEditService(service)}
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button variant="outline" size="sm">
@@ -289,7 +315,8 @@ export default function Services() {
                             </Button>
                           </div>
                         </TableCell>
-                      </TableRow>)}
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>
@@ -480,5 +507,13 @@ export default function Services() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>;
+
+      <ServiceDialog
+        open={serviceDialogOpen}
+        onOpenChange={setServiceDialogOpen}
+        service={editingService}
+        onSave={handleSaveService}
+      />
+    </div>
+  );
 }
