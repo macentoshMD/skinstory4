@@ -26,6 +26,8 @@ export const SERVICES: Service[] = [
     expectedResults: 'Tydlig behandlingsplan och produktrekommendationer',
     canBeCombinedWith: [],
     isActive: true,
+    isBaseService: true,
+    isOnlineBookable: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -58,6 +60,8 @@ export const SERVICES: Service[] = [
     expectedResults: 'Detaljerad hudrapport med före/efter-spårning',
     canBeCombinedWith: [],
     isActive: true,
+    isBaseService: true,
+    isOnlineBookable: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -66,7 +70,7 @@ export const SERVICES: Service[] = [
   {
     id: 'hydrafacial-classic',
     name: 'HydraFacial Classic',
-    categoryId: 'facial',
+    categoryId: 'Hudvård',
     description: 'Klassisk 3-stegs HydraFacial behandling',
     duration: 60,
     price: 150000,
@@ -93,6 +97,8 @@ export const SERVICES: Service[] = [
     recommendedSessions: 6,
     canBeCombinedWith: ['led-therapy'],
     isActive: true,
+    isBaseService: true,
+    isOnlineBookable: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -101,7 +107,7 @@ export const SERVICES: Service[] = [
   {
     id: 'laser-hair-removal-face',
     name: 'Hårborttagning Ansikte',
-    categoryId: 'laser',
+    categoryId: 'Laser',
     description: 'Permanent hårborttagning i ansiktet',
     duration: 30,
     price: 80000,
@@ -130,13 +136,15 @@ export const SERVICES: Service[] = [
     recommendedSessions: 8,
     canBeCombinedWith: [],
     isActive: true,
+    isBaseService: true,
+    isOnlineBookable: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
     id: 'laser-hair-removal-body',
     name: 'Hårborttagning Kropp',
-    categoryId: 'laser',
+    categoryId: 'Laser',
     description: 'Permanent hårborttagning på större kroppsområden',
     duration: 90,
     price: 200000,
@@ -165,6 +173,8 @@ export const SERVICES: Service[] = [
     recommendedSessions: 8,
     canBeCombinedWith: [],
     isActive: true,
+    isBaseService: true,
+    isOnlineBookable: false,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -173,7 +183,7 @@ export const SERVICES: Service[] = [
   {
     id: 'microneedling-face',
     name: 'Microneedling Ansikte',
-    categoryId: 'microneedling',
+    categoryId: 'Anti-age',
     description: 'Kollagenstimulering med DermaPen',
     duration: 90,
     price: 180000,
@@ -201,6 +211,8 @@ export const SERVICES: Service[] = [
     recommendedSessions: 3,
     canBeCombinedWith: ['hydrafacial-classic'],
     isActive: true,
+    isBaseService: true,
+    isOnlineBookable: false,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -209,7 +221,7 @@ export const SERVICES: Service[] = [
   {
     id: 'chemical-peel-mild',
     name: 'Kemisk Peeling Mild',
-    categoryId: 'peeling',
+    categoryId: 'Anti-age',
     description: 'Mild syrabehandling för hudförnyelse',
     duration: 45,
     price: 120000,
@@ -226,6 +238,8 @@ export const SERVICES: Service[] = [
     recommendedSessions: 4,
     canBeCombinedWith: ['hydrafacial-classic'],
     isActive: true,
+    isBaseService: true,
+    isOnlineBookable: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -234,7 +248,7 @@ export const SERVICES: Service[] = [
   {
     id: 'acne-extraction-treatment',
     name: 'Aknebehandling med Portömning',
-    categoryId: 'acne',
+    categoryId: 'Akne',
     description: 'Djuprengöring och manuell portömning',
     duration: 75,
     price: 140000,
@@ -257,6 +271,8 @@ export const SERVICES: Service[] = [
     recommendedSessions: 6,
     canBeCombinedWith: ['led-therapy'],
     isActive: true,
+    isBaseService: true,
+    isOnlineBookable: true,
     createdAt: new Date(),
     updatedAt: new Date()
   }

@@ -53,6 +53,10 @@ export interface Service {
   recommendedSessions?: number;
   canBeCombinedWith: string[]; // Other service IDs
   isActive: boolean;
+  isBaseService: boolean; // New field to distinguish base services from composite services
+  baseServiceIds?: string[]; // For composite services - which base services they're built from
+  margin?: number; // Calculated margin percentage
+  isOnlineBookable?: boolean; // Whether this service can be booked online
   createdAt: Date;
   updatedAt: Date;
 }
@@ -125,7 +129,7 @@ export const EQUIPMENT: Equipment[] = [
     model: 'Soprano ICE',
     description: 'Permanent hårborttagning för alla hudtyper',
     capabilities: ['hair_removal', 'all_skin_types', 'pain_free'],
-    maintenanceRequired: true
+    maintenanceRequired: false
   },
   {
     id: 'laser-alexandrite-755',
@@ -135,7 +139,7 @@ export const EQUIPMENT: Equipment[] = [
     model: 'GentleLase Pro',
     description: 'Hårborttagning för ljusare hudtyper',
     capabilities: ['hair_removal', 'light_skin', 'fast_treatment'],
-    maintenanceRequired: true
+    maintenanceRequired: false
   },
   {
     id: 'laser-nd-yag-1064',

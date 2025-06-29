@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,7 +15,6 @@ import Insights from "./pages/Insights";
 import Statistics from "./pages/Statistics";
 import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
-import Equipment from "./pages/Equipment";
 import ProblemsAndAreas from "./pages/ProblemsAndAreas";
 
 const queryClient = new QueryClient();
@@ -31,7 +31,6 @@ const App = () => (
             <Route path="/kunder" element={<Customers />} />
             <Route path="/foretag" element={<Companies />} />
             <Route path="/tjanster" element={<Services />} />
-            <Route path="/utrustning" element={<Equipment />} />
             <Route path="/problem-omraden" element={<ProblemsAndAreas />} />
             <Route path="/behandlingar" element={<Services />} />
             <Route path="/aktiviteter" element={<ActivityLog />} />

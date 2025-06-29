@@ -1,35 +1,58 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SERVICES } from "@/data/services";
-import { Sparkles, Plus, Edit, Trash2, Clock, DollarSign } from "lucide-react";
+import { EQUIPMENT } from "@/types/services";
+import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target } from "lucide-react";
 
 export default function Services() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedService, setSelectedService] = useState(SERVICES[0]);
+
+  const baseServices = SERVICES.filter(service => service.isActive);
+  const compositeServices = []; // Will be populated with composite services
+
+  const filteredBaseServices = baseServices.filter(service => {
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || service.categoryId === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const categories = [
+    { id: "all", name: "Alla kategorier" },
+    { id: "Laser", name: "Laser", color: "bg-blue-100 text-blue-800" },
+    { id: "Hudvård", name: "Hudvård", color: "bg-green-100 text-green-800" },
+    { id: "Anti-age", name: "Anti-age", color: "bg-purple-100 text-purple-800" },
+    { id: "Akne", name: "Akne", color: "bg-red-100 text-red-800" },
+  ];
+
+  const getCategoryColor = (categoryId: string) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category?.color || "bg-gray-100 text-gray-800";
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Lätt': return 'bg-green-100 text-green-800';
-      case 'Medel': return 'bg-yellow-100 text-yellow-800';
-      case 'Svår': return 'bg-red-100 text-red-800';
+      case 'basic': return 'bg-green-100 text-green-800';
+      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
+      case 'advanced': return 'bg-red-100 text-red-800';
+      case 'expert': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'Laser': return 'bg-blue-100 text-blue-800';
-      case 'Hudvård': return 'bg-green-100 text-green-800';
-      case 'Anti-age': return 'bg-purple-100 text-purple-800';
-      case 'Akne': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const calculateMargin = (price: number) => {
+    // Simplified margin calculation - in real app this would be based on actual costs
+    const estimatedCost = price * 0.4; // Assume 40% cost
+    return ((price - estimatedCost) / price * 100).toFixed(1);
   };
 
   return (
@@ -37,213 +60,207 @@ export default function Services() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Tjänster</h1>
         <p className="text-muted-foreground">
-          Hantera grundtjänster och sammansatta behandlingspaket
+          Hantera grundtjänster och sammansatta tjänster med utrustning
         </p>
       </div>
 
-      <Tabs defaultValue="services" className="w-full">
+      <Tabs defaultValue="base-services" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="services">Grundtjänster</TabsTrigger>
-          <TabsTrigger value="packages">Behandlingspaket</TabsTrigger>
+          <TabsTrigger value="base-services">Grundtjänster</TabsTrigger>
+          <TabsTrigger value="services">Tjänster</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="services" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">Grundtjänster</h2>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Lägg till tjänst
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Services List */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Tillgängliga tjänster</h3>
-              {SERVICES.map((service) => (
-                <Card 
-                  key={service.id} 
-                  className={`cursor-pointer transition-colors ${selectedService.id === service.id ? 'ring-2 ring-blue-500' : ''}`}
-                  onClick={() => setSelectedService(service)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <CardTitle className="text-lg">{service.name}</CardTitle>
-                      <Badge variant={service.isActive ? "default" : "secondary"}>
-                        {service.isActive ? "Aktiv" : "Inaktiv"}
-                      </Badge>
-                    </div>
-                    <CardDescription className="line-clamp-2">{service.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <Badge className={getCategoryColor(service.categoryId)}>
-                        {service.categoryId}
-                      </Badge>
-                      <Badge className={getDifficultyColor(service.requiredSpecialistLevel)}>
-                        {service.requiredSpecialistLevel}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {service.duration} min
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="h-4 w-4" />
-                        {service.price / 100} kr
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+        <TabsContent value="base-services" className="space-y-6">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Sök tjänster..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-[200px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-
-            {/* Service Details */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <Sparkles className="h-5 w-5" />
-                      {selectedService.name}
-                    </CardTitle>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <CardDescription>{selectedService.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium">Kategori</Label>
-                      <div className="mt-1">
-                        <Badge className={getCategoryColor(selectedService.categoryId)}>
-                          {selectedService.categoryId}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Specialistnivå</Label>
-                      <div className="mt-1">
-                        <Badge className={getDifficultyColor(selectedService.requiredSpecialistLevel)}>
-                          {selectedService.requiredSpecialistLevel}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Varaktighet</Label>
-                      <p className="text-sm text-muted-foreground">{selectedService.duration} minuter</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Pris</Label>
-                      <p className="text-sm text-muted-foreground">{selectedService.price / 100} kr</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">Rekommenderad utrustning</Label>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {selectedService.equipment.map((eq) => (
-                        <Badge key={eq.equipmentId} variant="outline">
-                          {eq.equipmentId}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">Förväntade resultat</Label>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {selectedService.expectedResults}
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">Eftervård</Label>
-                    <ul className="mt-2 list-disc list-inside text-sm text-muted-foreground space-y-1">
-                      {selectedService.afterCare.map((care, index) => (
-                        <li key={index}>{care}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {selectedService.contraindications && selectedService.contraindications.length > 0 && (
-                    <div>
-                      <Label className="text-sm font-medium">Kontraindikationer</Label>
-                      <ul className="mt-2 list-disc list-inside text-sm text-red-600 space-y-1">
-                        {selectedService.contraindications.map((contraindication, index) => (
-                          <li key={index}>{contraindication}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                <Upload className="h-4 w-4 mr-2" />
+                Importera
+              </Button>
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Exportera
+              </Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Ny grundtjänst
+              </Button>
             </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="packages" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">Behandlingspaket</h2>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Skapa paket
-            </Button>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Sammansatta behandlingspaket</CardTitle>
+              <CardTitle>Grundtjänster ({filteredBaseServices.length})</CardTitle>
               <CardDescription>
-                Skapa paket genom att kombinera flera grundtjänster för helhetslösningar
+                Grundläggande tjänster som kan kombineras till sammansatta behandlingar
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Paketnamn</Label>
-                  <Input placeholder="T.ex. Komplett ansiktsbehandling" />
-                </div>
-                <div>
-                  <Label>Totalpris</Label>
-                  <Input type="number" placeholder="Pris i SEK" />
-                </div>
-              </div>
-              
-              <div>
-                <Label>Beskrivning</Label>
-                <Textarea placeholder="Beskriv behandlingspaketet..." />
-              </div>
-              
-              <div>
-                <Label>Välj tjänster att inkludera</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Lägg till tjänst" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SERVICES.map((service) => (
-                      <SelectItem key={service.id} value={service.id}>
-                        {service.name} - {service.price / 100} kr
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <Button className="w-full">
-                Skapa behandlingspaket
-              </Button>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Namn</TableHead>
+                    <TableHead>Kategori</TableHead>
+                    <TableHead>Tidsgång</TableHead>
+                    <TableHead>Pris</TableHead>
+                    <TableHead>Marginal</TableHead>
+                    <TableHead>Specialistnivå</TableHead>
+                    <TableHead>Onlinebokningsbar</TableHead>
+                    <TableHead>Åtgärder</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredBaseServices.map((service) => (
+                    <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
+                      <TableCell className="font-medium">
+                        <div>
+                          <div className="font-medium">{service.name}</div>
+                          <div className="text-sm text-muted-foreground line-clamp-1">
+                            {service.description}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getCategoryColor(service.categoryId)}>
+                          {service.categoryId}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {service.duration} min
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <DollarSign className="h-4 w-4" />
+                          {service.price / 100} kr
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-green-600 font-medium">
+                          {calculateMargin(service.price / 100)}%
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getDifficultyColor(service.requiredSpecialistLevel)}>
+                          {service.requiredSpecialistLevel}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={service.isActive ? "default" : "secondary"}>
+                          {service.isActive ? "Ja" : "Nej"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="services" className="space-y-6">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Sök sammansatta tjänster..."
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                <Wrench className="h-4 w-4 mr-2" />
+                Hantera utrustning
+              </Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Ny sammansatt tjänst
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Sammansatta tjänster</CardTitle>
+                <CardDescription>
+                  Tjänster som kombinerar grundtjänster med specifik utrustning
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Inga sammansatta tjänster skapade än</p>
+                  <p className="text-sm">Klicka "Ny sammansatt tjänst" för att komma igång</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Tillgänglig utrustning</CardTitle>
+                <CardDescription>
+                  Utrustning som kan användas i sammansatta tjänster
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {EQUIPMENT.slice(0, 5).map((equipment) => (
+                    <div key={equipment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <div className="font-medium">{equipment.name}</div>
+                        <div className="text-sm text-muted-foreground">{equipment.brand} {equipment.model}</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{equipment.type}</Badge>
+                        <Badge variant={equipment.maintenanceRequired ? "destructive" : "default"}>
+                          {equipment.maintenanceRequired ? "Underhåll" : "OK"}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
