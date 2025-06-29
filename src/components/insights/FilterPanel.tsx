@@ -85,9 +85,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             <div>
               <label className="text-xs font-medium mb-1 block">Företag</label>
               <Select 
-                value={filterContext.geographic.companies[0] || ''} 
+                value={filterContext.geographic.companies[0] || 'all'} 
                 onValueChange={(value) => {
-                  const companies = value ? [value] : [];
+                  const companies = value === 'all' ? [] : [value];
                   updateFilter('geographic', { companies });
                   // Clear clinic filter when company changes
                   if (value !== filterContext.geographic.companies[0]) {
@@ -99,7 +99,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <SelectValue placeholder="Välj företag" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alla företag</SelectItem>
+                  <SelectItem value="all">Alla företag</SelectItem>
                   {data.companies.map(company => (
                     <SelectItem key={company.id} value={company.id}>
                       {company.name}
@@ -112,9 +112,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             <div>
               <label className="text-xs font-medium mb-1 block">Klinik</label>
               <Select 
-                value={filterContext.geographic.clinics[0] || ''} 
+                value={filterContext.geographic.clinics[0] || 'all'} 
                 onValueChange={(value) => {
-                  const clinics = value ? [value] : [];
+                  const clinics = value === 'all' ? [] : [value];
                   updateFilter('geographic', { clinics });
                 }}
               >
@@ -122,7 +122,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <SelectValue placeholder="Välj klinik" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alla kliniker</SelectItem>
+                  <SelectItem value="all">Alla kliniker</SelectItem>
                   {data.clinics
                     .filter(clinic => 
                       filterContext.geographic.companies.length === 0 || 
@@ -146,9 +146,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             <div>
               <label className="text-xs font-medium mb-1 block">Roll</label>
               <Select 
-                value={filterContext.personnel.roles[0] || ''} 
+                value={filterContext.personnel.roles[0] || 'all'} 
                 onValueChange={(value) => {
-                  const roles = value ? [value] : [];
+                  const roles = value === 'all' ? [] : [value];
                   updateFilter('personnel', { roles });
                 }}
               >
@@ -156,7 +156,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <SelectValue placeholder="Välj roll" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alla roller</SelectItem>
+                  <SelectItem value="all">Alla roller</SelectItem>
                   {uniqueRoles.map(role => (
                     <SelectItem key={role} value={role}>
                       {role}
@@ -169,9 +169,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             <div>
               <label className="text-xs font-medium mb-1 block">Specialisering</label>
               <Select 
-                value={filterContext.personnel.specializations[0] || ''} 
+                value={filterContext.personnel.specializations[0] || 'all'} 
                 onValueChange={(value) => {
-                  const specializations = value ? [value] : [];
+                  const specializations = value === 'all' ? [] : [value];
                   updateFilter('personnel', { specializations });
                 }}
               >
@@ -179,7 +179,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <SelectValue placeholder="Välj specialisering" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alla specialiseringar</SelectItem>
+                  <SelectItem value="all">Alla specialiseringar</SelectItem>
                   {uniqueSpecializations.map(spec => (
                     <SelectItem key={spec} value={spec}>
                       {spec}
@@ -198,9 +198,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             <div>
               <label className="text-xs font-medium mb-1 block">Behandlingskategori</label>
               <Select 
-                value={filterContext.services.treatmentCategories[0] || ''} 
+                value={filterContext.services.treatmentCategories[0] || 'all'} 
                 onValueChange={(value) => {
-                  const treatmentCategories = value ? [value] : [];
+                  const treatmentCategories = value === 'all' ? [] : [value];
                   updateFilter('services', { treatmentCategories });
                 }}
               >
@@ -208,7 +208,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <SelectValue placeholder="Välj kategori" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alla kategorier</SelectItem>
+                  <SelectItem value="all">Alla kategorier</SelectItem>
                   {uniqueCategories.map(category => (
                     <SelectItem key={category} value={category}>
                       {category}
