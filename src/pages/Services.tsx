@@ -201,7 +201,7 @@ export default function Services() {
                     <TableHead>Pris</TableHead>
                     
                     <TableHead>Specialistnivå</TableHead>
-                    <TableHead>Onlinebokningsbar</TableHead>
+                    
                     <TableHead>Åtgärder</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -251,11 +251,7 @@ export default function Services() {
                           {service.requiredSpecialistLevel}
                         </Badge>
                       </TableCell>
-                      <TableCell>
-                        <Badge variant={service.isOnlineBookable ? "default" : "secondary"}>
-                          {service.isOnlineBookable ? "Ja" : "Nej"}
-                        </Badge>
-                      </TableCell>
+                      
                       <TableCell>
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm">
