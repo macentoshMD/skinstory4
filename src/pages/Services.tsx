@@ -42,20 +42,17 @@ export default function Services() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedEquipmentType, setSelectedEquipmentType] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
-
   const filteredServices = SERVICES.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || service.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || service.categoryId === selectedCategory;
-    const matchesTag = selectedTag === "all" || (service.tags && service.tags.includes(selectedTag));
+    const matchesTag = selectedTag === "all" || service.tags && service.tags.includes(selectedTag);
     return matchesSearch && matchesCategory && matchesTag;
   });
-
   const filteredEquipment = EQUIPMENT.filter(equipment => {
     const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) || equipment.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedEquipmentType === "all" || equipment.type === selectedEquipmentType;
     return matchesSearch && matchesType;
   });
-
   const equipmentTypes = [{
     id: "all",
     name: "All utrustning"
@@ -78,7 +75,6 @@ export default function Services() {
     id: "radiofrequency",
     name: "Radiofrekvens"
   }];
-
   const categories = [{
     id: "all",
     name: "Alla kategorier"
@@ -99,7 +95,6 @@ export default function Services() {
     name: "Akne",
     color: "bg-red-100 text-red-800"
   }];
-
   const tags = [{
     id: "all",
     name: "Alla taggar"
@@ -113,7 +108,6 @@ export default function Services() {
     id: "populär",
     name: "Populär"
   }];
-
   const getCategoryColor = (categoryId: string) => {
     const category = categories.find(cat => cat.id === categoryId);
     return category?.color || "bg-gray-100 text-gray-800";
@@ -154,7 +148,6 @@ export default function Services() {
     const estimatedCost = price * 0.4;
     return ((price - estimatedCost) / price * 100).toFixed(1);
   };
-
   return <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Tjänster</h1>
@@ -234,7 +227,7 @@ export default function Services() {
                       <TableHead>Tidsgång</TableHead>
                       <TableHead>Pris</TableHead>
                       <TableHead>Taggar</TableHead>
-                      <TableHead>Specialistnivå</TableHead>
+                      
                       <TableHead>Åtgärder</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -277,23 +270,15 @@ export default function Services() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {service.tags?.slice(0, 2).map((tag, idx) => (
-                              <Badge key={idx} variant="secondary" className="text-xs">
+                            {service.tags?.slice(0, 2).map((tag, idx) => <Badge key={idx} variant="secondary" className="text-xs">
                                 {tag}
-                              </Badge>
-                            ))}
-                            {service.tags && service.tags.length > 2 && (
-                              <Badge variant="secondary" className="text-xs">
+                              </Badge>)}
+                            {service.tags && service.tags.length > 2 && <Badge variant="secondary" className="text-xs">
                                 +{service.tags.length - 2}
-                              </Badge>
-                            )}
+                              </Badge>}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <Badge className={getDifficultyColor(service.requiredSpecialistLevel)}>
-                            {service.requiredSpecialistLevel}
-                          </Badge>
-                        </TableCell>
+                        
                         <TableCell>
                           <div className="flex gap-2">
                             <Button variant="outline" size="sm">
