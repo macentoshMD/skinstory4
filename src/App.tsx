@@ -11,6 +11,7 @@ import Companies from "./pages/Companies";
 import Treatments from "./pages/Treatments";
 import ActivityLog from "./pages/ActivityLog";
 import Staff from "./pages/Staff";
+import Insights from "./pages/Insights";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
