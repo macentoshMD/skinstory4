@@ -5,11 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, ShoppingCart, Users, Sparkles, Search, Download, AlertCircle } from "lucide-react";
-import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
 import { Button } from '@/components/ui/button';
-import { ExtendedActivityLog, ACTIVITY_CATEGORIES, ACTIVITY_TYPES } from '@/types/activity';
-import { generateExtendedMockActivities } from '@/utils/mockActivityGenerator';
+import { 
+  Calendar, ShoppingCart, Users, Sparkles, Search, Download, AlertCircle,
+  TrendingUp, Star, Phone, MessageCircle, Heart
+} from "lucide-react";
+import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
+import { ExtendedActivityLog, ACTIVITY_CATEGORIES, ACTIVITY_TYPES, QUICK_FILTERS } from '@/types/activity';
+import { generateExtendedMockActivities, generateTodayStats } from '@/utils/mockActivityGenerator';
 
 const ActivityLog = () => {
   const [currentDateRange, setCurrentDateRange] = useState<DateRange>({
@@ -19,51 +22,54 @@ const ActivityLog = () => {
   });
   
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [actorFilter, setActorFilter] = useState<string>('all');
-  const [importantOnly, setImportantOnly] = useState<boolean>(false);
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [companyFilter, setCompanyFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [activeQuickFilter, setActiveQuickFilter] = useState<string | null>(null);
 
   const activities = generateExtendedMockActivities(currentDateRange);
+  const todayStats = generateTodayStats(activities);
 
   const filteredActivities = activities.filter(activity => {
     const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;
-    const matchesActor = actorFilter === 'all' || activity.actor.type === actorFilter;
-    const matchesImportant = !importantOnly || activity.is_important;
+    const matchesPriority = priorityFilter === 'all' || ACTIVITY_TYPES[activity.activity_type].priority === priorityFilter;
+    const matchesCompany = companyFilter === 'all' || activity.metadata.company === companyFilter;
     const matchesSearch = searchTerm === '' || 
       activity.actor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ACTIVITY_TYPES[activity.activity_type].label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (activity.target && activity.target.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    return matchesCategory && matchesActor && matchesImportant && matchesSearch;
+    // Quick filter logic
+    if (activeQuickFilter && QUICK_FILTERS[activeQuickFilter as keyof typeof QUICK_FILTERS]) {
+      const quickFilter = QUICK_FILTERS[activeQuickFilter as keyof typeof QUICK_FILTERS];
+      if (quickFilter.category && activity.category !== quickFilter.category) return false;
+      if (quickFilter.types && !quickFilter.types.includes(activity.activity_type)) return false;
+      if (quickFilter.priority && ACTIVITY_TYPES[activity.activity_type].priority !== quickFilter.priority) return false;
+    }
+    
+    return matchesCategory && matchesPriority && matchesCompany && matchesSearch;
   });
 
-  const getActivityIcon = (category: string) => {
+  const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'bokningar': return <Calendar className="h-4 w-4" />;
       case 'beställningar': return <ShoppingCart className="h-4 w-4" />;
       case 'kunder': return <Users className="h-4 w-4" />;
       case 'ekonomi': return <Sparkles className="h-4 w-4" />;
-      case 'personal': return <Users className="h-4 w-4" />;
-      case 'system': return <AlertCircle className="h-4 w-4" />;
+      case 'specialist': return <Star className="h-4 w-4" />;
+      case 'behandlingar': return <Heart className="h-4 w-4" />;
+      case 'rekommendationer': return <TrendingUp className="h-4 w-4" />;
+      case 'support': return <MessageCircle className="h-4 w-4" />;
       default: return <Calendar className="h-4 w-4" />;
     }
   };
 
-  const getActorColor = (actorType: string) => {
-    switch (actorType) {
-      case 'employee': return 'bg-blue-100 text-blue-800';
-      case 'customer': return 'bg-green-100 text-green-800';
-      case 'system': return 'bg-gray-100 text-gray-800';
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getActorLabel = (actorType: string) => {
-    switch (actorType) {
-      case 'employee': return 'Personal';
-      case 'customer': return 'Kund';
-      case 'system': return 'System';
-      default: return actorType;
     }
   };
 
@@ -71,22 +77,35 @@ const ActivityLog = () => {
     setCurrentDateRange(newRange);
   };
 
+  const handleQuickFilter = (filterKey: string) => {
+    if (activeQuickFilter === filterKey) {
+      setActiveQuickFilter(null);
+    } else {
+      setActiveQuickFilter(filterKey);
+      // Reset other filters when using quick filter
+      setCategoryFilter('all');
+      setPriorityFilter('all');
+    }
+  };
+
   const handleExport = () => {
     console.log('Exporterar aktiviteter...', filteredActivities);
-    // Implementation for CSV export would go here
   };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Aktivitetslogg</h1>
-          <p className="text-gray-600 mt-2">Omfattande spårning av alla systemaktiviteter</p>
+          <h1 className="text-3xl font-bold text-gray-900">SkinStory - Aktivitetslogg</h1>
+          <p className="text-gray-600 mt-2">MVP Dashboard för affärskritisk verksamhetsövervakning</p>
         </div>
-        <Button onClick={handleExport} variant="outline">
-          <Download className="h-4 w-4 mr-2" />
-          Exportera
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleExport} variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Exportera
+          </Button>
+        </div>
       </div>
 
       {/* Date Range Filter */}
@@ -95,58 +114,69 @@ const ActivityLog = () => {
         onDateRangeChange={handleDateRangeChange}
       />
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Totala aktiviteter</p>
-                <p className="text-2xl font-bold">{activities.length}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-blue-500" />
+      {/* Quick Overview for Today */}
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Snabböversikt Idag
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{todayStats.bookingsCreated}</div>
+              <div className="text-gray-600">bokningar skapade</div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Viktiga händelser</p>
-                <p className="text-2xl font-bold text-red-600">{activities.filter(a => a.is_important).length}</p>
-              </div>
-              <AlertCircle className="h-8 w-8 text-red-500" />
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{todayStats.treatmentsCompleted}</div>
+              <div className="text-gray-600">behandlingar genomförda</div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Kund-aktiviteter</p>
-                <p className="text-2xl font-bold text-green-600">{activities.filter(a => a.actor.type === 'customer').length}</p>
-              </div>
-              <Users className="h-8 w-8 text-green-500" />
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">{todayStats.coursesStarted}</div>
+              <div className="text-gray-600">kurpaket sålda</div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Personal-aktiviteter</p>
-                <p className="text-2xl font-bold text-blue-600">{activities.filter(a => a.actor.type === 'employee').length}</p>
-              </div>
-              <Users className="h-8 w-8 text-blue-500" />
+            <div className="text-center">
+              <div className="text-2xl font-bold text-emerald-600">{(todayStats.totalRevenue / 100).toLocaleString('sv-SE')}</div>
+              <div className="text-gray-600">kr intjänat</div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-600">{todayStats.complaints}</div>
+              <div className="text-gray-600">klagomål mottagna</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">{todayStats.noShows}</div>
+              <div className="text-gray-600">NoShow</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Filters */}
+      {/* Quick Filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Filter</CardTitle>
+          <CardTitle>Snabbfilter</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(QUICK_FILTERS).map(([key, filter]) => (
+              <Button
+                key={key}
+                variant={activeQuickFilter === key ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleQuickFilter(key)}
+              >
+                {filter.label}
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Advanced Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Avancerade filter</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -166,29 +196,31 @@ const ActivityLog = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Aktör</label>
-              <Select value={actorFilter} onValueChange={setActorFilter}>
+              <label className="text-sm font-medium">Prioritet</label>
+              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Alla aktörer</SelectItem>
-                  <SelectItem value="employee">Personal</SelectItem>
-                  <SelectItem value="customer">Kunder</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="all">Alla prioriteter</SelectItem>
+                  <SelectItem value="high">Hög</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="low">Låg</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Prioritet</label>
-              <Select value={importantOnly ? 'important' : 'all'} onValueChange={(value) => setImportantOnly(value === 'important')}>
+              <label className="text-sm font-medium">Företag</label>
+              <Select value={companyFilter} onValueChange={setCompanyFilter}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Alla</SelectItem>
-                  <SelectItem value="important">Endast viktiga</SelectItem>
+                  <SelectItem value="all">Alla företag</SelectItem>
+                  <SelectItem value="AcneSpecialisten">AcneSpecialisten</SelectItem>
+                  <SelectItem value="DAHL">DAHL</SelectItem>
+                  <SelectItem value="Sveriges Skönhetscenter">Sveriges Skönhetscenter</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -213,11 +245,22 @@ const ActivityLog = () => {
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
           Visar {filteredActivities.length} av {activities.length} aktiviteter
+          {activeQuickFilter && (
+            <span className="ml-2 text-blue-600">
+              (Filter: {QUICK_FILTERS[activeQuickFilter as keyof typeof QUICK_FILTERS].label})
+            </span>
+          )}
         </p>
       </div>
 
-      {/* Activity Table */}
+      {/* Activity Feed */}
       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5" />
+            Aktivitetsflöde
+          </CardTitle>
+        </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -226,57 +269,72 @@ const ActivityLog = () => {
                 <TableHead>Kategori</TableHead>
                 <TableHead>Aktivitet</TableHead>
                 <TableHead>Aktör</TableHead>
-                <TableHead>Mål</TableHead>
-                <TableHead>Klinik</TableHead>
+                <TableHead>Företag/Klinik</TableHead>
+                <TableHead>Specialist</TableHead>
                 <TableHead className="text-right">Belopp</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Prioritet</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredActivities.map((activity) => (
-                <TableRow key={activity.id} className={activity.is_important ? 'bg-red-50' : ''}>
+              {filteredActivities.slice(0, 50).map((activity) => (
+                <TableRow 
+                  key={activity.id} 
+                  className={activity.is_important ? 'bg-red-50 border-l-4 border-l-red-500' : ''}
+                >
                   <TableCell className="font-mono text-sm">
-                    {activity.timestamp.toLocaleDateString('sv-SE')} {activity.timestamp.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}
-                    {activity.is_important && <AlertCircle className="h-3 w-3 text-red-500 inline ml-2" />}
-                  </TableCell>
-                  <TableCell>
                     <div className="flex items-center gap-2">
-                      {getActivityIcon(activity.category)}
-                      <span className="text-sm">{ACTIVITY_CATEGORIES[activity.category]}</span>
+                      {activity.timestamp.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}
+                      {activity.is_important && <AlertCircle className="h-3 w-3 text-red-500" />}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {activity.timestamp.toLocaleDateString('sv-SE')}
                     </div>
                   </TableCell>
+                  
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {getCategoryIcon(activity.category)}
+                      <span className="text-sm font-medium">{ACTIVITY_CATEGORIES[activity.category]}</span>
+                    </div>
+                  </TableCell>
+                  
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{ACTIVITY_TYPES[activity.activity_type].icon}</span>
-                      <span className="text-sm">{ACTIVITY_TYPES[activity.activity_type].label}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <Badge className={getActorColor(activity.actor.type)}>
-                        {getActorLabel(activity.actor.type)}
-                      </Badge>
-                      <div className="text-sm text-gray-600">{activity.actor.name}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {activity.target ? (
-                      <div className="text-sm">
-                        <div className="font-medium">{activity.target.name}</div>
-                        <div className="text-gray-500 capitalize">{activity.target.type}</div>
+                      <div>
+                        <div className="text-sm font-medium">{ACTIVITY_TYPES[activity.activity_type].label}</div>
+                        {activity.target && (
+                          <div className="text-xs text-gray-500">{activity.target.name}</div>
+                        )}
                       </div>
-                    ) : '-'}
+                    </div>
                   </TableCell>
+                  
+                  <TableCell>
+                    <div className="text-sm">
+                      <div className="font-medium">{activity.actor.name}</div>
+                      <div className="text-gray-500 capitalize">{activity.actor.type}</div>
+                    </div>
+                  </TableCell>
+                  
+                  <TableCell className="text-sm">
+                    <div className="font-medium">{activity.metadata.company}</div>
+                    <div className="text-gray-500">{activity.metadata.clinic}</div>
+                  </TableCell>
+                  
                   <TableCell className="text-sm text-gray-600">
-                    {activity.metadata.location || '-'}
+                    {activity.metadata.specialist || '-'}
                   </TableCell>
+                  
                   <TableCell className="text-right">
                     {activity.details.amount_cents ? 
                       `${(activity.details.amount_cents / 100).toLocaleString('sv-SE')} kr` : '-'}
                   </TableCell>
+                  
                   <TableCell>
-                    <Badge className={`${activity.metadata.source === 'system' ? 'bg-gray-100 text-gray-800' : 'bg-blue-100 text-blue-800'}`}>
-                      {activity.metadata.source.replace('_', ' ')}
+                    <Badge className={getPriorityColor(ACTIVITY_TYPES[activity.activity_type].priority)}>
+                      {ACTIVITY_TYPES[activity.activity_type].priority === 'high' ? 'Hög' :
+                       ACTIVITY_TYPES[activity.activity_type].priority === 'medium' ? 'Medium' : 'Låg'}
                     </Badge>
                   </TableCell>
                 </TableRow>
