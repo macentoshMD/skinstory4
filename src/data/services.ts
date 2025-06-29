@@ -1,4 +1,3 @@
-
 import { Service, ServicePackage } from '@/types/services';
 
 export const SERVICES: Service[] = [
@@ -25,6 +24,7 @@ export const SERVICES: Service[] = [
     beforeCare: ['Rengör ansiktet från makeup'],
     afterCare: ['Följ given hudvårdsrutin'],
     expectedResults: 'Tydlig behandlingsplan och produktrekommendationer',
+    canBeCombinedWith: [],
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -56,6 +56,7 @@ export const SERVICES: Service[] = [
     beforeCare: ['Rengör ansiktet från makeup', 'Undvik retinol 24h innan'],
     afterCare: ['Använd solskydd dagligen'],
     expectedResults: 'Detaljerad hudrapport med före/efter-spårning',
+    canBeCombinedWith: [],
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
