@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,49 +7,60 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Edit, Settings, Zap, Clock, Star } from "lucide-react";
-import { SERVICES, SERVICE_PACKAGES } from "@/data/services";
-import { SERVICE_CATEGORIES, EQUIPMENT } from "@/types/services";
+import { Search, Plus, Edit, Settings, Zap, Clock, Star, Layers, Target } from "lucide-react";
+import { BASE_SERVICES, COMPOSED_SERVICES } from "@/types/base-services";
+import { PROBLEM_AREAS } from "@/types/problem-areas";
+import { EQUIPMENT } from "@/types/services";
 
 const Services = () => {
-  const [services] = useState(SERVICES);
-  const [packages] = useState(SERVICE_PACKAGES);
+  const [baseServices] = useState(BASE_SERVICES);
+  const [composedServices] = useState(COMPOSED_SERVICES);
+  const [problemAreas] = useState(PROBLEM_AREAS);
+  const [equipment] = useState(EQUIPMENT);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-
-  const filteredServices = services.filter(service => {
-    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || service.categoryId === selectedCategory;
-    return matchesSearch && matchesCategory && service.isActive;
-  });
-
-  const getEquipmentNames = (serviceEquipment: any[]) => {
-    return serviceEquipment.map(eq => {
-      const equipment = EQUIPMENT.find(e => e.id === eq.equipmentId);
-      return equipment?.name || 'Okänt';
-    });
-  };
+  const [selectedType, setSelectedType] = useState<string>("all");
 
   const formatPrice = (priceInCents: number) => {
     return `${(priceInCents / 100).toLocaleString('sv-SE')} kr`;
   };
 
-  const getCategoryStats = () => {
-    const categoryStats = SERVICE_CATEGORIES.map(category => {
-      const categoryServices = services.filter(s => s.categoryId === category.id && s.isActive);
-      const avgPrice = categoryServices.length > 0 
-        ? categoryServices.reduce((sum, s) => sum + s.price, 0) / categoryServices.length / 100
-        : 0;
-      
-      return {
-        ...category,
-        count: categoryServices.length,
-        avgPrice: Math.round(avgPrice)
-      };
-    }).filter(stat => stat.count > 0);
+  const getSpecialistLevelBadge = (level: string) => {
+    const variants = {
+      'basic': 'secondary',
+      'intermediate': 'default', 
+      'advanced': 'destructive',
+      'expert': 'destructive'
+    } as const;
+    
+    const labels = {
+      'basic': 'Grund',
+      'intermediate': 'Mellan', 
+      'advanced': 'Avancerad',
+      'expert': 'Expert'
+    };
+    
+    return { variant: variants[level as keyof typeof variants], label: labels[level as keyof typeof labels] };
+  };
 
-    return categoryStats;
+  const filteredBaseServices = baseServices.filter(service => {
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = selectedType === "all" || selectedType === "base";
+    return matchesSearch && matchesType && service.isActive;
+  });
+
+  const filteredComposedServices = composedServices.filter(service => {
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = selectedType === "all" || selectedType === "composed";
+    return matchesSearch && matchesType && service.isActive;
+  });
+
+  const getBaseServiceNames = (baseServiceIds: string[]) => {
+    return baseServiceIds.map(id => {
+      const service = baseServices.find(s => s.id === id);
+      return service?.name || 'Okänd tjänst';
+    });
   };
 
   return (
@@ -58,41 +68,29 @@ const Services = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Tjänster</h1>
-          <p className="text-gray-600 mt-2">Hantera tjänster, utrustning och tjänstepaket</p>
+          <p className="text-gray-600 mt-2">Hantera grund- och sammansatta tjänster, utrustning och problemområden</p>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Ny tjänst
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Skapa ny tjänst</DialogTitle>
-              <DialogDescription>
-                Skapa en ny tjänst med utrustning och inställningar
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="Tjänstens namn" />
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Kategori" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SERVICE_CATEGORIES.map(category => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.icon} {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Input placeholder="Beskrivning" />
-              <div className="grid grid-cols-3 gap-4">
-                <Input placeholder="Pris (kr)" type="number" />
+        <div className="flex gap-2">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Grundtjänst
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Skapa ny grundtjänst</DialogTitle>
+                <DialogDescription>
+                  Skapa en grundläggande tjänst som kan kombineras med andra
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <Input placeholder="Tjänstens namn" />
+                  <Input placeholder="Pris (kr)" type="number" />
+                </div>
+                <Input placeholder="Beskrivning" />
                 <Input placeholder="Varaktighet (min)" type="number" />
                 <Select>
                   <SelectTrigger>
@@ -106,32 +104,54 @@ const Services = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Utrustning</label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Välj utrustning" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {EQUIPMENT.map(equipment => (
-                      <SelectItem key={equipment.id} value={equipment.id}>
-                        {equipment.name} ({equipment.brand})
-                      </SelectItem>
+              <Button className="w-full">Skapa grundtjänst</Button>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Layers className="h-4 w-4" />
+                Sammansatt tjänst
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Skapa sammansatt tjänst</DialogTitle>
+                <DialogDescription>
+                  Kombinera flera grundtjänster till ett paket
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <Input placeholder="Tjänstens namn" />
+                <Input placeholder="Beskrivning" />
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Välj grundtjänster</label>
+                  <div className="space-y-2 max-h-32 overflow-y-auto border rounded p-2">
+                    {baseServices.map(service => (
+                      <div key={service.id} className="flex items-center space-x-2">
+                        <input type="checkbox" id={service.id} />
+                        <label htmlFor={service.id} className="text-sm">
+                          {service.name} ({formatPrice(service.price)}, {service.duration}min)
+                        </label>
+                      </div>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                </div>
+                <Input placeholder="Rabatt (%)" type="number" />
               </div>
-            </div>
-            <Button className="w-full">Skapa tjänst</Button>
-          </DialogContent>
-        </Dialog>
+              <Button className="w-full">Skapa sammansatt tjänst</Button>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <Tabs defaultValue="services" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="services">Tjänster</TabsTrigger>
-          <TabsTrigger value="packages">Tjänstepaket</TabsTrigger>
+          <TabsTrigger value="problems">Problemområden</TabsTrigger>
           <TabsTrigger value="equipment">Utrustning</TabsTrigger>
+          <TabsTrigger value="links">Kopplingar</TabsTrigger>
         </TabsList>
 
         <TabsContent value="services" className="space-y-6">
@@ -140,39 +160,37 @@ const Services = () => {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  Aktiva tjänster
+                  <Star className="h-4 w-4 text-blue-500" />
+                  Grundtjänster
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">{services.filter(s => s.isActive).length}</div>
+                <div className="text-2xl font-bold text-blue-600">{baseServices.filter(s => s.isActive).length}</div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-green-500" />
-                  Genomsnittlig tid
+                  <Layers className="h-4 w-4 text-green-500" />
+                  Sammansatta
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">
-                  {Math.round(services.reduce((sum, s) => sum + s.duration, 0) / services.length)} min
-                </div>
+                <div className="text-2xl font-bold text-green-600">{composedServices.filter(s => s.isActive).length}</div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-purple-500" />
-                  Med utrustning
+                  <Clock className="h-4 w-4 text-purple-500" />
+                  Snitt-tid grund
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-purple-600">
-                  {services.filter(s => s.equipment.length > 0).length}
+                  {Math.round(baseServices.reduce((sum, s) => sum + s.duration, 0) / baseServices.length)} min
                 </div>
               </CardContent>
             </Card>
@@ -180,39 +198,15 @@ const Services = () => {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Settings className="h-4 w-4 text-orange-500" />
-                  Tjänstepaket
+                  <Zap className="h-4 w-4 text-orange-500" />
+                  Utrustning
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-orange-600">{packages.length}</div>
+                <div className="text-2xl font-bold text-orange-600">{equipment.length}</div>
               </CardContent>
             </Card>
           </div>
-
-          {/* Category Overview */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Kategorier</CardTitle>
-              <CardDescription>Översikt över tjänstekategorier</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {getCategoryStats().map(category => (
-                  <div key={category.id} className="p-4 border rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl">{category.icon}</span>
-                      <span className="font-medium">{category.name}</span>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      <div>{category.count} tjänster</div>
-                      <div>Snitt: {category.avgPrice.toLocaleString('sv-SE')} kr</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Services List */}
           <Card>
@@ -220,20 +214,17 @@ const Services = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <CardTitle>Tjänstlista</CardTitle>
-                  <CardDescription>Alla tillgängliga tjänster med utrustning</CardDescription>
+                  <CardDescription>Grund- och sammansatta tjänster</CardDescription>
                 </div>
                 <div className="flex gap-4">
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <Select value={selectedType} onValueChange={setSelectedType}>
                     <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Filtrera kategori" />
+                      <SelectValue placeholder="Filtrera typ" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Alla kategorier</SelectItem>
-                      {SERVICE_CATEGORIES.map(category => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.icon} {category.name}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="all">Alla typer</SelectItem>
+                      <SelectItem value="base">Grundtjänster</SelectItem>
+                      <SelectItem value="composed">Sammansatta</SelectItem>
                     </SelectContent>
                   </Select>
                   <div className="relative">
@@ -253,17 +244,62 @@ const Services = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Tjänst</TableHead>
-                    <TableHead>Kategori</TableHead>
+                    <TableHead>Typ</TableHead>
                     <TableHead>Tid & Pris</TableHead>
-                    <TableHead>Utrustning</TableHead>
                     <TableHead>Nivå</TableHead>
+                    <TableHead>Detaljer</TableHead>
                     <TableHead>Åtgärder</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredServices.map((service) => {
-                    const category = SERVICE_CATEGORIES.find(c => c.id === service.categoryId);
-                    const equipmentNames = getEquipmentNames(service.equipment);
+                  {/* Base Services */}
+                  {filteredBaseServices.map((service) => {
+                    const levelInfo = getSpecialistLevelBadge(service.requiredSpecialistLevel);
+                    
+                    return (
+                      <TableRow key={service.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{service.name}</div>
+                            <div className="text-sm text-gray-500 max-w-xs truncate">
+                              {service.description}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                            <Star className="h-3 w-3" />
+                            Grund
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <div className="font-medium">{formatPrice(service.price)}</div>
+                            <div className="text-sm text-gray-500">{service.duration} min</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={levelInfo.variant as any}>
+                            {levelInfo.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm text-gray-600">
+                            {service.skinTypes.length} hudtyper
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  
+                  {/* Composed Services */}
+                  {filteredComposedServices.map((service) => {
+                    const baseServiceNames = getBaseServiceNames(service.baseServiceIds);
                     
                     return (
                       <TableRow key={service.id}>
@@ -281,47 +317,38 @@ const Services = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="flex items-center gap-1 w-fit">
-                            <span>{category?.icon}</span>
-                            {category?.name}
+                          <Badge variant="secondary" className="flex items-center gap-1 w-fit">
+                            <Layers className="h-3 w-3" />
+                            Sammansatt
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <div className="font-medium">{formatPrice(service.price)}</div>
-                            <div className="text-sm text-gray-500">{service.duration} min</div>
+                            <div className="font-medium">{formatPrice(service.totalPrice)}</div>
+                            <div className="text-sm text-gray-500">{service.totalDuration} min</div>
+                            {service.discount && (
+                              <div className="text-xs text-green-600">-{service.discount}% rabatt</div>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
+                          <Badge variant="outline">
+                            {service.baseServiceIds.length} tjänster
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
                           <div className="space-y-1">
-                            {equipmentNames.length > 0 ? (
-                              equipmentNames.slice(0, 2).map((name, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs mr-1">
-                                  <Zap className="h-3 w-3 mr-1" />
-                                  {name}
-                                </Badge>
-                              ))
-                            ) : (
-                              <Badge variant="outline" className="text-xs">
-                                Ingen utrustning
+                            {baseServiceNames.slice(0, 2).map((name, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs mr-1">
+                                {name}
                               </Badge>
-                            )}
-                            {equipmentNames.length > 2 && (
+                            ))}
+                            {baseServiceNames.length > 2 && (
                               <Badge variant="secondary" className="text-xs">
-                                +{equipmentNames.length - 2} till
+                                +{baseServiceNames.length - 2} till
                               </Badge>
                             )}
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge 
-                            variant={service.requiredSpecialistLevel === 'expert' ? 'destructive' : 
-                                   service.requiredSpecialistLevel === 'advanced' ? 'default' : 'secondary'}
-                          >
-                            {service.requiredSpecialistLevel === 'basic' ? 'Grund' :
-                             service.requiredSpecialistLevel === 'intermediate' ? 'Mellan' :
-                             service.requiredSpecialistLevel === 'advanced' ? 'Avancerad' : 'Expert'}
-                          </Badge>
                         </TableCell>
                         <TableCell>
                           <Button variant="ghost" size="sm">
@@ -337,37 +364,42 @@ const Services = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="packages" className="space-y-6">
+        <TabsContent value="problems" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Tjänstepaket</CardTitle>
-              <CardDescription>Förkonfigurerade paket med rabatter</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Problemområden
+              </CardTitle>
+              <CardDescription>Hudproblem som kan behandlas</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {packages.map(pkg => (
-                  <Card key={pkg.id} className="border-2">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                      <CardDescription>{pkg.description}</CardDescription>
+                {problemAreas.map(problem => (
+                  <Card key={problem.id} className="border">
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg">{problem.name}</CardTitle>
+                        <Badge variant={problem.severity === 'severe' ? 'destructive' : 
+                                     problem.severity === 'moderate' ? 'default' : 'secondary'}>
+                          {problem.severity === 'mild' ? 'Mild' :
+                           problem.severity === 'moderate' ? 'Måttlig' : 'Svår'}
+                        </Badge>
+                      </div>
+                      <CardDescription>{problem.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span>Sessioner:</span>
-                          <span className="font-medium">{pkg.sessions}st</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Rabatt:</span>
-                          <span className="font-medium text-green-600">{pkg.discount}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Pris:</span>
-                          <span className="font-bold">{formatPrice(pkg.price)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Giltighet:</span>
-                          <span className="text-sm">{pkg.validityMonths} månader</span>
+                        <Badge variant="outline" className="text-xs">
+                          {problem.category}
+                        </Badge>
+                        <div className="text-sm text-gray-600">
+                          <div className="font-medium mb-1">Vanliga orsaker:</div>
+                          <ul className="text-xs space-y-1">
+                            {problem.commonCauses.slice(0, 2).map((cause, index) => (
+                              <li key={index}>• {cause}</li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
                     </CardContent>
@@ -386,7 +418,7 @@ const Services = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {EQUIPMENT.map(equipment => (
+                {equipment.map(equipment => (
                   <Card key={equipment.id} className="border">
                     <CardHeader>
                       <div className="flex justify-between items-start">
@@ -419,6 +451,22 @@ const Services = () => {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="links" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Kopplingar</CardTitle>
+              <CardDescription>Hantera kopplingar mellan tjänster, utrustning och problemområden</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-gray-500">
+                <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Funktionalitet för att hantera kopplingar kommer snart...</p>
+                <p className="text-sm mt-2">Här kommer du kunna koppla tjänster till utrustning och problemområden</p>
               </div>
             </CardContent>
           </Card>
