@@ -14,7 +14,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,18 +24,20 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Service } from "@/types/services";
 import { EQUIPMENT } from "@/types/services";
+import { BASE_SERVICES, PROBLEM_AREAS, TREATMENT_AREAS, CompositeService } from "@/types/base-services";
 
 const serviceFormSchema = z.object({
-  name: z.string().min(1, "Namn krävs"),
-  categoryId: z.string().min(1, "Kategori krävs"),
+  baseServiceId: z.string().min(1, "Grundtjänst krävs"),
+  selectedEquipment: z.array(z.string()).default([]),
+  selectedProblems: z.array(z.string()).min(1, "Minst ett problem måste väljas"),
+  selectedAreas: z.array(z.string()).min(1, "Minst ett område måste väljas"),
+  customName: z.string().min(1, "Namn krävs"),
   description: z.string().min(1, "Beskrivning krävs"),
-  duration: z.number().min(1, "Tidsgång måste vara minst 1 minut"),
-  price: z.number().min(1, "Pris måste vara större än 0"),
-  requiredSpecialistLevel: z.enum(["basic", "intermediate", "advanced", "expert"]),
-  tags: z.array(z.string()).optional(),
 });
 
 type ServiceFormValues = z.infer<typeof serviceFormSchema>;
@@ -48,50 +49,100 @@ interface ServiceDialogProps {
   onSave: (service: Partial<Service>) => void;
 }
 
-const categories = [
-  { id: "Laser", name: "Laser" },
-  { id: "Hudvård", name: "Hudvård" },
-  { id: "Anti-age", name: "Anti-age" },
-  { id: "Akne", name: "Akne" },
+const STEPS = [
+  { id: 1, title: "Grundtjänst", description: "Välj typ av behandling" },
+  { id: 2, title: "Utrustning", description: "Välj vilken utrustning som behövs" },
+  { id: 3, title: "Problem", description: "Vilka problem behandlas?" },
+  { id: 4, title: "Områden", description: "Vilka områden behandlas?" },
+  { id: 5, title: "Namn & Beskrivning", description: "Slutför din behandling" },
 ];
 
-const availableTags = ["klinik", "premium", "populär"];
-
 export function ServiceDialog({ open, onOpenChange, service, onSave }: ServiceDialogProps) {
-  const [selectedTags, setSelectedTags] = useState<string[]>(service?.tags || []);
-  const [newTag, setNewTag] = useState("");
+  const [currentStep, setCurrentStep] = useState(1);
 
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
-      name: service?.name || "",
-      categoryId: service?.categoryId || "",
-      description: service?.description || "",
-      duration: service?.duration || 60,
-      price: service?.price ? service.price / 100 : 0,
-      requiredSpecialistLevel: service?.requiredSpecialistLevel || "basic",
-      tags: service?.tags || [],
+      baseServiceId: "",
+      selectedEquipment: [],
+      selectedProblems: [],
+      selectedAreas: [],
+      customName: "",
+      description: "",
     },
   });
 
+  const generateKeywords = (values: ServiceFormValues): string[] => {
+    const keywords: string[] = [];
+    
+    // Add base service
+    const baseService = BASE_SERVICES.find(s => s.id === values.baseServiceId);
+    if (baseService) {
+      keywords.push(baseService.name.toLowerCase());
+    }
+    
+    // Add equipment
+    values.selectedEquipment.forEach(equipId => {
+      const equipment = EQUIPMENT.find(e => e.id === equipId);
+      if (equipment) {
+        keywords.push(equipment.name.toLowerCase());
+        keywords.push(equipment.brand.toLowerCase());
+      }
+    });
+    
+    // Add problems
+    values.selectedProblems.forEach(problemId => {
+      const problem = PROBLEM_AREAS.find(p => p.id === problemId);
+      if (problem) {
+        keywords.push(problem.name.toLowerCase());
+      }
+    });
+    
+    // Add areas
+    values.selectedAreas.forEach(areaId => {
+      const area = TREATMENT_AREAS.find(a => a.id === areaId);
+      if (area) {
+        keywords.push(area.name.toLowerCase());
+      }
+    });
+    
+    // Add custom name words
+    if (values.customName) {
+      keywords.push(...values.customName.toLowerCase().split(' '));
+    }
+    
+    return [...new Set(keywords)]; // Remove duplicates
+  };
+
   const onSubmit = (values: ServiceFormValues) => {
+    const keywords = generateKeywords(values);
+    
     const serviceData: Partial<Service> = {
-      ...values,
-      price: values.price * 100, // Convert to cents
-      tags: selectedTags,
-      equipment: service?.equipment || [],
-      skinTypes: service?.skinTypes || [],
-      problemAreas: service?.problemAreas || [],
-      contraindications: service?.contraindications || [],
-      beforeCare: service?.beforeCare || [],
-      afterCare: service?.afterCare || [],
-      expectedResults: service?.expectedResults || "",
-      canBeCombinedWith: service?.canBeCombinedWith || [],
-      isActive: service?.isActive ?? true,
-      isBaseService: service?.isBaseService ?? false,
+      name: values.customName,
+      categoryId: BASE_SERVICES.find(s => s.id === values.baseServiceId)?.name || "",
+      description: values.description,
+      equipment: values.selectedEquipment.map(equipId => ({
+        equipmentId: equipId,
+        settings: {},
+        isRequired: true
+      })),
+      skinTypes: ["all"],
+      problemAreas: values.selectedProblems,
+      contraindications: [],
+      beforeCare: [],
+      afterCare: [],
+      expectedResults: "",
+      canBeCombinedWith: [],
+      isActive: true,
+      isBaseService: false,
       currency: "SEK",
-      createdAt: service?.createdAt || new Date(),
+      tags: keywords,
+      createdAt: new Date(),
       updatedAt: new Date(),
+      // These will be set later by staff/clinic
+      duration: 60,
+      price: 100000,
+      requiredSpecialistLevel: "basic"
     };
 
     if (service) {
@@ -101,74 +152,195 @@ export function ServiceDialog({ open, onOpenChange, service, onSave }: ServiceDi
     onSave(serviceData);
     onOpenChange(false);
     form.reset();
-    setSelectedTags([]);
+    setCurrentStep(1);
   };
 
-  const addTag = () => {
-    if (newTag && !selectedTags.includes(newTag)) {
-      setSelectedTags([...selectedTags, newTag]);
-      setNewTag("");
+  const nextStep = () => {
+    if (currentStep < STEPS.length) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  const removeTag = (tagToRemove: string) => {
-    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {service ? "Redigera tjänst" : "Ny tjänst"}
-          </DialogTitle>
-          <DialogDescription>
-            {service ? "Uppdatera tjänstinformation" : "Skapa en ny tjänst"}
-          </DialogDescription>
-        </DialogHeader>
+  const canGoNext = () => {
+    const values = form.getValues();
+    switch (currentStep) {
+      case 1:
+        return values.baseServiceId !== "";
+      case 2:
+        return true; // Equipment is optional
+      case 3:
+        return values.selectedProblems.length > 0;
+      case 4:
+        return values.selectedAreas.length > 0;
+      case 5:
+        return values.customName !== "" && values.description !== "";
+      default:
+        return false;
+    }
+  };
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Namn</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Tjänstens namn" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <FormField
+            control={form.control}
+            name="baseServiceId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Välj grundtjänst</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Välj typ av behandling" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {BASE_SERVICES.map((service) => (
+                      <SelectItem key={service.id} value={service.id}>
+                        <div>
+                          <div className="font-medium">{service.name}</div>
+                          <div className="text-sm text-muted-foreground">{service.description}</div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        );
 
-              <FormField
-                control={form.control}
-                name="categoryId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Kategori</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Välj kategori" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+      case 2:
+        return (
+          <FormField
+            control={form.control}
+            name="selectedEquipment"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Välj utrustning (valfritt)</FormLabel>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {EQUIPMENT.map((equipment) => (
+                    <div key={equipment.id} className="flex items-start space-x-3 p-3 border rounded-lg">
+                      <Checkbox
+                        checked={field.value.includes(equipment.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            field.onChange([...field.value, equipment.id]);
+                          } else {
+                            field.onChange(field.value.filter(id => id !== equipment.id));
+                          }
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">{equipment.name}</div>
+                        <div className="text-sm text-muted-foreground">{equipment.brand} - {equipment.model}</div>
+                        <div className="text-sm text-muted-foreground">{equipment.description}</div>
+                        <Badge className="mt-1" variant="outline">{equipment.type}</Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        );
+
+      case 3:
+        return (
+          <FormField
+            control={form.control}
+            name="selectedProblems"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Vilka problem behandlas?</FormLabel>
+                <div className="grid grid-cols-2 gap-3">
+                  {PROBLEM_AREAS.map((problem) => (
+                    <div key={problem.id} className="flex items-start space-x-3 p-3 border rounded-lg">
+                      <Checkbox
+                        checked={field.value.includes(problem.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            field.onChange([...field.value, problem.id]);
+                          } else {
+                            field.onChange(field.value.filter(id => id !== problem.id));
+                          }
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">{problem.name}</div>
+                        <div className="text-sm text-muted-foreground">{problem.description}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        );
+
+      case 4:
+        return (
+          <FormField
+            control={form.control}
+            name="selectedAreas"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Vilka områden behandlas?</FormLabel>
+                <div className="grid grid-cols-2 gap-3">
+                  {TREATMENT_AREAS.map((area) => (
+                    <div key={area.id} className="flex items-start space-x-3 p-3 border rounded-lg">
+                      <Checkbox
+                        checked={field.value.includes(area.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            field.onChange([...field.value, area.id]);
+                          } else {
+                            field.onChange(field.value.filter(id => id !== area.id));
+                          }
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">{area.name}</div>
+                        <div className="text-sm text-muted-foreground">{area.bodyRegion}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        );
+
+      case 5:
+        const values = form.getValues();
+        const previewKeywords = generateKeywords(values);
+        
+        return (
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="customName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Namn på behandling</FormLabel>
+                  <FormControl>
+                    <Input placeholder="T.ex. DermaPen Microneedling Dekolletage" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -178,7 +350,7 @@ export function ServiceDialog({ open, onOpenChange, service, onSave }: ServiceDi
                   <FormLabel>Beskrivning</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Beskrivning av tjänsten" 
+                      placeholder="Beskriv behandlingen och vad den åstadkommer" 
                       className="resize-none" 
                       {...field} 
                     />
@@ -188,114 +360,97 @@ export function ServiceDialog({ open, onOpenChange, service, onSave }: ServiceDi
               )}
             />
 
-            <div className="grid grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tidsgång (minuter)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="60" 
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pris (kr)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="500" 
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="requiredSpecialistLevel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Specialistnivå</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Välj nivå" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="basic">Grundläggande</SelectItem>
-                        <SelectItem value="intermediate">Mellannivå</SelectItem>
-                        <SelectItem value="advanced">Avancerad</SelectItem>
-                        <SelectItem value="expert">Expert</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
             <div>
-              <FormLabel>Taggar</FormLabel>
-              <div className="flex flex-wrap gap-2 mt-2 mb-3">
-                {selectedTags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                    {tag}
-                    <X 
-                      className="h-3 w-3 cursor-pointer" 
-                      onClick={() => removeTag(tag)}
-                    />
+              <FormLabel>Automatiskt genererade sökord</FormLabel>
+              <div className="flex flex-wrap gap-2 mt-2 p-3 bg-muted rounded-lg">
+                {previewKeywords.map((keyword, idx) => (
+                  <Badge key={idx} variant="secondary">
+                    {keyword}
                   </Badge>
                 ))}
               </div>
-              <div className="flex gap-2">
-                <Select value={newTag} onValueChange={setNewTag}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Välj tagg" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableTags
-                      .filter(tag => !selectedTags.includes(tag))
-                      .map((tag) => (
-                        <SelectItem key={tag} value={tag}>
-                          {tag}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-                <Button type="button" onClick={addTag} disabled={!newTag}>
-                  Lägg till
-                </Button>
-              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Dessa sökord genereras automatiskt baserat på dina val
+              </p>
             </div>
+          </div>
+        );
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Avbryt
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
+            {service ? "Redigera tjänst" : "Ny tjänst"}
+          </DialogTitle>
+          <DialogDescription>
+            Steg {currentStep} av {STEPS.length}: {STEPS[currentStep - 1]?.description}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Progress value={(currentStep / STEPS.length) * 100} className="w-full" />
+            <div className="flex justify-between text-sm text-muted-foreground">
+              {STEPS.map((step) => (
+                <span 
+                  key={step.id} 
+                  className={currentStep === step.id ? "font-medium text-foreground" : ""}
+                >
+                  {step.title}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {renderStepContent()}
+            </form>
+          </Form>
+        </div>
+
+        <DialogFooter className="flex justify-between">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={prevStep}
+            disabled={currentStep === 1}
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Föregående
+          </Button>
+          
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Avbryt
+            </Button>
+            
+            {currentStep < STEPS.length ? (
+              <Button 
+                type="button" 
+                onClick={nextStep}
+                disabled={!canGoNext()}
+              >
+                Nästa
+                <ChevronRight className="h-4 w-4 ml-2" />
               </Button>
-              <Button type="submit">
+            ) : (
+              <Button 
+                type="button" 
+                onClick={form.handleSubmit(onSubmit)}
+                disabled={!canGoNext()}
+              >
                 {service ? "Uppdatera" : "Skapa"} tjänst
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+            )}
+          </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
