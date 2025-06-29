@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,23 +21,37 @@ const ActivityLog = () => {
   });
   
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [companyFilter, setCompanyFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  
+  // Sub-filters for specific categories
+  const [orderTypeFilter, setOrderTypeFilter] = useState<string>('all'); // B2C/B2B for orders
+  const [customerStatusFilter, setCustomerStatusFilter] = useState<string>('all'); // Active/Inactive etc for customers
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>('all'); // Cash/Card etc for payments
 
   const activities = generateExtendedMockActivities(currentDateRange);
   const todayStats = generateTodayStats(activities);
 
   const filteredActivities = activities.filter(activity => {
     const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;
-    const matchesPriority = priorityFilter === 'all' || ACTIVITY_TYPES[activity.activity_type].priority === priorityFilter;
     const matchesCompany = companyFilter === 'all' || activity.metadata.company === companyFilter;
     const matchesSearch = searchTerm === '' || 
       activity.actor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ACTIVITY_TYPES[activity.activity_type].label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (activity.target && activity.target.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    return matchesCategory && matchesPriority && matchesCompany && matchesSearch;
+    // Sub-filter matching
+    const matchesOrderType = orderTypeFilter === 'all' || 
+      (activity.category === 'beställningar' && activity.details.order_type === orderTypeFilter);
+    
+    const matchesCustomerStatus = customerStatusFilter === 'all' || 
+      (activity.category === 'kunder' && activity.activity_type.includes(customerStatusFilter));
+    
+    const matchesPaymentMethod = paymentMethodFilter === 'all' || 
+      (activity.category === 'ekonomi' && activity.activity_type.includes(paymentMethodFilter));
+    
+    return matchesCategory && matchesCompany && matchesSearch && 
+           matchesOrderType && matchesCustomerStatus && matchesPaymentMethod;
   });
 
   const getCategoryIcon = (category: string) => {
@@ -55,13 +68,21 @@ const ActivityLog = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const getStatusBadge = (activity: ExtendedActivityLog) => {
+    // Generate status based on activity type
+    if (activity.activity_type.includes('completed') || activity.activity_type.includes('delivered')) {
+      return <Badge className="bg-green-100 text-green-800 text-xs">Klar</Badge>;
     }
+    if (activity.activity_type.includes('cancelled') || activity.activity_type.includes('no_show')) {
+      return <Badge className="bg-red-100 text-red-800 text-xs">Avbruten</Badge>;
+    }
+    if (activity.activity_type.includes('created') || activity.activity_type.includes('started')) {
+      return <Badge className="bg-blue-100 text-blue-800 text-xs">Pågående</Badge>;
+    }
+    if (activity.activity_type.includes('shipped') || activity.activity_type.includes('transit')) {
+      return <Badge className="bg-yellow-100 text-yellow-800 text-xs">Transport</Badge>;
+    }
+    return <Badge className="bg-gray-100 text-gray-800 text-xs">Öppen</Badge>;
   };
 
   const handleDateRangeChange = (newRange: DateRange) => {
@@ -70,6 +91,61 @@ const ActivityLog = () => {
 
   const handleExport = () => {
     console.log('Exporterar aktiviteter...', filteredActivities);
+  };
+
+  // Helper to show relevant sub-filters based on main category
+  const renderSubFilters = () => {
+    if (categoryFilter === 'beställningar') {
+      return (
+        <Select value={orderTypeFilter} onValueChange={setOrderTypeFilter}>
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder="Ordertyp" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alla ordertyper</SelectItem>
+            <SelectItem value="B2C">Kundbeställning</SelectItem>
+            <SelectItem value="B2B">Klinikbeställning</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    if (categoryFilter === 'kunder') {
+      return (
+        <Select value={customerStatusFilter} onValueChange={setCustomerStatusFilter}>
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder="Kundstatus" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alla statusar</SelectItem>
+            <SelectItem value="active">Aktiv</SelectItem>
+            <SelectItem value="inactive">Inaktiv</SelectItem>
+            <SelectItem value="maintenance">Maintenance</SelectItem>
+            <SelectItem value="under_treatment">Under behandling</SelectItem>
+            <SelectItem value="returning">Återkommande</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    if (categoryFilter === 'ekonomi') {
+      return (
+        <Select value={paymentMethodFilter} onValueChange={setPaymentMethodFilter}>
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder="Betalmetod" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alla metoder</SelectItem>
+            <SelectItem value="cash">Kassa</SelectItem>
+            <SelectItem value="card">Kort</SelectItem>
+            <SelectItem value="klarna">Klarna</SelectItem>
+            <SelectItem value="swish">Swish</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    return null;
   };
 
   return (
@@ -152,17 +228,7 @@ const ActivityLog = () => {
               </SelectContent>
             </Select>
 
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="Prioritet" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alla prioriteter</SelectItem>
-                <SelectItem value="high">Hög</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Låg</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSubFilters()}
 
             <Select value={companyFilter} onValueChange={setCompanyFilter}>
               <SelectTrigger className="h-9">
@@ -211,11 +277,10 @@ const ActivityLog = () => {
                 <TableHead className="w-24">Tid</TableHead>
                 <TableHead className="w-32">Kategori</TableHead>
                 <TableHead>Aktivitet</TableHead>
-                <TableHead className="w-32">Aktör</TableHead>
+                <TableHead className="w-32">Specialist</TableHead>
                 <TableHead className="w-32">Företag/Klinik</TableHead>
-                <TableHead className="w-24">Specialist</TableHead>
                 <TableHead className="w-24 text-right">Belopp</TableHead>
-                <TableHead className="w-20">Prioritet</TableHead>
+                <TableHead className="w-20">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -255,7 +320,7 @@ const ActivityLog = () => {
                   
                   <TableCell>
                     <div className="text-xs">
-                      <div className="font-medium truncate">{activity.actor.name}</div>
+                      <div className="font-medium truncate">{activity.metadata.specialist || activity.actor.name}</div>
                       <div className="text-gray-500 capitalize">{activity.actor.type}</div>
                     </div>
                   </TableCell>
@@ -265,20 +330,13 @@ const ActivityLog = () => {
                     <div className="text-gray-500">{activity.metadata.clinic}</div>
                   </TableCell>
                   
-                  <TableCell className="text-xs text-gray-600">
-                    {activity.metadata.specialist || '-'}
-                  </TableCell>
-                  
                   <TableCell className="text-right text-xs">
                     {activity.details.amount_cents ? 
                       `${(activity.details.amount_cents / 100).toLocaleString('sv-SE')} kr` : '-'}
                   </TableCell>
                   
                   <TableCell>
-                    <Badge className={`text-xs ${getPriorityColor(ACTIVITY_TYPES[activity.activity_type].priority)}`}>
-                      {ACTIVITY_TYPES[activity.activity_type].priority === 'high' ? 'Hög' :
-                       ACTIVITY_TYPES[activity.activity_type].priority === 'medium' ? 'Med' : 'Låg'}
-                    </Badge>
+                    {getStatusBadge(activity)}
                   </TableCell>
                 </TableRow>
               ))}
