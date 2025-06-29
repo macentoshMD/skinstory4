@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SERVICES } from "@/data/services";
 import { EQUIPMENT } from "@/types/services";
-import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings } from "lucide-react";
+import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag } from "lucide-react";
 
 // Base service categories (no pricing)
 const BASE_SERVICE_CATEGORIES = [{
@@ -41,16 +41,21 @@ export default function Services() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedEquipmentType, setSelectedEquipmentType] = useState("all");
+  const [selectedTag, setSelectedTag] = useState("all");
+
   const filteredServices = SERVICES.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || service.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || service.categoryId === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesTag = selectedTag === "all" || (service.tags && service.tags.includes(selectedTag));
+    return matchesSearch && matchesCategory && matchesTag;
   });
+
   const filteredEquipment = EQUIPMENT.filter(equipment => {
     const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) || equipment.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedEquipmentType === "all" || equipment.type === selectedEquipmentType;
     return matchesSearch && matchesType;
   });
+
   const equipmentTypes = [{
     id: "all",
     name: "All utrustning"
@@ -73,6 +78,7 @@ export default function Services() {
     id: "radiofrequency",
     name: "Radiofrekvens"
   }];
+
   const categories = [{
     id: "all",
     name: "Alla kategorier"
@@ -93,6 +99,21 @@ export default function Services() {
     name: "Akne",
     color: "bg-red-100 text-red-800"
   }];
+
+  const tags = [{
+    id: "all",
+    name: "Alla taggar"
+  }, {
+    id: "klinik",
+    name: "Klinik"
+  }, {
+    id: "premium",
+    name: "Premium"
+  }, {
+    id: "populär",
+    name: "Populär"
+  }];
+
   const getCategoryColor = (categoryId: string) => {
     const category = categories.find(cat => cat.id === categoryId);
     return category?.color || "bg-gray-100 text-gray-800";
@@ -133,11 +154,12 @@ export default function Services() {
     const estimatedCost = price * 0.4;
     return ((price - estimatedCost) / price * 100).toFixed(1);
   };
+
   return <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Tjänster</h1>
         <p className="text-muted-foreground">
-          Hantera grundtjänster, utrustning och sammansatta tjänster
+          Hantera tjänster, grundtjänster och utrustning
         </p>
       </div>
 
@@ -166,6 +188,17 @@ export default function Services() {
                     </SelectItem>)}
                 </SelectContent>
               </Select>
+              <Select value={selectedTag} onValueChange={setSelectedTag}>
+                <SelectTrigger className="w-[180px]">
+                  <Tag className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {tags.map(tag => <SelectItem key={tag.id} value={tag.id}>
+                      {tag.name}
+                    </SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm">
@@ -191,78 +224,90 @@ export default function Services() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Namn</TableHead>
-                    <TableHead>Grundtjänst</TableHead>
-                    <TableHead>Utrustning</TableHead>
-                    <TableHead>Tidsgång</TableHead>
-                    <TableHead>Pris</TableHead>
-                    
-                    <TableHead>Specialistnivå</TableHead>
-                    
-                    <TableHead>Åtgärder</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredServices.map(service => <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
-                      <TableCell className="font-medium">
-                        <div>
-                          <div className="font-medium">{service.name}</div>
-                          
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getCategoryColor(service.categoryId)}>
-                          {service.categoryId}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {service.equipment.slice(0, 2).map((eq, idx) => {
-                        const equipment = EQUIPMENT.find(e => e.id === eq.equipmentId);
-                        return equipment ? <Badge key={idx} variant="outline" className="text-xs">
-                                {equipment.name.split(' ')[0]}
-                              </Badge> : null;
-                      })}
-                          {service.equipment.length > 2 && <Badge variant="outline" className="text-xs">
-                              +{service.equipment.length - 2}
-                            </Badge>}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {service.duration} min
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="h-4 w-4" />
-                          {service.price / 100} kr
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell>
-                        <Badge className={getDifficultyColor(service.requiredSpecialistLevel)}>
-                          {service.requiredSpecialistLevel}
-                        </Badge>
-                      </TableCell>
-                      
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>)}
-                </TableBody>
-              </Table>
+              <div className="relative w-full overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Namn</TableHead>
+                      <TableHead>Grundtjänst</TableHead>
+                      <TableHead>Utrustning</TableHead>
+                      <TableHead>Tidsgång</TableHead>
+                      <TableHead>Pris</TableHead>
+                      <TableHead>Taggar</TableHead>
+                      <TableHead>Specialistnivå</TableHead>
+                      <TableHead>Åtgärder</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredServices.map(service => <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          <div>
+                            <div className="font-medium">{service.name}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getCategoryColor(service.categoryId)}>
+                            {service.categoryId}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {service.equipment.slice(0, 2).map((eq, idx) => {
+                          const equipment = EQUIPMENT.find(e => e.id === eq.equipmentId);
+                          return equipment ? <Badge key={idx} variant="outline" className="text-xs">
+                                  {equipment.name.split(' ')[0]}
+                                </Badge> : null;
+                        })}
+                            {service.equipment.length > 2 && <Badge variant="outline" className="text-xs">
+                                +{service.equipment.length - 2}
+                              </Badge>}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {service.duration} min
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="h-4 w-4" />
+                            {service.price / 100} kr
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {service.tags?.slice(0, 2).map((tag, idx) => (
+                              <Badge key={idx} variant="secondary" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                            {service.tags && service.tags.length > 2 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{service.tags.length - 2}
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getDifficultyColor(service.requiredSpecialistLevel)}>
+                            {service.requiredSpecialistLevel}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>)}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -291,52 +336,54 @@ export default function Services() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Namn</TableHead>
-                    <TableHead>Beskrivning</TableHead>
-                    <TableHead>Underkategorier</TableHead>
-                    <TableHead>Antal tjänster</TableHead>
-                    <TableHead>Åtgärder</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {BASE_SERVICE_CATEGORIES.map(category => <TableRow key={category.id} className="cursor-pointer hover:bg-muted/50">
-                      <TableCell className="font-medium">
-                        {category.name}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {category.description}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {category.subcategories.slice(0, 3).map((sub, idx) => <Badge key={idx} variant="outline" className="text-xs">
-                              {sub}
-                            </Badge>)}
-                          {category.subcategories.length > 3 && <Badge variant="outline" className="text-xs">
-                              +{category.subcategories.length - 3}
-                            </Badge>}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {SERVICES.filter(s => s.categoryId.toLowerCase().includes(category.id.toLowerCase())).length} tjänster
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>)}
-                </TableBody>
-              </Table>
+              <div className="relative w-full overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Namn</TableHead>
+                      <TableHead>Beskrivning</TableHead>
+                      <TableHead>Underkategorier</TableHead>
+                      <TableHead>Antal tjänster</TableHead>
+                      <TableHead>Åtgärder</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {BASE_SERVICE_CATEGORIES.map(category => <TableRow key={category.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {category.name}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {category.description}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {category.subcategories.slice(0, 3).map((sub, idx) => <Badge key={idx} variant="outline" className="text-xs">
+                                {sub}
+                              </Badge>)}
+                            {category.subcategories.length > 3 && <Badge variant="outline" className="text-xs">
+                                +{category.subcategories.length - 3}
+                              </Badge>}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-muted-foreground">
+                            {SERVICES.filter(s => s.categoryId.toLowerCase().includes(category.id.toLowerCase())).length} tjänster
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>)}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -380,68 +427,70 @@ export default function Services() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Namn</TableHead>
-                    <TableHead>Typ</TableHead>
-                    <TableHead>Märke & Modell</TableHead>
-                    <TableHead>Beskrivning</TableHead>
-                    <TableHead>Kapacitet</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Åtgärder</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredEquipment.map(equipment => <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
-                      <TableCell className="font-medium">
-                        {equipment.name}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getEquipmentTypeColor(equipment.type)}>
-                          {equipment.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{equipment.brand}</div>
-                          <div className="text-sm text-muted-foreground">{equipment.model}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground max-w-xs truncate">
-                        {equipment.description}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {equipment.capabilities.slice(0, 2).map((cap, idx) => <Badge key={idx} variant="outline" className="text-xs">
-                              {cap.replace('_', ' ')}
-                            </Badge>)}
-                          {equipment.capabilities.length > 2 && <Badge variant="outline" className="text-xs">
-                              +{equipment.capabilities.length - 2}
-                            </Badge>}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={equipment.maintenanceRequired ? "destructive" : "default"}>
-                          {equipment.maintenanceRequired ? "Underhåll krävs" : "Funktionsduglig"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Wrench className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>)}
-                </TableBody>
-              </Table>
+              <div className="relative w-full overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Namn</TableHead>
+                      <TableHead>Typ</TableHead>
+                      <TableHead>Märke & Modell</TableHead>
+                      <TableHead>Beskrivning</TableHead>
+                      <TableHead>Kapacitet</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Åtgärder</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredEquipment.map(equipment => <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {equipment.name}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getEquipmentTypeColor(equipment.type)}>
+                            {equipment.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{equipment.brand}</div>
+                            <div className="text-sm text-muted-foreground">{equipment.model}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground max-w-xs truncate">
+                          {equipment.description}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {equipment.capabilities.slice(0, 2).map((cap, idx) => <Badge key={idx} variant="outline" className="text-xs">
+                                {cap.replace('_', ' ')}
+                              </Badge>)}
+                            {equipment.capabilities.length > 2 && <Badge variant="outline" className="text-xs">
+                                +{equipment.capabilities.length - 2}
+                              </Badge>}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={equipment.maintenanceRequired ? "destructive" : "default"}>
+                            {equipment.maintenanceRequired ? "Underhåll krävs" : "Funktionsduglig"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Wrench className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>)}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
