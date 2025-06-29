@@ -8,10 +8,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from '@/components/ui/button';
 import { 
   Calendar, ShoppingCart, Users, Sparkles, Search, Download, AlertCircle,
-  TrendingUp, Star, Phone, MessageCircle, Heart
+  TrendingUp, Star, Phone, MessageCircle, Heart, Filter
 } from "lucide-react";
 import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
-import { ExtendedActivityLog, ACTIVITY_CATEGORIES, ACTIVITY_TYPES, QUICK_FILTERS } from '@/types/activity';
+import { ExtendedActivityLog, ACTIVITY_CATEGORIES, ACTIVITY_TYPES } from '@/types/activity';
 import { generateExtendedMockActivities, generateTodayStats } from '@/utils/mockActivityGenerator';
 
 const ActivityLog = () => {
@@ -25,7 +25,6 @@ const ActivityLog = () => {
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [companyFilter, setCompanyFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [activeQuickFilter, setActiveQuickFilter] = useState<string | null>(null);
 
   const activities = generateExtendedMockActivities(currentDateRange);
   const todayStats = generateTodayStats(activities);
@@ -38,14 +37,6 @@ const ActivityLog = () => {
       activity.actor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ACTIVITY_TYPES[activity.activity_type].label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (activity.target && activity.target.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    // Quick filter logic
-    if (activeQuickFilter && QUICK_FILTERS[activeQuickFilter as keyof typeof QUICK_FILTERS]) {
-      const quickFilter = QUICK_FILTERS[activeQuickFilter as keyof typeof QUICK_FILTERS];
-      if (quickFilter.category && activity.category !== quickFilter.category) return false;
-      if (quickFilter.types && !quickFilter.types.includes(activity.activity_type)) return false;
-      if (quickFilter.priority && ACTIVITY_TYPES[activity.activity_type].priority !== quickFilter.priority) return false;
-    }
     
     return matchesCategory && matchesPriority && matchesCompany && matchesSearch;
   });
@@ -77,35 +68,22 @@ const ActivityLog = () => {
     setCurrentDateRange(newRange);
   };
 
-  const handleQuickFilter = (filterKey: string) => {
-    if (activeQuickFilter === filterKey) {
-      setActiveQuickFilter(null);
-    } else {
-      setActiveQuickFilter(filterKey);
-      // Reset other filters when using quick filter
-      setCategoryFilter('all');
-      setPriorityFilter('all');
-    }
-  };
-
   const handleExport = () => {
     console.log('Exporterar aktiviteter...', filteredActivities);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">SkinStory - Aktivitetslogg</h1>
-          <p className="text-gray-600 mt-2">MVP Dashboard för affärskritisk verksamhetsövervakning</p>
+          <h1 className="text-2xl font-bold text-gray-900">SkinStory - Aktivitetslogg</h1>
+          <p className="text-gray-600 text-sm">MVP Dashboard för affärskritisk verksamhetsövervakning</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={handleExport} variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Exportera
-          </Button>
-        </div>
+        <Button onClick={handleExport} variant="outline" size="sm">
+          <Download className="h-4 w-4 mr-2" />
+          Exportera
+        </Button>
       </div>
 
       {/* Date Range Filter */}
@@ -116,124 +94,96 @@ const ActivityLog = () => {
 
       {/* Quick Overview for Today */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Calendar className="h-5 w-5" />
             Snabböversikt Idag
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 text-sm">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{todayStats.bookingsCreated}</div>
-              <div className="text-gray-600">bokningar skapade</div>
+              <div className="text-xl font-bold text-blue-600">{todayStats.bookingsCreated}</div>
+              <div className="text-gray-600 text-xs">bokningar skapade</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{todayStats.treatmentsCompleted}</div>
-              <div className="text-gray-600">behandlingar genomförda</div>
+              <div className="text-xl font-bold text-green-600">{todayStats.treatmentsCompleted}</div>
+              <div className="text-gray-600 text-xs">behandlingar genomförda</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{todayStats.coursesStarted}</div>
-              <div className="text-gray-600">kurpaket sålda</div>
+              <div className="text-xl font-bold text-purple-600">{todayStats.coursesStarted}</div>
+              <div className="text-gray-600 text-xs">kurpaket sålda</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-emerald-600">{(todayStats.totalRevenue / 100).toLocaleString('sv-SE')}</div>
-              <div className="text-gray-600">kr intjänat</div>
+              <div className="text-xl font-bold text-emerald-600">{(todayStats.totalRevenue / 100).toLocaleString('sv-SE')}</div>
+              <div className="text-gray-600 text-xs">kr intjänat</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">{todayStats.complaints}</div>
-              <div className="text-gray-600">klagomål mottagna</div>
+              <div className="text-xl font-bold text-red-600">{todayStats.complaints}</div>
+              <div className="text-gray-600 text-xs">klagomål mottagna</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{todayStats.noShows}</div>
-              <div className="text-gray-600">NoShow</div>
+              <div className="text-xl font-bold text-orange-600">{todayStats.noShows}</div>
+              <div className="text-gray-600 text-xs">NoShow</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Quick Filters */}
+      {/* Compact Filters */}
       <Card>
-        <CardHeader>
-          <CardTitle>Snabbfilter</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Filter className="h-4 w-4" />
+            Filter
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(QUICK_FILTERS).map(([key, filter]) => (
-              <Button
-                key={key}
-                variant={activeQuickFilter === key ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleQuickFilter(key)}
-              >
-                {filter.label}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alla kategorier</SelectItem>
+                {Object.entries(ACTIVITY_CATEGORIES).map(([key, label]) => (
+                  <SelectItem key={key} value={key}>{label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-      {/* Advanced Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Avancerade filter</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Kategori</label>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alla kategorier</SelectItem>
-                  {Object.entries(ACTIVITY_CATEGORIES).map(([key, label]) => (
-                    <SelectItem key={key} value={key}>{label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Prioritet" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alla prioriteter</SelectItem>
+                <SelectItem value="high">Hög</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="low">Låg</SelectItem>
+              </SelectContent>
+            </Select>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Prioritet</label>
-              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alla prioriteter</SelectItem>
-                  <SelectItem value="high">Hög</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Låg</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={companyFilter} onValueChange={setCompanyFilter}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Företag" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alla företag</SelectItem>
+                <SelectItem value="AcneSpecialisten">AcneSpecialisten</SelectItem>
+                <SelectItem value="DAHL">DAHL</SelectItem>
+                <SelectItem value="Sveriges Skönhetscenter">Sveriges Skönhetscenter</SelectItem>
+              </SelectContent>
+            </Select>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Företag</label>
-              <Select value={companyFilter} onValueChange={setCompanyFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alla företag</SelectItem>
-                  <SelectItem value="AcneSpecialisten">AcneSpecialisten</SelectItem>
-                  <SelectItem value="DAHL">DAHL</SelectItem>
-                  <SelectItem value="Sveriges Skönhetscenter">Sveriges Skönhetscenter</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium">Sök</label>
+            <div className="md:col-span-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Sök på aktör, aktivitet eller beskrivning..."
+                  placeholder="Sök aktiviteter..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-9"
                 />
               </div>
             </div>
@@ -242,21 +192,14 @@ const ActivityLog = () => {
       </Card>
 
       {/* Results Summary */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          Visar {filteredActivities.length} av {activities.length} aktiviteter
-          {activeQuickFilter && (
-            <span className="ml-2 text-blue-600">
-              (Filter: {QUICK_FILTERS[activeQuickFilter as keyof typeof QUICK_FILTERS].label})
-            </span>
-          )}
-        </p>
+      <div className="flex items-center justify-between text-sm text-gray-600">
+        <span>Visar {filteredActivities.length} av {activities.length} aktiviteter</span>
       </div>
 
       {/* Activity Feed */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <AlertCircle className="h-5 w-5" />
             Aktivitetsflöde
           </CardTitle>
@@ -264,77 +207,77 @@ const ActivityLog = () => {
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Tid</TableHead>
-                <TableHead>Kategori</TableHead>
+              <TableRow className="text-xs">
+                <TableHead className="w-24">Tid</TableHead>
+                <TableHead className="w-32">Kategori</TableHead>
                 <TableHead>Aktivitet</TableHead>
-                <TableHead>Aktör</TableHead>
-                <TableHead>Företag/Klinik</TableHead>
-                <TableHead>Specialist</TableHead>
-                <TableHead className="text-right">Belopp</TableHead>
-                <TableHead>Prioritet</TableHead>
+                <TableHead className="w-32">Aktör</TableHead>
+                <TableHead className="w-32">Företag/Klinik</TableHead>
+                <TableHead className="w-24">Specialist</TableHead>
+                <TableHead className="w-24 text-right">Belopp</TableHead>
+                <TableHead className="w-20">Prioritet</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredActivities.slice(0, 50).map((activity) => (
                 <TableRow 
                   key={activity.id} 
-                  className={activity.is_important ? 'bg-red-50 border-l-4 border-l-red-500' : ''}
+                  className={`text-sm ${activity.is_important ? 'bg-red-50 border-l-4 border-l-red-500' : ''}`}
                 >
-                  <TableCell className="font-mono text-sm">
-                    <div className="flex items-center gap-2">
+                  <TableCell className="font-mono text-xs">
+                    <div className="flex items-center gap-1">
                       {activity.timestamp.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}
                       {activity.is_important && <AlertCircle className="h-3 w-3 text-red-500" />}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {activity.timestamp.toLocaleDateString('sv-SE')}
+                      {activity.timestamp.toLocaleDateString('sv-SE', { month: 'short', day: 'numeric' })}
                     </div>
                   </TableCell>
                   
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {getCategoryIcon(activity.category)}
-                      <span className="text-sm font-medium">{ACTIVITY_CATEGORIES[activity.category]}</span>
+                      <span className="text-xs font-medium">{ACTIVITY_CATEGORIES[activity.category]}</span>
                     </div>
                   </TableCell>
                   
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{ACTIVITY_TYPES[activity.activity_type].icon}</span>
+                      <span className="text-base">{ACTIVITY_TYPES[activity.activity_type].icon}</span>
                       <div>
                         <div className="text-sm font-medium">{ACTIVITY_TYPES[activity.activity_type].label}</div>
                         {activity.target && (
-                          <div className="text-xs text-gray-500">{activity.target.name}</div>
+                          <div className="text-xs text-gray-500 truncate max-w-40">{activity.target.name}</div>
                         )}
                       </div>
                     </div>
                   </TableCell>
                   
                   <TableCell>
-                    <div className="text-sm">
-                      <div className="font-medium">{activity.actor.name}</div>
+                    <div className="text-xs">
+                      <div className="font-medium truncate">{activity.actor.name}</div>
                       <div className="text-gray-500 capitalize">{activity.actor.type}</div>
                     </div>
                   </TableCell>
                   
-                  <TableCell className="text-sm">
+                  <TableCell className="text-xs">
                     <div className="font-medium">{activity.metadata.company}</div>
                     <div className="text-gray-500">{activity.metadata.clinic}</div>
                   </TableCell>
                   
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-xs text-gray-600">
                     {activity.metadata.specialist || '-'}
                   </TableCell>
                   
-                  <TableCell className="text-right">
+                  <TableCell className="text-right text-xs">
                     {activity.details.amount_cents ? 
                       `${(activity.details.amount_cents / 100).toLocaleString('sv-SE')} kr` : '-'}
                   </TableCell>
                   
                   <TableCell>
-                    <Badge className={getPriorityColor(ACTIVITY_TYPES[activity.activity_type].priority)}>
+                    <Badge className={`text-xs ${getPriorityColor(ACTIVITY_TYPES[activity.activity_type].priority)}`}>
                       {ACTIVITY_TYPES[activity.activity_type].priority === 'high' ? 'Hög' :
-                       ACTIVITY_TYPES[activity.activity_type].priority === 'medium' ? 'Medium' : 'Låg'}
+                       ACTIVITY_TYPES[activity.activity_type].priority === 'medium' ? 'Med' : 'Låg'}
                     </Badge>
                   </TableCell>
                 </TableRow>
