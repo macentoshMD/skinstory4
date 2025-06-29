@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,16 +8,19 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Edit, Settings, Zap, Clock, Star, Layers, Target } from "lucide-react";
+import { Search, Plus, Edit, Settings, Zap, Clock, Star, Layers, Target, Stethoscope, Wrench } from "lucide-react";
 import { BASE_SERVICES, COMPOSED_SERVICES } from "@/types/base-services";
-import { PROBLEM_AREAS } from "@/types/problem-areas";
+import { PROBLEM_TYPES, PROBLEM_AREAS } from "@/types/problem-areas";
 import { EQUIPMENT } from "@/types/services";
+import { EQUIPMENT_SPECS } from "@/types/equipment-specs";
 
 const Services = () => {
   const [baseServices] = useState(BASE_SERVICES);
   const [composedServices] = useState(COMPOSED_SERVICES);
+  const [problemTypes] = useState(PROBLEM_TYPES);
   const [problemAreas] = useState(PROBLEM_AREAS);
   const [equipment] = useState(EQUIPMENT);
+  const [equipmentSpecs] = useState(EQUIPMENT_SPECS);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
 
@@ -63,12 +67,28 @@ const Services = () => {
     });
   };
 
+  const getSeverityBadge = (severity: string) => {
+    const variants = {
+      'mild': 'secondary',
+      'moderate': 'default',
+      'severe': 'destructive'
+    } as const;
+    
+    const labels = {
+      'mild': 'Mild',
+      'moderate': 'Måttlig',
+      'severe': 'Svår'
+    };
+    
+    return { variant: variants[severity as keyof typeof variants], label: labels[severity as keyof typeof labels] };
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tjänster</h1>
-          <p className="text-gray-600 mt-2">Hantera grund- och sammansatta tjänster, utrustning och problemområden</p>
+          <h1 className="text-3xl font-bold text-gray-900">Tjänster & Diagnostik</h1>
+          <p className="text-gray-600 mt-2">Hantera tjänster, problemtyper, utrustning och behandlingsparametrar</p>
         </div>
         <div className="flex gap-2">
           <Dialog>
@@ -147,11 +167,12 @@ const Services = () => {
       </div>
 
       <Tabs defaultValue="services" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="services">Tjänster</TabsTrigger>
-          <TabsTrigger value="problems">Problemområden</TabsTrigger>
+          <TabsTrigger value="problems">Problemtyper</TabsTrigger>
+          <TabsTrigger value="areas">Områden</TabsTrigger>
           <TabsTrigger value="equipment">Utrustning</TabsTrigger>
-          <TabsTrigger value="links">Kopplingar</TabsTrigger>
+          <TabsTrigger value="settings">Parametrar</TabsTrigger>
         </TabsList>
 
         <TabsContent value="services" className="space-y-6">
@@ -368,38 +389,87 @@ const Services = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
-                Problemområden
+                <Stethoscope className="h-5 w-5" />
+                Problemtyper för Diagnostik
               </CardTitle>
-              <CardDescription>Hudproblem som kan behandlas</CardDescription>
+              <CardDescription>Diagnoser och hudproblem för konsultationer</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {problemAreas.map(problem => (
-                  <Card key={problem.id} className="border">
+                {problemTypes.map(problem => {
+                  const severityInfo = getSeverityBadge(problem.severity);
+                  
+                  return (
+                    <Card key={problem.id} className="border">
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-lg">{problem.name}</CardTitle>
+                          <Badge variant={severityInfo.variant as any}>
+                            {severityInfo.label}
+                          </Badge>
+                        </div>
+                        <CardDescription>{problem.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <Badge variant="outline" className="text-xs">
+                            {problem.category}
+                          </Badge>
+                          
+                          <div className="text-sm">
+                            <div className="font-medium mb-1">Vanliga symtom:</div>
+                            <ul className="text-xs space-y-1 text-gray-600">
+                              {problem.commonSymptoms.slice(0, 3).map((symptom, index) => (
+                                <li key={index}>• {symptom}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          
+                          <div className="text-sm">
+                            <div className="font-medium mb-1">Kroppsområden:</div>
+                            <div className="flex flex-wrap gap-1">
+                              {problem.bodyAreas.slice(0, 3).map(area => (
+                                <Badge key={area} variant="secondary" className="text-xs">
+                                  {area}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="areas" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Anatomiska Områden
+              </CardTitle>
+              <CardDescription>Kroppsområden för behandlingar och diagnostik</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {problemAreas.map(area => (
+                  <Card key={area.id} className="border">
                     <CardHeader className="pb-3">
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg">{problem.name}</CardTitle>
-                        <Badge variant={problem.severity === 'severe' ? 'destructive' : 
-                                     problem.severity === 'moderate' ? 'default' : 'secondary'}>
-                          {problem.severity === 'mild' ? 'Mild' :
-                           problem.severity === 'moderate' ? 'Måttlig' : 'Svår'}
-                        </Badge>
-                      </div>
-                      <CardDescription>{problem.description}</CardDescription>
+                      <CardTitle className="text-lg">{area.name}</CardTitle>
+                      <CardDescription className="text-sm">{area.anatomicalLocation}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        <Badge variant="outline" className="text-xs">
-                          {problem.category}
-                        </Badge>
-                        <div className="text-sm text-gray-600">
-                          <div className="font-medium mb-1">Vanliga orsaker:</div>
-                          <ul className="text-xs space-y-1">
-                            {problem.commonCauses.slice(0, 2).map((cause, index) => (
-                              <li key={index}>• {cause}</li>
-                            ))}
-                          </ul>
+                        <p className="text-sm text-gray-600">{area.description}</p>
+                        <div className="text-sm">
+                          <div className="font-medium mb-1">Vanliga problem:</div>
+                          <div className="text-xs text-gray-600">
+                            {area.commonProblemTypes.length} problemtyper
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -456,17 +526,73 @@ const Services = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="links" className="space-y-6">
+        <TabsContent value="settings" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Kopplingar</CardTitle>
-              <CardDescription>Hantera kopplingar mellan tjänster, utrustning och problemområden</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Wrench className="h-5 w-5" />
+                Behandlingsparametrar
+              </CardTitle>
+              <CardDescription>Detaljerade inställningar för varje utrustning - krävs för Strålskyddsmyndigheten</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Funktionalitet för att hantera kopplingar kommer snart...</p>
-                <p className="text-sm mt-2">Här kommer du kunna koppla tjänster till utrustning och problemområden</p>
+              <div className="space-y-6">
+                {equipmentSpecs.map(spec => (
+                  <div key={spec.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold">{spec.brand} {spec.model}</h3>
+                        <p className="text-sm text-gray-600">{spec.category.replace('_', ' ')}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge variant="outline">{spec.type}</Badge>
+                        {spec.wavelengths && (
+                          <Badge variant="secondary">
+                            {spec.wavelengths.join(', ')} nm
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {spec.parameters.map(param => (
+                        <div key={param.id} className="border rounded p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-medium text-sm">{param.name}</h4>
+                            {param.isRequired && (
+                              <Badge variant="destructive" className="text-xs">Obligatorisk</Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-600 mb-2">{param.description}</p>
+                          <div className="text-xs">
+                            <span className="font-medium">Typ:</span> {param.type}
+                            {param.unit && <span className="ml-2">({param.unit})</span>}
+                          </div>
+                          {param.minValue !== undefined && param.maxValue !== undefined && (
+                            <div className="text-xs text-gray-500">
+                              Range: {param.minValue} - {param.maxValue}
+                            </div>
+                          )}
+                          {param.options && (
+                            <div className="text-xs text-gray-500">
+                              Alternativ: {param.options.join(', ')}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t">
+                      <div className="flex flex-wrap gap-2">
+                        {spec.certifications.map(cert => (
+                          <Badge key={cert} variant="outline" className="text-xs">
+                            {cert}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
