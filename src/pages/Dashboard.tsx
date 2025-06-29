@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, TrendingUp, Clock, DollarSign, BarChart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Users, TrendingUp, Clock, DollarSign, BarChart, Activity, ArrowRight } from "lucide-react";
 import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   // Initialize with "today" as default
@@ -63,7 +65,13 @@ const Dashboard = () => {
         peakHours: "10:00-14:00",
         cancellationRate: 12,
         followUpRate: 88
-      }
+      },
+      recentActivities: [
+        { type: 'booking', description: 'Anna Andersson bokade HydraFacial', time: '09:15', status: 'Bekräftad' },
+        { type: 'order', description: 'Beställning hudkräm levererad', time: '08:45', status: 'Levererad' },
+        { type: 'customer', description: 'Ny kund Erik Johansson registrerad', time: '08:30', status: 'Aktiv' },
+        { type: 'booking', description: 'Maria Larsson avbokade behandling', time: '08:15', status: 'Avbokad' }
+      ]
     };
   };
 
@@ -71,6 +79,29 @@ const Dashboard = () => {
 
   const handleDateRangeChange = (newRange: DateRange) => {
     setCurrentDateRange(newRange);
+  };
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'booking': return <Calendar className="h-4 w-4" />;
+      case 'order': return <Clock className="h-4 w-4" />;
+      case 'customer': return <Users className="h-4 w-4" />;
+      default: return <Activity className="h-4 w-4" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'bekräftad':
+      case 'aktiv':
+        return 'bg-green-100 text-green-800';
+      case 'levererad':
+        return 'bg-blue-100 text-blue-800';
+      case 'avbokad':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
@@ -133,8 +164,42 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Sektion 2: Försäljning & Ekonomi */}
+      {/* Sektion 2: Recent Activities & Sales */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Senaste aktiviteter</CardTitle>
+              <CardDescription>Nyligen genomförda aktiviteter</CardDescription>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/aktiviteter">
+                Se alla <ArrowRight className="h-4 w-4 ml-1" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {currentData.recentActivities.map((activity, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    {getActivityIcon(activity.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900 truncate">
+                      {activity.description}
+                    </div>
+                    <div className="text-xs text-gray-500">{activity.time}</div>
+                  </div>
+                  <Badge className={getStatusColor(activity.status)}>
+                    {activity.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Månadens försäljning</CardTitle>
@@ -148,29 +213,6 @@ const Dashboard = () => {
               </div>
               <Progress value={93} className="h-2" />
               <div className="text-sm text-green-600">93% av målet uppnått</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Ekonomisk översikt</CardTitle>
-            <CardDescription>Kassaflöde och marginaler</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span>Kassaflöde:</span>
-                <span className="font-medium text-green-600">{currentData.finance.cashFlow}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Rörelsemarginal:</span>
-                <span className="font-medium">{currentData.finance.operatingMargin}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Kundlivstidsvärde:</span>
-                <span className="font-medium">{currentData.finance.lifetimeValue}</span>
-              </div>
             </div>
           </CardContent>
         </Card>
