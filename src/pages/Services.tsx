@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,129 +9,60 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SERVICES } from "@/data/services";
 import { EQUIPMENT } from "@/types/services";
-import { Service } from "@/types/services";
-import { ServiceDialog } from "@/components/services/ServiceDialog";
+import { BASE_SERVICES, PROBLEM_AREAS, TREATMENT_AREAS } from "@/types/base-services";
 import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag } from "lucide-react";
 
-// Base service categories (no pricing)
-const BASE_SERVICE_CATEGORIES = [{
-  id: 'ansiktsbehandling',
-  name: 'Ansiktsbehandling',
-  description: 'Grundläggande ansiktsbehandlingar',
-  subcategories: ['Portömning', 'Klassisk ansiktsbehandling', 'Facial boost up', 'Djuprengöring']
-}, {
-  id: 'microneedling',
-  name: 'Microneedling',
-  description: 'Kollagenstimulering och hudförnyelse',
-  subcategories: ['Klassisk microneedling', 'Microneedling med serum', 'Microneedling RF']
-}, {
-  id: 'laserbehandling',
-  name: 'Laserbehandling',
-  description: 'Olika typer av laserbehandlingar',
-  subcategories: ['Hårborttagning', 'Pigmentbehandling', 'Kärlbehandling', 'Hudförnyelse']
-}, {
-  id: 'kemisk-peeling',
-  name: 'Kemisk peeling',
-  description: 'Syrabehandlingar för hudförnyelse',
-  subcategories: ['Mild peeling', 'Medel peeling', 'Djup peeling']
-}, {
-  id: 'konsultation',
-  name: 'Konsultation',
-  description: 'Rådgivning och analys',
-  subcategories: ['Hudanalys', 'Behandlingsplan', 'Uppföljning']
-}];
 export default function Services() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedEquipmentType, setSelectedEquipmentType] = useState("all");
-  const [selectedTag, setSelectedTag] = useState("all");
-  const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
-  const [editingService, setEditingService] = useState<Service | undefined>();
-  
+  const [selectedProblemCategory, setSelectedProblemCategory] = useState("all");
+  const [selectedAreaRegion, setSelectedAreaRegion] = useState("all");
+
+  // Filter functions
   const filteredServices = SERVICES.filter(service => {
-    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || service.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || service.categoryId === selectedCategory;
-    const matchesTag = selectedTag === "all" || service.tags && service.tags.includes(selectedTag);
-    return matchesSearch && matchesCategory && matchesTag;
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
   });
+
   const filteredEquipment = EQUIPMENT.filter(equipment => {
-    const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) || equipment.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedEquipmentType === "all" || equipment.type === selectedEquipmentType;
     return matchesSearch && matchesType;
   });
-  const equipmentTypes = [{
-    id: "all",
-    name: "All utrustning"
-  }, {
-    id: "laser",
-    name: "Laser"
-  }, {
-    id: "hydrafacial",
-    name: "HydraFacial"
-  }, {
-    id: "microneedling",
-    name: "Microneedling"
-  }, {
-    id: "analysis",
-    name: "Analys"
-  }, {
-    id: "ipl",
-    name: "IPL"
-  }, {
-    id: "radiofrequency",
-    name: "Radiofrekvens"
-  }];
-  const categories = [{
-    id: "all",
-    name: "Alla kategorier"
-  }, {
-    id: "Laser",
-    name: "Laser",
-    color: "bg-blue-100 text-blue-800"
-  }, {
-    id: "Hudvård",
-    name: "Hudvård",
-    color: "bg-green-100 text-green-800"
-  }, {
-    id: "Anti-age",
-    name: "Anti-age",
-    color: "bg-purple-100 text-purple-800"
-  }, {
-    id: "Akne",
-    name: "Akne",
-    color: "bg-red-100 text-red-800"
-  }];
-  const tags = [{
-    id: "all",
-    name: "Alla taggar"
-  }, {
-    id: "klinik",
-    name: "Klinik"
-  }, {
-    id: "premium",
-    name: "Premium"
-  }, {
-    id: "populär",
-    name: "Populär"
-  }];
-  const getCategoryColor = (categoryId: string) => {
-    const category = categories.find(cat => cat.id === categoryId);
-    return category?.color || "bg-gray-100 text-gray-800";
-  };
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'basic':
-        return 'bg-green-100 text-green-800';
-      case 'intermediate':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'advanced':
-        return 'bg-red-100 text-red-800';
-      case 'expert':
-        return 'bg-purple-100 text-purple-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+
+  const filteredProblems = PROBLEM_AREAS.filter(problem => {
+    const matchesSearch = problem.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
+  const filteredAreas = TREATMENT_AREAS.filter(area => {
+    const matchesSearch = area.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRegion = selectedAreaRegion === "all" || area.bodyRegion === selectedAreaRegion;
+    return matchesSearch && matchesRegion;
+  });
+
+  const equipmentTypes = [
+    { id: "all", name: "All utrustning" },
+    { id: "laser", name: "Laser" },
+    { id: "hydrafacial", name: "HydraFacial" },
+    { id: "microneedling", name: "Microneedling" },
+    { id: "analysis", name: "Analys" },
+    { id: "ipl", name: "IPL" },
+    { id: "radiofrequency", name: "Radiofrekvens" }
+  ];
+
+  const bodyRegions = [
+    { id: "all", name: "Alla regioner" },
+    { id: "face", name: "Ansikte" },
+    { id: "neck", name: "Hals" },
+    { id: "chest", name: "Bröst" },
+    { id: "hands", name: "Händer" },
+    { id: "arms", name: "Armar" },
+    { id: "legs", name: "Ben" },
+    { id: "back", name: "Rygg" }
+  ];
+
   const getEquipmentTypeColor = (type: string) => {
     switch (type) {
       case 'laser':
@@ -149,94 +81,68 @@ export default function Services() {
         return 'bg-gray-100 text-gray-800';
     }
   };
-  const calculateMargin = (price: number) => {
-    const estimatedCost = price * 0.4;
-    return ((price - estimatedCost) / price * 100).toFixed(1);
-  };
 
-  const handleNewService = () => {
-    setEditingService(undefined);
-    setServiceDialogOpen(true);
-  };
-
-  const handleEditService = (service: Service) => {
-    setEditingService(service);
-    setServiceDialogOpen(true);
-  };
-
-  const handleSaveService = (serviceData: Partial<Service>) => {
-    console.log("Saving service:", serviceData);
-    // Here you would typically update your services data
-    // For now, just log the data
+  const getBodyRegionColor = (region: string) => {
+    switch (region) {
+      case 'face':
+        return 'bg-green-100 text-green-800';
+      case 'neck':
+        return 'bg-blue-100 text-blue-800';
+      case 'chest':
+        return 'bg-purple-100 text-purple-800';
+      case 'hands':
+        return 'bg-orange-100 text-orange-800';
+      case 'arms':
+        return 'bg-pink-100 text-pink-800';
+      case 'legs':
+        return 'bg-cyan-100 text-cyan-800';
+      case 'back':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Tjänster</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Tjänsteadministration</h1>
         <p className="text-muted-foreground">
-          Hantera tjänster, grundtjänster och utrustning
+          Hantera grundtjänster, utrustning, problem och behandlingsområden
         </p>
       </div>
 
-      <Tabs defaultValue="services" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="services">Tjänster</TabsTrigger>
+      <Tabs defaultValue="base-services" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="base-services">Grundtjänster</TabsTrigger>
           <TabsTrigger value="equipment">Utrustning</TabsTrigger>
+          <TabsTrigger value="problems">Problem</TabsTrigger>
+          <TabsTrigger value="areas">Områden</TabsTrigger>
+          <TabsTrigger value="examples">Exempel</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="services" className="space-y-6">
+        {/* Grundtjänster Tab */}
+        <TabsContent value="base-services" className="space-y-6">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Sök tjänster..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
+                <Input placeholder="Sök grundtjänster..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
               </div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-[200px]">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(category => <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>)}
-                </SelectContent>
-              </Select>
-              <Select value={selectedTag} onValueChange={setSelectedTag}>
-                <SelectTrigger className="w-[180px]">
-                  <Tag className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {tags.map(tag => <SelectItem key={tag.id} value={tag.id}>
-                      {tag.name}
-                    </SelectItem>)}
-                </SelectContent>
-              </Select>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Upload className="h-4 w-4 mr-2" />
-                Importera
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Exportera
-              </Button>
-              <Button onClick={handleNewService}>
+              <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Ny tjänst
+                Ny grundtjänst
               </Button>
             </div>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Aktiva tjänster ({filteredServices.length})</CardTitle>
+              <CardTitle>Grundtjänster ({BASE_SERVICES.length})</CardTitle>
               <CardDescription>
-                Kompletta tjänster med prissättning som kombinerar grundtjänster och utrustning
+                Grundläggande tjänstekategorier som används för att bygga kompletta behandlingar
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -245,69 +151,34 @@ export default function Services() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Namn</TableHead>
-                      <TableHead>Grundtjänst</TableHead>
-                      <TableHead>Utrustning</TableHead>
-                      <TableHead>Tidsgång</TableHead>
-                      <TableHead>Pris</TableHead>
-                      <TableHead>Taggar</TableHead>
+                      <TableHead>Kategori</TableHead>
+                      <TableHead>Beskrivning</TableHead>
+                      <TableHead>Antal behandlingar</TableHead>
                       <TableHead>Åtgärder</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredServices.map(service => (
+                    {BASE_SERVICES.map(service => (
                       <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
                         <TableCell className="font-medium">
-                          <div>
-                            <div className="font-medium">{service.name}</div>
-                          </div>
+                          {service.name}
                         </TableCell>
                         <TableCell>
-                          <Badge className={getCategoryColor(service.categoryId)}>
-                            {service.categoryId}
+                          <Badge variant="outline">
+                            {service.category}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {service.equipment.slice(0, 2).map((eq, idx) => {
-                          const equipment = EQUIPMENT.find(e => e.id === eq.equipmentId);
-                          return equipment ? <Badge key={idx} variant="outline" className="text-xs">
-                                  {equipment.name.split(' ')[0]}
-                                </Badge> : null;
-                        })}
-                            {service.equipment.length > 2 && <Badge variant="outline" className="text-xs">
-                                +{service.equipment.length - 2}
-                              </Badge>}
-                          </div>
+                        <TableCell className="text-muted-foreground">
+                          {service.description}
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {service.duration} min
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="h-4 w-4" />
-                            {service.price / 100} kr
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {service.tags?.slice(0, 2).map((tag, idx) => <Badge key={idx} variant="secondary" className="text-xs">
-                                {tag}
-                              </Badge>)}
-                            {service.tags && service.tags.length > 2 && <Badge variant="secondary" className="text-xs">
-                                +{service.tags.length - 2}
-                              </Badge>}
-                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {SERVICES.filter(s => s.categoryId.toLowerCase().includes(service.id.toLowerCase())).length} behandlingar
+                          </span>
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleEditService(service)}
-                            >
+                            <Button variant="outline" size="sm">
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button variant="outline" size="sm">
@@ -324,82 +195,7 @@ export default function Services() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="base-services" className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Sök grundtjänster..." className="pl-10" />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Ny grundtjänst
-              </Button>
-            </div>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Grundtjänster ({BASE_SERVICE_CATEGORIES.length})</CardTitle>
-              <CardDescription>
-                Grundläggande tjänstekategorier utan prissättning - används för att bygga kompletta tjänster
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="relative w-full overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Namn</TableHead>
-                      <TableHead>Beskrivning</TableHead>
-                      <TableHead>Underkategorier</TableHead>
-                      <TableHead>Antal tjänster</TableHead>
-                      <TableHead>Åtgärder</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {BASE_SERVICE_CATEGORIES.map(category => <TableRow key={category.id} className="cursor-pointer hover:bg-muted/50">
-                        <TableCell className="font-medium">
-                          {category.name}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {category.description}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {category.subcategories.slice(0, 3).map((sub, idx) => <Badge key={idx} variant="outline" className="text-xs">
-                                {sub}
-                              </Badge>)}
-                            {category.subcategories.length > 3 && <Badge variant="outline" className="text-xs">
-                                +{category.subcategories.length - 3}
-                              </Badge>}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {SERVICES.filter(s => s.categoryId.toLowerCase().includes(category.id.toLowerCase())).length} tjänster
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>)}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
+        {/* Utrustning Tab */}
         <TabsContent value="equipment" className="space-y-6">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
@@ -413,9 +209,11 @@ export default function Services() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {equipmentTypes.map(type => <SelectItem key={type.id} value={type.id}>
+                  {equipmentTypes.map(type => (
+                    <SelectItem key={type.id} value={type.id}>
                       {type.name}
-                    </SelectItem>)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -435,7 +233,7 @@ export default function Services() {
             <CardHeader>
               <CardTitle>Tillgänglig utrustning ({filteredEquipment.length})</CardTitle>
               <CardDescription>
-                Utrustning som kan användas i tjänster
+                Utrustning som kan användas i behandlingar
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -453,7 +251,8 @@ export default function Services() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredEquipment.map(equipment => <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
+                    {filteredEquipment.map(equipment => (
+                      <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
                         <TableCell className="font-medium">
                           {equipment.name}
                         </TableCell>
@@ -473,12 +272,16 @@ export default function Services() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {equipment.capabilities.slice(0, 2).map((cap, idx) => <Badge key={idx} variant="outline" className="text-xs">
+                            {equipment.capabilities.slice(0, 2).map((cap, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
                                 {cap.replace('_', ' ')}
-                              </Badge>)}
-                            {equipment.capabilities.length > 2 && <Badge variant="outline" className="text-xs">
+                              </Badge>
+                            ))}
+                            {equipment.capabilities.length > 2 && (
+                              <Badge variant="outline" className="text-xs">
                                 +{equipment.capabilities.length - 2}
-                              </Badge>}
+                              </Badge>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -499,7 +302,229 @@ export default function Services() {
                             </Button>
                           </div>
                         </TableCell>
-                      </TableRow>)}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Problem Tab */}
+        <TabsContent value="problems" className="space-y-6">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Sök problem..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nytt problem
+              </Button>
+            </div>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Hudproblem ({filteredProblems.length})</CardTitle>
+              <CardDescription>
+                Problem som kan behandlas med olika tjänster
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative w-full overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Namn</TableHead>
+                      <TableHead>Beskrivning</TableHead>
+                      <TableHead>Åtgärder</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredProblems.map(problem => (
+                      <TableRow key={problem.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {problem.name}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {problem.description}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Områden Tab */}
+        <TabsContent value="areas" className="space-y-6">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Sök områden..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
+              </div>
+              <Select value={selectedAreaRegion} onValueChange={setSelectedAreaRegion}>
+                <SelectTrigger className="w-[200px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {bodyRegions.map(region => (
+                    <SelectItem key={region.id} value={region.id}>
+                      {region.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2">
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nytt område
+              </Button>
+            </div>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Behandlingsområden ({filteredAreas.length})</CardTitle>
+              <CardDescription>
+                Kroppsområden som kan behandlas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative w-full overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Namn</TableHead>
+                      <TableHead>Kroppsregion</TableHead>
+                      <TableHead>Åtgärder</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAreas.map(area => (
+                      <TableRow key={area.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {area.name}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getBodyRegionColor(area.bodyRegion)}>
+                            {area.bodyRegion}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Exempel Tab */}
+        <TabsContent value="examples" className="space-y-6">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Sök exempel..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                <Upload className="h-4 w-4 mr-2" />
+                Importera
+              </Button>
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Exportera
+              </Button>
+            </div>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Exempel-behandlingar ({filteredServices.length})</CardTitle>
+              <CardDescription>
+                Referensbehandlingar som kliniker kan använda som mallar
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative w-full overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Namn</TableHead>
+                      <TableHead>Kategori</TableHead>
+                      <TableHead>Tidsgång</TableHead>
+                      <TableHead>Referenspris</TableHead>
+                      <TableHead>Åtgärder</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredServices.map(service => (
+                      <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {service.name}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {service.categoryId}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {service.duration} min
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="h-4 w-4" />
+                            {service.price / 100} kr
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>
@@ -507,13 +532,6 @@ export default function Services() {
           </Card>
         </TabsContent>
       </Tabs>
-
-      <ServiceDialog
-        open={serviceDialogOpen}
-        onOpenChange={setServiceDialogOpen}
-        service={editingService}
-        onSave={handleSaveService}
-      />
     </div>
   );
 }
