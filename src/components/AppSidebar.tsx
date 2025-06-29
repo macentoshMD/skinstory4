@@ -1,4 +1,3 @@
-
 import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -17,7 +16,7 @@ const navigation = [
   { name: "Insikter", href: "/insikter", icon: BarChart3 },
   { name: "Aktiviteter", href: "/aktiviteter", icon: Activity },
   { name: "Kunder", href: "/kunder", icon: Users },
-  { name: "Behandlingar", href: "/behandlingar", icon: Sparkles },
+  { name: "Tjänster", href: "/tjanster", icon: Sparkles },
   { name: "Personal", href: "/personal", icon: User },
   { name: "Företag", href: "/foretag", icon: Building },
   { name: "Statistik", href: "/statistik", icon: BarChart3 },

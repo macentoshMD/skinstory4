@@ -8,7 +8,7 @@ import { Layout } from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
 import Companies from "./pages/Companies";
-import Treatments from "./pages/Treatments";
+import Services from "./pages/Services";
 import ActivityLog from "./pages/ActivityLog";
 import Staff from "./pages/Staff";
 import Insights from "./pages/Insights";
@@ -29,7 +29,8 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/kunder" element={<Customers />} />
             <Route path="/foretag" element={<Companies />} />
-            <Route path="/behandlingar" element={<Treatments />} />
+            <Route path="/tjanster" element={<Services />} />
+            <Route path="/behandlingar" element={<Services />} />
             <Route path="/aktiviteter" element={<ActivityLog />} />
             <Route path="/personal" element={<Staff />} />
             <Route path="/insikter" element={<Insights />} />
