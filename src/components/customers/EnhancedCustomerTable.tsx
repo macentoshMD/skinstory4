@@ -41,6 +41,7 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
       const matchesSearch = filters.search === "" || 
         customer.name.toLowerCase().includes(filters.search.toLowerCase()) ||
         customer.email.toLowerCase().includes(filters.search.toLowerCase()) ||
+        customer.phone.toLowerCase().includes(filters.search.toLowerCase()) ||
         customer.company.toLowerCase().includes(filters.search.toLowerCase()) ||
         customer.tags.some(tag => tag.toLowerCase().includes(filters.search.toLowerCase())) ||
         customer.problems.some(problem => problem.toLowerCase().includes(filters.search.toLowerCase()));
@@ -142,7 +143,7 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
           <div className="relative mb-4">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
-              placeholder="Sök kunder efter namn, e-post, företag, taggar eller problem..."
+              placeholder="Sök kunder efter namn, e-post, telefon, företag, taggar eller problem..."
               value={filters.search}
               onChange={e => setFilters(prev => ({ ...prev, search: e.target.value }))}
               className="pl-12 h-12 text-base bg-gray-50 border-gray-300 focus:bg-white focus:border-blue-500"
@@ -212,7 +213,7 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
                   Namn <ArrowUpDown className="ml-1 h-3 w-3" />
                 </Button>
               </TableHead>
-              <TableHead>E-post</TableHead>
+              <TableHead>Kontakt</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('status')} className="h-auto p-0 font-medium">
                   Status <ArrowUpDown className="ml-1 h-3 w-3" />
@@ -250,7 +251,12 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
                   </Avatar>
                 </TableCell>
                 <TableCell className="font-medium">{customer.name}</TableCell>
-                <TableCell className="text-sm text-gray-600">{customer.email}</TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <div className="text-sm text-gray-900">{customer.email}</div>
+                    <div className="text-xs text-gray-500">{customer.phone}</div>
+                  </div>
+                </TableCell>
                 <TableCell>
                   <Badge variant="secondary" className={getStatusColor(customer.status)}>
                     {customer.status}
