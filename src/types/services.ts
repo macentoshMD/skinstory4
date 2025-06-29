@@ -57,6 +57,7 @@ export interface Service {
   baseServiceIds?: string[]; // For composite services - which base services they're built from
   margin?: number; // Calculated margin percentage
   isOnlineBookable?: boolean; // Whether this service can be booked online
+  tags?: string[]; // Add tags property to fix TypeScript errors
   createdAt: Date;
   updatedAt: Date;
 }
