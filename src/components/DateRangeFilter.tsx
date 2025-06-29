@@ -127,6 +127,8 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       });
       setShowCustomPicker(false);
       setSelectedPreset('custom');
+    } else if (range) {
+      setCustomDateRange(range);
     }
   };
 
@@ -181,7 +183,10 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
               initialFocus
               mode="range"
               defaultMonth={customDateRange.from}
-              selected={customDateRange}
+              selected={customDateRange.from && customDateRange.to ? {
+                from: customDateRange.from,
+                to: customDateRange.to
+              } : undefined}
               onSelect={handleCustomDateSelect}
               numberOfMonths={2}
               className="pointer-events-auto"
