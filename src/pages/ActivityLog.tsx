@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,27 +40,27 @@ const generateMockActivities = (dateRange: DateRange): ActivityLog[] => {
     const activityTypes = [
       {
         type: 'booking' as const,
-        subtype: ['created', 'updated', 'cancelled', 'completed'][Math.floor(Math.random() * 4)] as const,
+        subtype: (['created', 'updated', 'cancelled', 'completed'] as const)[Math.floor(Math.random() * 4)],
         description: `Bokning ${treatments[Math.floor(Math.random() * treatments.length)]}`,
         amount: 800 + Math.floor(Math.random() * 1200),
         status: ['Bekräftad', 'Genomförd', 'Avbokad'][Math.floor(Math.random() * 3)]
       },
       {
         type: 'order' as const,
-        subtype: ['created', 'completed'][Math.floor(Math.random() * 2)] as const,
+        subtype: (['created', 'completed'] as const)[Math.floor(Math.random() * 2)],
         description: `Beställning ${products[Math.floor(Math.random() * products.length)]}`,
         amount: 200 + Math.floor(Math.random() * 800),
         status: ['Beställd', 'Levererad', 'Behandlas'][Math.floor(Math.random() * 3)]
       },
       {
         type: 'customer' as const,
-        subtype: ['created', 'updated'][Math.floor(Math.random() * 2)] as const,
+        subtype: (['created', 'updated'] as const)[Math.floor(Math.random() * 2)],
         description: 'Ny kund registrerad',
         status: 'Aktiv'
       },
       {
         type: 'treatment' as const,
-        subtype: ['created', 'updated'][Math.floor(Math.random() * 2)] as const,
+        subtype: (['created', 'updated'] as const)[Math.floor(Math.random() * 2)],
         description: `Behandling ${treatments[Math.floor(Math.random() * treatments.length)]} uppdaterad`,
         status: 'Tillgänglig'
       }
