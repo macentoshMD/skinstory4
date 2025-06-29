@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { services } from "@/data/services";
+import { SERVICES } from "@/data/services";
 import { Sparkles, Plus, Edit, Trash2, Clock, DollarSign } from "lucide-react";
 
 export default function Services() {
-  const [selectedService, setSelectedService] = useState(services[0]);
+  const [selectedService, setSelectedService] = useState(SERVICES[0]);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -61,7 +60,7 @@ export default function Services() {
             {/* Services List */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Tillgängliga tjänster</h3>
-              {services.map((service) => (
+              {SERVICES.map((service) => (
                 <Card 
                   key={service.id} 
                   className={`cursor-pointer transition-colors ${selectedService.id === service.id ? 'ring-2 ring-blue-500' : ''}`}
@@ -78,11 +77,11 @@ export default function Services() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2 mb-3">
-                      <Badge className={getCategoryColor(service.category)}>
-                        {service.category}
+                      <Badge className={getCategoryColor(service.categoryId)}>
+                        {service.categoryId}
                       </Badge>
-                      <Badge className={getDifficultyColor(service.difficulty)}>
-                        {service.difficulty}
+                      <Badge className={getDifficultyColor(service.requiredSpecialistLevel)}>
+                        {service.requiredSpecialistLevel}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -92,7 +91,7 @@ export default function Services() {
                       </div>
                       <div className="flex items-center gap-1">
                         <DollarSign className="h-4 w-4" />
-                        {service.price} kr
+                        {service.price / 100} kr
                       </div>
                     </div>
                   </CardContent>
@@ -125,16 +124,16 @@ export default function Services() {
                     <div>
                       <Label className="text-sm font-medium">Kategori</Label>
                       <div className="mt-1">
-                        <Badge className={getCategoryColor(selectedService.category)}>
-                          {selectedService.category}
+                        <Badge className={getCategoryColor(selectedService.categoryId)}>
+                          {selectedService.categoryId}
                         </Badge>
                       </div>
                     </div>
                     <div>
-                      <Label className="text-sm font-medium">Svårighetsgrad</Label>
+                      <Label className="text-sm font-medium">Specialistnivå</Label>
                       <div className="mt-1">
-                        <Badge className={getDifficultyColor(selectedService.difficulty)}>
-                          {selectedService.difficulty}
+                        <Badge className={getDifficultyColor(selectedService.requiredSpecialistLevel)}>
+                          {selectedService.requiredSpecialistLevel}
                         </Badge>
                       </div>
                     </div>
@@ -144,34 +143,32 @@ export default function Services() {
                     </div>
                     <div>
                       <Label className="text-sm font-medium">Pris</Label>
-                      <p className="text-sm text-muted-foreground">{selectedService.price} kr</p>
+                      <p className="text-sm text-muted-foreground">{selectedService.price / 100} kr</p>
                     </div>
                   </div>
 
                   <div>
-                    <Label className="text-sm font-medium">Rekommenderat utrustning</Label>
+                    <Label className="text-sm font-medium">Rekommenderad utrustning</Label>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {selectedService.equipment.map((eq) => (
-                        <Badge key={eq} variant="outline">
-                          {eq}
+                        <Badge key={eq.equipmentId} variant="outline">
+                          {eq.equipmentId}
                         </Badge>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <Label className="text-sm font-medium">Fördelar</Label>
-                    <ul className="mt-2 list-disc list-inside text-sm text-muted-foreground space-y-1">
-                      {selectedService.benefits.map((benefit, index) => (
-                        <li key={index}>{benefit}</li>
-                      ))}
-                    </ul>
+                    <Label className="text-sm font-medium">Förväntade resultat</Label>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {selectedService.expectedResults}
+                    </p>
                   </div>
 
                   <div>
                     <Label className="text-sm font-medium">Eftervård</Label>
                     <ul className="mt-2 list-disc list-inside text-sm text-muted-foreground space-y-1">
-                      {selectedService.aftercare.map((care, index) => (
+                      {selectedService.afterCare.map((care, index) => (
                         <li key={index}>{care}</li>
                       ))}
                     </ul>
@@ -233,9 +230,9 @@ export default function Services() {
                     <SelectValue placeholder="Lägg till tjänst" />
                   </SelectTrigger>
                   <SelectContent>
-                    {services.map((service) => (
+                    {SERVICES.map((service) => (
                       <SelectItem key={service.id} value={service.id}>
-                        {service.name} - {service.price} kr
+                        {service.name} - {service.price / 100} kr
                       </SelectItem>
                     ))}
                   </SelectContent>
