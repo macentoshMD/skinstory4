@@ -1,6 +1,5 @@
 
 import { useMemo } from "react";
-import { EnhancedCustomerStats } from "@/components/customers/EnhancedCustomerStats";
 import { EnhancedCustomerTable } from "@/components/customers/EnhancedCustomerTable";
 import { AddCustomerDialog } from "@/components/customers/AddCustomerDialog";
 import { generateExtendedMockActivities } from "@/utils/mockActivityGenerator";
@@ -30,7 +29,6 @@ const Customers = () => {
         <AddCustomerDialog />
       </div>
 
-      <EnhancedCustomerStats customers={customers} />
       <EnhancedCustomerTable customers={customers} />
     </div>
   );
