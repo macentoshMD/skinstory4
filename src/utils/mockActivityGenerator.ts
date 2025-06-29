@@ -6,13 +6,14 @@ const customers = [
   'Anna Andersson', 'Erik Johansson', 'Maria Larsson', 'Johan Petersson', 
   'Lisa Svensson', 'Emma Nilsson', 'Oscar Berg', 'Sofia Lindqvist',
   'Daniel Holm', 'Maja Westberg', 'Viktor Åberg', 'Elin Forsberg',
-  'Karin Blomberg', 'Magnus Hedberg', 'Sara Karlsson', 'Tobias Engström'
+  'Karin Blomberg', 'Magnus Hedberg', 'Sara Karlsson', 'Tobias Engström',
+  'Linda Axelsson', 'Peter Lundgren', 'Camilla Eriksson', 'Andreas Olsson'
 ];
 
 const treatments = [
   'Portömning', 'Laser', 'HydraFacial', 'Microneedling', 'Chemical Peeling',
   'Konsultation', 'Aknebehandling', 'Rosacea-behandling', 'Anti-age behandling',
-  'IPL', 'Dermaplaning', 'Oxygen Facial', 'LED-behandling'
+  'IPL', 'Dermaplaning', 'Oxygen Facial', 'LED-behandling', 'Hårborttagning'
 ];
 
 const products = [
@@ -23,7 +24,7 @@ const products = [
 
 const problemCategories = [
   'Akne', 'Rosacea', 'Åldrande', 'Pigmentering', 'Känslighet', 'Torrhet',
-  'Stora porer', 'Ärr', 'Melasma', 'Solskador'
+  'Stora porer', 'Ärr', 'Melasma', 'Solskador', 'Hårborttagning'
 ];
 
 const supportReasons = [
@@ -31,16 +32,38 @@ const supportReasons = [
   'Allergisk reaktion', 'Ombokning', 'Avbokning', 'Rekommendation'
 ];
 
+// Category weights to ensure good distribution
+const categoryWeights = {
+  'bokningar': 25,      // 25% - Most common
+  'ekonomi': 20,        // 20% - Very important
+  'behandlingar': 15,   // 15% - Core business
+  'beställningar': 12,  // 12% - Regular occurrence
+  'kunder': 10,         // 10% - Status changes
+  'rekommendationer': 8, // 8% - Business driving
+  'specialist': 6,      // 6% - Performance tracking
+  'support': 4          // 4% - Customer service
+};
+
 export const generateExtendedMockActivities = (dateRange: DateRange): ExtendedActivityLog[] => {
   const activities: ExtendedActivityLog[] = [];
   const daysDiff = Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-  const activityCount = Math.max(50, daysDiff * 12);
+  const activityCount = Math.max(100, daysDiff * 15);
 
-  const activityTypes = Object.keys(ACTIVITY_TYPES) as ActivityType[];
+  // Create weighted activity type selection
+  const weightedActivityTypes: ActivityType[] = [];
+  Object.entries(categoryWeights).forEach(([category, weight]) => {
+    const categoryTypes = Object.keys(ACTIVITY_TYPES).filter(
+      type => ACTIVITY_TYPES[type as ActivityType].category === category
+    ) as ActivityType[];
+    
+    for (let i = 0; i < weight; i++) {
+      weightedActivityTypes.push(...categoryTypes);
+    }
+  });
 
   for (let i = 0; i < activityCount; i++) {
     const randomDate = new Date(dateRange.from.getTime() + Math.random() * (dateRange.to.getTime() - dateRange.from.getTime()));
-    const activityType = activityTypes[Math.floor(Math.random() * activityTypes.length)];
+    const activityType = weightedActivityTypes[Math.floor(Math.random() * weightedActivityTypes.length)];
     const activityInfo = ACTIVITY_TYPES[activityType];
     
     const company = COMPANIES[Math.floor(Math.random() * COMPANIES.length)];
