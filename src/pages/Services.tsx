@@ -210,9 +210,7 @@ export default function Services() {
                       <TableCell className="font-medium">
                         <div>
                           <div className="font-medium">{service.name}</div>
-                          <div className="text-sm text-muted-foreground line-clamp-1">
-                            {service.description}
-                          </div>
+                          
                         </div>
                       </TableCell>
                       <TableCell>
