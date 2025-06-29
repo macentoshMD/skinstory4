@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,110 +11,129 @@ import { EQUIPMENT } from "@/types/services";
 import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings } from "lucide-react";
 
 // Base service categories (no pricing)
-const BASE_SERVICE_CATEGORIES = [
-  {
-    id: 'ansiktsbehandling',
-    name: 'Ansiktsbehandling',
-    description: 'Grundläggande ansiktsbehandlingar',
-    subcategories: ['Portömning', 'Klassisk ansiktsbehandling', 'Facial boost up', 'Djuprengöring']
-  },
-  {
-    id: 'microneedling',
-    name: 'Microneedling',
-    description: 'Kollagenstimulering och hudförnyelse',
-    subcategories: ['Klassisk microneedling', 'Microneedling med serum', 'Microneedling RF']
-  },
-  {
-    id: 'laserbehandling',
-    name: 'Laserbehandling',
-    description: 'Olika typer av laserbehandlingar',
-    subcategories: ['Hårborttagning', 'Pigmentbehandling', 'Kärlbehandling', 'Hudförnyelse']
-  },
-  {
-    id: 'kemisk-peeling',
-    name: 'Kemisk peeling',
-    description: 'Syrabehandlingar för hudförnyelse',
-    subcategories: ['Mild peeling', 'Medel peeling', 'Djup peeling']
-  },
-  {
-    id: 'konsultation',
-    name: 'Konsultation',
-    description: 'Rådgivning och analys',
-    subcategories: ['Hudanalys', 'Behandlingsplan', 'Uppföljning']
-  }
-];
-
+const BASE_SERVICE_CATEGORIES = [{
+  id: 'ansiktsbehandling',
+  name: 'Ansiktsbehandling',
+  description: 'Grundläggande ansiktsbehandlingar',
+  subcategories: ['Portömning', 'Klassisk ansiktsbehandling', 'Facial boost up', 'Djuprengöring']
+}, {
+  id: 'microneedling',
+  name: 'Microneedling',
+  description: 'Kollagenstimulering och hudförnyelse',
+  subcategories: ['Klassisk microneedling', 'Microneedling med serum', 'Microneedling RF']
+}, {
+  id: 'laserbehandling',
+  name: 'Laserbehandling',
+  description: 'Olika typer av laserbehandlingar',
+  subcategories: ['Hårborttagning', 'Pigmentbehandling', 'Kärlbehandling', 'Hudförnyelse']
+}, {
+  id: 'kemisk-peeling',
+  name: 'Kemisk peeling',
+  description: 'Syrabehandlingar för hudförnyelse',
+  subcategories: ['Mild peeling', 'Medel peeling', 'Djup peeling']
+}, {
+  id: 'konsultation',
+  name: 'Konsultation',
+  description: 'Rådgivning och analys',
+  subcategories: ['Hudanalys', 'Behandlingsplan', 'Uppföljning']
+}];
 export default function Services() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedEquipmentType, setSelectedEquipmentType] = useState("all");
-
   const filteredServices = SERVICES.filter(service => {
-    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || service.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || service.categoryId === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
   const filteredEquipment = EQUIPMENT.filter(equipment => {
-    const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         equipment.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) || equipment.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedEquipmentType === "all" || equipment.type === selectedEquipmentType;
     return matchesSearch && matchesType;
   });
-
-  const equipmentTypes = [
-    { id: "all", name: "All utrustning" },
-    { id: "laser", name: "Laser" },
-    { id: "hydrafacial", name: "HydraFacial" },
-    { id: "microneedling", name: "Microneedling" },
-    { id: "analysis", name: "Analys" },
-    { id: "ipl", name: "IPL" },
-    { id: "radiofrequency", name: "Radiofrekvens" }
-  ];
-
-  const categories = [
-    { id: "all", name: "Alla kategorier" },
-    { id: "Laser", name: "Laser", color: "bg-blue-100 text-blue-800" },
-    { id: "Hudvård", name: "Hudvård", color: "bg-green-100 text-green-800" },
-    { id: "Anti-age", name: "Anti-age", color: "bg-purple-100 text-purple-800" },
-    { id: "Akne", name: "Akne", color: "bg-red-100 text-red-800" },
-  ];
-
+  const equipmentTypes = [{
+    id: "all",
+    name: "All utrustning"
+  }, {
+    id: "laser",
+    name: "Laser"
+  }, {
+    id: "hydrafacial",
+    name: "HydraFacial"
+  }, {
+    id: "microneedling",
+    name: "Microneedling"
+  }, {
+    id: "analysis",
+    name: "Analys"
+  }, {
+    id: "ipl",
+    name: "IPL"
+  }, {
+    id: "radiofrequency",
+    name: "Radiofrekvens"
+  }];
+  const categories = [{
+    id: "all",
+    name: "Alla kategorier"
+  }, {
+    id: "Laser",
+    name: "Laser",
+    color: "bg-blue-100 text-blue-800"
+  }, {
+    id: "Hudvård",
+    name: "Hudvård",
+    color: "bg-green-100 text-green-800"
+  }, {
+    id: "Anti-age",
+    name: "Anti-age",
+    color: "bg-purple-100 text-purple-800"
+  }, {
+    id: "Akne",
+    name: "Akne",
+    color: "bg-red-100 text-red-800"
+  }];
   const getCategoryColor = (categoryId: string) => {
     const category = categories.find(cat => cat.id === categoryId);
     return category?.color || "bg-gray-100 text-gray-800";
   };
-
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'basic': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      case 'expert': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'basic':
+        return 'bg-green-100 text-green-800';
+      case 'intermediate':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'advanced':
+        return 'bg-red-100 text-red-800';
+      case 'expert':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getEquipmentTypeColor = (type: string) => {
     switch (type) {
-      case 'laser': return 'bg-blue-100 text-blue-800';
-      case 'hydrafacial': return 'bg-cyan-100 text-cyan-800';
-      case 'microneedling': return 'bg-purple-100 text-purple-800';
-      case 'analysis': return 'bg-orange-100 text-orange-800';
-      case 'ipl': return 'bg-pink-100 text-pink-800';
-      case 'radiofrequency': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'laser':
+        return 'bg-blue-100 text-blue-800';
+      case 'hydrafacial':
+        return 'bg-cyan-100 text-cyan-800';
+      case 'microneedling':
+        return 'bg-purple-100 text-purple-800';
+      case 'analysis':
+        return 'bg-orange-100 text-orange-800';
+      case 'ipl':
+        return 'bg-pink-100 text-pink-800';
+      case 'radiofrequency':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
-
   const calculateMargin = (price: number) => {
     const estimatedCost = price * 0.4;
     return ((price - estimatedCost) / price * 100).toFixed(1);
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Tjänster</h1>
         <p className="text-muted-foreground">
@@ -135,12 +153,7 @@ export default function Services() {
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Sök tjänster..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+                <Input placeholder="Sök tjänster..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
               </div>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                 <SelectTrigger className="w-[200px]">
@@ -148,11 +161,9 @@ export default function Services() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
+                  {categories.map(category => <SelectItem key={category.id} value={category.id}>
                       {category.name}
-                    </SelectItem>
-                  ))}
+                    </SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -188,15 +199,14 @@ export default function Services() {
                     <TableHead>Utrustning</TableHead>
                     <TableHead>Tidsgång</TableHead>
                     <TableHead>Pris</TableHead>
-                    <TableHead>Marginal</TableHead>
+                    
                     <TableHead>Specialistnivå</TableHead>
                     <TableHead>Onlinebokningsbar</TableHead>
                     <TableHead>Åtgärder</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredServices.map((service) => (
-                    <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
+                  {filteredServices.map(service => <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">
                         <div>
                           <div className="font-medium">{service.name}</div>
@@ -213,18 +223,14 @@ export default function Services() {
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
                           {service.equipment.slice(0, 2).map((eq, idx) => {
-                            const equipment = EQUIPMENT.find(e => e.id === eq.equipmentId);
-                            return equipment ? (
-                              <Badge key={idx} variant="outline" className="text-xs">
+                        const equipment = EQUIPMENT.find(e => e.id === eq.equipmentId);
+                        return equipment ? <Badge key={idx} variant="outline" className="text-xs">
                                 {equipment.name.split(' ')[0]}
-                              </Badge>
-                            ) : null;
-                          })}
-                          {service.equipment.length > 2 && (
-                            <Badge variant="outline" className="text-xs">
+                              </Badge> : null;
+                      })}
+                          {service.equipment.length > 2 && <Badge variant="outline" className="text-xs">
                               +{service.equipment.length - 2}
-                            </Badge>
-                          )}
+                            </Badge>}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -239,11 +245,7 @@ export default function Services() {
                           {service.price / 100} kr
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <span className="text-green-600 font-medium">
-                          {calculateMargin(service.price / 100)}%
-                        </span>
-                      </TableCell>
+                      
                       <TableCell>
                         <Badge className={getDifficultyColor(service.requiredSpecialistLevel)}>
                           {service.requiredSpecialistLevel}
@@ -264,8 +266,7 @@ export default function Services() {
                           </Button>
                         </div>
                       </TableCell>
-                    </TableRow>
-                  ))}
+                    </TableRow>)}
                 </TableBody>
               </Table>
             </CardContent>
@@ -277,10 +278,7 @@ export default function Services() {
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Sök grundtjänster..."
-                  className="pl-10"
-                />
+                <Input placeholder="Sök grundtjänster..." className="pl-10" />
               </div>
             </div>
             <div className="flex gap-2">
@@ -310,8 +308,7 @@ export default function Services() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {BASE_SERVICE_CATEGORIES.map((category) => (
-                    <TableRow key={category.id} className="cursor-pointer hover:bg-muted/50">
+                  {BASE_SERVICE_CATEGORIES.map(category => <TableRow key={category.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">
                         {category.name}
                       </TableCell>
@@ -320,16 +317,12 @@ export default function Services() {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {category.subcategories.slice(0, 3).map((sub, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
+                          {category.subcategories.slice(0, 3).map((sub, idx) => <Badge key={idx} variant="outline" className="text-xs">
                               {sub}
-                            </Badge>
-                          ))}
-                          {category.subcategories.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
+                            </Badge>)}
+                          {category.subcategories.length > 3 && <Badge variant="outline" className="text-xs">
                               +{category.subcategories.length - 3}
-                            </Badge>
-                          )}
+                            </Badge>}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -347,8 +340,7 @@ export default function Services() {
                           </Button>
                         </div>
                       </TableCell>
-                    </TableRow>
-                  ))}
+                    </TableRow>)}
                 </TableBody>
               </Table>
             </CardContent>
@@ -360,12 +352,7 @@ export default function Services() {
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Sök utrustning..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+                <Input placeholder="Sök utrustning..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
               </div>
               <Select value={selectedEquipmentType} onValueChange={setSelectedEquipmentType}>
                 <SelectTrigger className="w-[200px]">
@@ -373,11 +360,9 @@ export default function Services() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {equipmentTypes.map((type) => (
-                    <SelectItem key={type.id} value={type.id}>
+                  {equipmentTypes.map(type => <SelectItem key={type.id} value={type.id}>
                       {type.name}
-                    </SelectItem>
-                  ))}
+                    </SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -414,8 +399,7 @@ export default function Services() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredEquipment.map((equipment) => (
-                    <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
+                  {filteredEquipment.map(equipment => <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">
                         {equipment.name}
                       </TableCell>
@@ -435,16 +419,12 @@ export default function Services() {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {equipment.capabilities.slice(0, 2).map((cap, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
+                          {equipment.capabilities.slice(0, 2).map((cap, idx) => <Badge key={idx} variant="outline" className="text-xs">
                               {cap.replace('_', ' ')}
-                            </Badge>
-                          ))}
-                          {equipment.capabilities.length > 2 && (
-                            <Badge variant="outline" className="text-xs">
+                            </Badge>)}
+                          {equipment.capabilities.length > 2 && <Badge variant="outline" className="text-xs">
                               +{equipment.capabilities.length - 2}
-                            </Badge>
-                          )}
+                            </Badge>}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -465,14 +445,12 @@ export default function Services() {
                           </Button>
                         </div>
                       </TableCell>
-                    </TableRow>
-                  ))}
+                    </TableRow>)}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
-  );
+    </div>;
 }
