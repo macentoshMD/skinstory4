@@ -81,6 +81,10 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
     }));
   };
 
+  const handleSelectCustomer = (customer: Customer) => {
+    setSelectedCustomer(customer);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Aktiv":
@@ -289,7 +293,7 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
                   <div className="flex gap-1">
                     <CustomerDetailsDialog
                       customer={customer}
-                      onSelect={setSelectedCustomer}
+                      onSelect={handleSelectCustomer}
                       selectedCustomer={selectedCustomer}
                     />
                     <Button variant="ghost" size="sm">
