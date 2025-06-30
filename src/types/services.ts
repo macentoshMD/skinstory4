@@ -16,10 +16,9 @@ export interface Equipment {
   coolingSystem?: string;
   otherSpecs?: string;
   
-  // New fields for handpieces and problems
+  // New fields for handpieces
   hasHandpieces?: boolean;
   handpieceCount?: number;
-  treatsProblemTypes?: string[]; // Summary of all problems this equipment can treat
   
   capabilities: string[];
   maintenanceRequired: boolean;
@@ -169,7 +168,6 @@ export const EQUIPMENT: Equipment[] = [
     coolingSystem: 'Contact cooling + air cooling',
     otherSpecs: 'Triple wavelength technology, SHR mode, pain-free treatment',
     hasHandpieces: false,
-    treatsProblemTypes: ['unwanted_hair'],
     capabilities: ['hair_removal', 'all_skin_types', 'pain_free'],
     maintenanceRequired: false
   },
@@ -189,7 +187,6 @@ export const EQUIPMENT: Equipment[] = [
     coolingSystem: 'BLEND X technology with contact cooling',
     otherSpecs: 'Dual wavelength, BLEND technology, high repetition rate up to 20Hz',
     hasHandpieces: false,
-    treatsProblemTypes: ['unwanted_hair'],
     capabilities: ['hair_removal', 'light_skin', 'fast_treatment'],
     maintenanceRequired: false
   },
@@ -209,7 +206,6 @@ export const EQUIPMENT: Equipment[] = [
     coolingSystem: 'Contact cooling',
     otherSpecs: 'Dual wavelength, precision targeting, variable pulse duration',
     hasHandpieces: false,
-    treatsProblemTypes: ['vascular_lesions', 'pigmentation'],
     capabilities: ['vascular_lesions', 'pigmentation', 'dark_skin_safe'],
     maintenanceRequired: true
   },
@@ -226,7 +222,6 @@ export const EQUIPMENT: Equipment[] = [
     subCategories: ['LED Therapy'],
     otherSpecs: 'Vortex-Fusion technology, HydraPeel tips, LED light therapy',
     hasHandpieces: false,
-    treatsProblemTypes: ['dryness', 'dullness', 'fine_lines'],
     capabilities: ['deep_cleansing', 'extraction', 'hydration', 'infusion'],
     maintenanceRequired: false
   },
@@ -243,7 +238,6 @@ export const EQUIPMENT: Equipment[] = [
     subCategories: ['Automated Pen'],
     otherSpecs: 'Needle depth: 0.25-3.0mm, Variable speed settings, Vibration technology',
     hasHandpieces: false,
-    treatsProblemTypes: ['acne_scars', 'wrinkles', 'large_pores'],
     capabilities: ['collagen_stimulation', 'scar_treatment', 'adjustable_depth'],
     maintenanceRequired: false
   },
@@ -258,7 +252,6 @@ export const EQUIPMENT: Equipment[] = [
     subCategories: ['Automated Pen'],
     otherSpecs: 'Needle depth: 0.25-3.0mm, Integrated LED therapy, AOVN technology',
     hasHandpieces: false,
-    treatsProblemTypes: ['acne_scars', 'wrinkles', 'large_pores'],
     capabilities: ['collagen_stimulation', 'led_therapy', 'precision_control'],
     maintenanceRequired: false
   },
@@ -279,7 +272,6 @@ export const EQUIPMENT: Equipment[] = [
     otherSpecs: 'Fractional CO2 + RF, Variable pulse modes, Scanning technology',
     hasHandpieces: true,
     handpieceCount: 2,
-    treatsProblemTypes: ['photoaging', 'acne-inflammatory'],
     capabilities: ['skin_resurfacing', 'wrinkle_reduction', 'scar_treatment'],
     maintenanceRequired: true
   },
@@ -300,7 +292,6 @@ export const EQUIPMENT: Equipment[] = [
     otherSpecs: 'Multiple handpieces, Q-Switch technology, Fractional capabilities',
     hasHandpieces: true,
     handpieceCount: 4,
-    treatsProblemTypes: ['acne-comedonal', 'acne-inflammatory', 'photoaging', 'melasma'],
     capabilities: ['hair_removal', 'pigmentation', 'vascular_lesions', 'skin_resurfacing'],
     maintenanceRequired: true
   },
@@ -317,7 +308,6 @@ export const EQUIPMENT: Equipment[] = [
     subCategories: ['Analysis'],
     otherSpecs: 'UV photography, RBX technology, Progress tracking, 3D imaging',
     hasHandpieces: false,
-    treatsProblemTypes: ['general_assessment'],
     capabilities: ['skin_analysis', 'uv_photography', 'progress_tracking'],
     maintenanceRequired: true
   },
@@ -332,7 +322,6 @@ export const EQUIPMENT: Equipment[] = [
     subCategories: ['Analysis'],
     otherSpecs: '10x magnification, Polarized and non-polarized light, LED illumination',
     hasHandpieces: false,
-    treatsProblemTypes: ['general_assessment'],
     capabilities: ['magnification', 'pigment_analysis', 'structure_analysis'],
     maintenanceRequired: false
   },
@@ -354,7 +343,6 @@ export const EQUIPMENT: Equipment[] = [
     coolingSystem: 'Sapphire contact cooling',
     otherSpecs: 'Dual mode filtering, OPT technology, Multiple filter options',
     hasHandpieces: false,
-    treatsProblemTypes: ['pigmentation', 'vascular_lesions'],
     capabilities: ['pigmentation', 'vascular_lesions', 'photo_rejuvenation'],
     maintenanceRequired: true
   }

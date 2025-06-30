@@ -4,7 +4,6 @@ export interface EquipmentHandpiece {
   name: string;
   type: string; // t.ex. "DyeVL (IPL)", "iPixel (Ablativ)"
   description: string;
-  treatsProblemTypes: string[]; // Länkar till problem-areas.ts
   technicalSpecs: {
     wavelength?: string;
     maxPower?: string;
@@ -22,7 +21,6 @@ export const EQUIPMENT_HANDPIECES: Record<string, EquipmentHandpiece[]> = {
       name: 'DyeVL',
       type: 'IPL',
       description: 'Intensivt pulserat ljus för hårborttagning och kärlbehandling',
-      treatsProblemTypes: ['acne-comedonal', 'acne-inflammatory', 'photoaging'],
       technicalSpecs: {
         wavelength: '515-1200nm',
         maxPower: '50 J/cm²',
@@ -36,7 +34,6 @@ export const EQUIPMENT_HANDPIECES: Record<string, EquipmentHandpiece[]> = {
       name: 'iPixel',
       type: 'Ablativ',
       description: 'Fraktionell ablativ behandling för ärr och anti-age',
-      treatsProblemTypes: ['photoaging', 'acne-inflammatory'],
       technicalSpecs: {
         wavelength: '2940nm',
         maxPower: '30W',
@@ -49,7 +46,6 @@ export const EQUIPMENT_HANDPIECES: Record<string, EquipmentHandpiece[]> = {
       name: 'ClearLift',
       type: 'Q-Switch',
       description: 'Non-ablativ Q-Switch för pigmentbehandling',
-      treatsProblemTypes: ['melasma', 'photoaging'],
       technicalSpecs: {
         wavelength: '1064nm',
         maxPower: '1000mJ',
@@ -63,7 +59,6 @@ export const EQUIPMENT_HANDPIECES: Record<string, EquipmentHandpiece[]> = {
       name: 'ClearSkin',
       type: 'Non-ablativ',
       description: 'Mild hudförbättring och porbehandling',
-      treatsProblemTypes: ['acne-comedonal', 'photoaging'],
       technicalSpecs: {
         wavelength: '1320nm',
         maxPower: '300W',
@@ -78,7 +73,6 @@ export const EQUIPMENT_HANDPIECES: Record<string, EquipmentHandpiece[]> = {
       name: 'CO2 Laser',
       type: 'Ablativ CO2',
       description: 'Fraktionell CO2 laser för hudförnyelse',
-      treatsProblemTypes: ['photoaging', 'acne-inflammatory'],
       technicalSpecs: {
         wavelength: '10600nm',
         maxPower: '30W',
@@ -91,7 +85,6 @@ export const EQUIPMENT_HANDPIECES: Record<string, EquipmentHandpiece[]> = {
       name: 'Radiofrekvens',
       type: 'Fraktionell RF',
       description: 'Bipolar radiofrekvens för hudstramning',
-      treatsProblemTypes: ['photoaging'],
       technicalSpecs: {
         maxPower: '62W',
         otherSpecs: 'Bipolar RF, fractional delivery'
