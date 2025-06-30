@@ -1,3 +1,4 @@
+
 import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -14,7 +15,7 @@ import {
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
   { name: "Insikter", href: "/insikter", icon: BarChart3 },
-  { name: "Aktiviteter", href: "/aktiviteter", icon: Activity },
+  { name: "Loggar", href: "/aktiviteter", icon: Activity },
   { name: "Kunder", href: "/kunder", icon: Users },
   { name: "Tjänster", href: "/tjanster", icon: Sparkles },
   { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
