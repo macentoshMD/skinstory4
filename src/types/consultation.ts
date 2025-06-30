@@ -1,4 +1,3 @@
-
 export interface CustomerFormData {
   personalNumber: string;
   firstName: string;
@@ -186,3 +185,38 @@ export const calculateSkinScore = (symptoms: SymptomSeverity[]): number => {
   // Ensure score is between 0-100
   return Math.min(100, Math.max(0, Math.round(finalScore)));
 };
+
+export interface DetailedTreatmentRecommendation extends TreatmentRecommendation {
+  category: string;
+  availableHandpieces: string[];
+  treatmentAreas: string[];
+  configuration?: {
+    selectedHandpiece: string;
+    numberOfSessions: number;
+    intervalWeeks: number;
+    selectedAreas: string[];
+    totalPrice: number;
+  };
+}
+
+export interface DetailedProductRecommendation extends ProductRecommendation {
+  availableOptions: {
+    strength?: string[];
+    spf?: number[];
+    microbeads?: boolean;
+  };
+  configuration?: {
+    selectedStrength?: string;
+    selectedSPF?: number;
+    withMicrobeads?: boolean;
+    finalPrice: number;
+  };
+}
+
+export interface TreatmentPlanV2 {
+  selectedTreatments: DetailedTreatmentRecommendation[];
+  selectedProducts: DetailedProductRecommendation[];
+  notes: string;
+  totalTreatmentPrice: number;
+  totalProductPrice: number;
+}

@@ -1,15 +1,19 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Home, Building2, DollarSign } from 'lucide-react';
+import { Plus, Settings, Trash2, DollarSign } from 'lucide-react';
 import { ConsultationHeader } from './ConsultationHeader';
 import { StepWrapper } from './StepWrapper';
 import { RecommendationControls } from './treatment-plan/RecommendationControls';
-import { HomecareTab } from './treatment-plan/HomecareTab';
-import { CliniccareTab } from './treatment-plan/CliniccareTab';
-import { TreatmentPlan, ProductRecommendation, TreatmentRecommendation } from '@/types/consultation';
+import { ServiceSelectionModal } from './treatment-plan/modals/ServiceSelectionModal';
+import { ServiceConfigurationModal } from './treatment-plan/modals/ServiceConfigurationModal';
+import { ProductSelectionModal } from './treatment-plan/modals/ProductSelectionModal';
+import { ProductConfigurationModal } from './treatment-plan/modals/ProductConfigurationModal';
+import { TreatmentPlan, DetailedTreatmentRecommendation, DetailedProductRecommendation } from '@/types/consultation';
+import { Badge } from '@/components/ui/badge';
 
 interface TreatmentPlanStepProps {
   treatmentPlan: TreatmentPlan;
@@ -21,61 +25,8 @@ interface TreatmentPlanStepProps {
   onContinue: () => void;
 }
 
-// Mock product database
-const MOCK_PRODUCTS: ProductRecommendation[] = [
-  {
-    id: 'cleanse-1',
-    name: 'Gentle Cleansing Gel',
-    brand: 'SkinCeuticals',
-    type: 'cleanser',
-    usage: 'Morgon och kväll',
-    price: 450,
-    priority: 'essential',
-    description: 'Mild rengöring för känslig aknebenägen hud'
-  },
-  {
-    id: 'serum-1',
-    name: 'Niacinamide 10% + Zinc',
-    brand: 'The Ordinary',
-    type: 'serum',
-    usage: 'Kvällsrutinen',
-    price: 89,
-    priority: 'essential',
-    description: 'Minskar synligheten av porer och kontrollerar talgproduktion'
-  },
-  {
-    id: 'serum-2',
-    name: 'Retinol 0.5%',
-    brand: 'Paula\'s Choice',
-    type: 'treatment',
-    usage: '2-3 gånger per vecka',
-    price: 395,
-    priority: 'recommended',
-    description: 'Accelererar cellförnyelse och förbättrer hudtextur'
-  },
-  {
-    id: 'moisturizer-1',
-    name: 'Ultra Facial Cream',
-    brand: 'Kiehl\'s',
-    type: 'moisturizer',
-    usage: 'Morgon och kväll',
-    price: 350,
-    priority: 'essential',
-    description: 'Återfuktar utan att täppa till porer'
-  },
-  {
-    id: 'sunscreen-1',
-    name: 'Anthelios Fluid SPF 50+',
-    brand: 'La Roche-Posay',
-    type: 'sunscreen',
-    usage: 'Varje morgon',
-    price: 225,
-    priority: 'essential',
-    description: 'Bred spektrum solskydd för aknebenägen hud'
-  }
-];
-
-const MOCK_TREATMENTS: TreatmentRecommendation[] = [
+// Enhanced mock data with configuration options
+const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [
   {
     id: 'treatment-1',
     name: 'HydraFacial MD',
@@ -84,7 +35,10 @@ const MOCK_TREATMENTS: TreatmentRecommendation[] = [
     price: 1200,
     priority: 'essential',
     contraindications: [],
-    description: 'Djuprengöring och återfuktning för aknebenägen hud'
+    description: 'Djuprengöring och återfuktning för aknebenägen hud',
+    category: 'Ansiktsbehandling',
+    availableHandpieces: ['Standard tip', 'Sensitive tip', 'Deep cleansing tip'],
+    treatmentAreas: ['Ansikte', 'Hals', 'Dekolletage', 'Rygg']
   },
   {
     id: 'treatment-2',
@@ -94,7 +48,10 @@ const MOCK_TREATMENTS: TreatmentRecommendation[] = [
     price: 500,
     priority: 'recommended',
     contraindications: ['Ljuskänsliga mediciner'],
-    description: 'Antiinflammatorisk behandling som accelererar läkning'
+    description: 'Antiinflammatorisk behandling som accelererar läkning',
+    category: 'Ljusterapi',
+    availableHandpieces: ['Red light panel', 'Blue light panel', 'Combined panel'],
+    treatmentAreas: ['Ansikte', 'Rygg', 'Bröst']
   },
   {
     id: 'treatment-3',
@@ -104,7 +61,53 @@ const MOCK_TREATMENTS: TreatmentRecommendation[] = [
     price: 800,
     priority: 'recommended',
     contraindications: ['Retinoider', 'Graviditet'],
-    description: 'Exfolierar och rengör porer på djupet'
+    description: 'Exfolierar och rengör porer på djupet',
+    category: 'Kemisk peeling',
+    availableHandpieces: [],
+    treatmentAreas: ['Ansikte', 'Hals', 'Rygg', 'Bröst']
+  }
+];
+
+const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [
+  {
+    id: 'cleanse-1',
+    name: 'Gentle Cleansing Gel',
+    brand: 'SkinCeuticals',
+    type: 'cleanser',
+    usage: 'Morgon och kväll',
+    price: 450,
+    priority: 'essential',
+    description: 'Mild rengöring för känslig aknebenägen hud',
+    availableOptions: {
+      strength: ['Mild', 'Medium', 'Strong']
+    }
+  },
+  {
+    id: 'serum-1',
+    name: 'Niacinamide 10% + Zinc',
+    brand: 'The Ordinary',
+    type: 'serum',
+    usage: 'Kvällsrutinen',
+    price: 89,
+    priority: 'essential',
+    description: 'Minskar synligheten av porer och kontrollerar talgproduktion',
+    availableOptions: {
+      strength: ['5%', '10%', '15%']
+    }
+  },
+  {
+    id: 'sunscreen-1',
+    name: 'Anthelios Fluid SPF 50+',
+    brand: 'La Roche-Posay',
+    type: 'sunscreen',
+    usage: 'Varje morgon',
+    price: 225,
+    priority: 'essential',
+    description: 'Bred spektrum solskydd för aknebenägen hud',
+    availableOptions: {
+      spf: [25, 30, 50],
+      microbeads: true
+    }
   }
 ];
 
@@ -117,107 +120,73 @@ export function TreatmentPlanStep({
   onBack,
   onContinue
 }: TreatmentPlanStepProps) {
-  const [activeTab, setActiveTab] = useState<'homecare' | 'cliniccare'>('homecare');
+  const [selectedServices, setSelectedServices] = useState<DetailedTreatmentRecommendation[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<DetailedProductRecommendation[]>([]);
+  
+  // Modal states
+  const [serviceModalOpen, setServiceModalOpen] = useState(false);
+  const [productModalOpen, setProductModalOpen] = useState(false);
+  const [serviceConfigModal, setServiceConfigModal] = useState<DetailedTreatmentRecommendation | null>(null);
+  const [productConfigModal, setProductConfigModal] = useState<DetailedProductRecommendation | null>(null);
 
-  // Generate AI recommendations based on problems and skin score
   const generateRecommendations = () => {
     const hasAcne = selectedProblems.some(p => p.toLowerCase().includes('acne'));
     const severity = skinScore > 70 ? 'severe' : skinScore > 40 ? 'medium' : 'light';
     
-    let recommendedProducts = MOCK_PRODUCTS.filter(product => {
-      if (hasAcne) return true; // All products are acne-focused in this mock
-      return product.priority === 'essential';
-    });
-
-    let recommendedTreatments = MOCK_TREATMENTS.filter(treatment => {
-      // Filter based on contraindications and severity
+    let recommendedTreatments = MOCK_DETAILED_TREATMENTS.filter(treatment => {
       if (riskLevel === 'high') return treatment.priority === 'essential';
       return severity === 'severe' || treatment.priority === 'essential';
     });
 
-    const newPlan: TreatmentPlan = {
-      homecare: {
-        morning: recommendedProducts.filter(p => p.usage.includes('Morgon')),
-        evening: recommendedProducts.filter(p => p.usage.includes('kväll')),
-        weekly: recommendedProducts.filter(p => p.usage.includes('vecka'))
-      },
-      cliniccare: {
-        treatments: recommendedTreatments,
-        schedule: severity === 'severe' ? 'Intensivperiod: 3 månader' : 'Standardbehandling: 2 månader',
-        followUp: 'Kontroll efter 4-6 veckor'
-      },
-      notes: `Anpassad behandlingsplan baserat på ${selectedProblems.join(', ')} med svårighetsgrad ${severity}.`,
-      totalHomecarePrice: recommendedProducts.reduce((sum, p) => sum + p.price, 0),
-      totalClinicPrice: recommendedTreatments.reduce((sum, t) => sum + (t.price * t.sessions), 0)
-    };
+    let recommendedProducts = MOCK_DETAILED_PRODUCTS.filter(product => {
+      if (hasAcne) return true;
+      return product.priority === 'essential';
+    });
 
-    onTreatmentPlanChange(newPlan);
-  };
-
-  const toggleProduct = (product: ProductRecommendation, timeOfDay: 'morning' | 'evening' | 'weekly') => {
-    const currentProducts = treatmentPlan.homecare[timeOfDay];
-    const exists = currentProducts.some(p => p.id === product.id);
-    
-    const newProducts = exists 
-      ? currentProducts.filter(p => p.id !== product.id)
-      : [...currentProducts, product];
-
-    const newPlan = {
-      ...treatmentPlan,
-      homecare: {
-        ...treatmentPlan.homecare,
-        [timeOfDay]: newProducts
-      }
-    };
-
-    // Recalculate total price
-    const allProducts = [...newPlan.homecare.morning, ...newPlan.homecare.evening, ...newPlan.homecare.weekly];
-    newPlan.totalHomecarePrice = allProducts.reduce((sum, p) => sum + p.price, 0);
-
-    onTreatmentPlanChange(newPlan);
-  };
-
-  const toggleTreatment = (treatment: TreatmentRecommendation) => {
-    const currentTreatments = treatmentPlan.cliniccare.treatments;
-    const exists = currentTreatments.some(t => t.id === treatment.id);
-    
-    const newTreatments = exists 
-      ? currentTreatments.filter(t => t.id !== treatment.id)
-      : [...currentTreatments, treatment];
-
-    const newPlan = {
-      ...treatmentPlan,
-      cliniccare: {
-        ...treatmentPlan.cliniccare,
-        treatments: newTreatments
-      }
-    };
-
-    // Recalculate total price
-    newPlan.totalClinicPrice = newTreatments.reduce((sum, t) => sum + (t.price * t.sessions), 0);
-
-    onTreatmentPlanChange(newPlan);
+    setSelectedServices(recommendedTreatments);
+    setSelectedProducts(recommendedProducts);
   };
 
   const clearAllRecommendations = () => {
-    const clearedPlan: TreatmentPlan = {
-      homecare: {
-        morning: [],
-        evening: [],
-        weekly: []
-      },
-      cliniccare: {
-        treatments: [],
-        schedule: '',
-        followUp: ''
-      },
-      notes: treatmentPlan.notes, // Keep the notes
-      totalHomecarePrice: 0,
-      totalClinicPrice: 0
-    };
-
-    onTreatmentPlanChange(clearedPlan);
+    setSelectedServices([]);
+    setSelectedProducts([]);
   };
+
+  const handleServiceSelect = (service: DetailedTreatmentRecommendation) => {
+    setServiceConfigModal(service);
+    setServiceModalOpen(false);
+  };
+
+  const handleServiceConfirm = (configuredService: DetailedTreatmentRecommendation) => {
+    setSelectedServices(prev => [...prev, configuredService]);
+    setServiceConfigModal(null);
+  };
+
+  const handleProductSelect = (product: DetailedProductRecommendation) => {
+    setProductConfigModal(product);
+    setProductModalOpen(false);
+  };
+
+  const handleProductConfirm = (configuredProduct: DetailedProductRecommendation) => {
+    setSelectedProducts(prev => [...prev, configuredProduct]);
+    setProductConfigModal(null);
+  };
+
+  const removeService = (serviceId: string) => {
+    setSelectedServices(prev => prev.filter(s => s.id !== serviceId));
+  };
+
+  const removeProduct = (productId: string) => {
+    setSelectedProducts(prev => prev.filter(p => p.id !== productId));
+  };
+
+  const totalTreatmentPrice = selectedServices.reduce((sum, service) => 
+    sum + (service.configuration?.totalPrice || service.price * service.sessions), 0
+  );
+
+  const totalProductPrice = selectedProducts.reduce((sum, product) => 
+    sum + (product.configuration?.finalPrice || product.price), 0
+  );
 
   return (
     <div className="space-y-6">
@@ -232,50 +201,128 @@ export function TreatmentPlanStep({
 
       <StepWrapper 
         title="Behandlingsplan & Rekommendationer"
-        subtitle="Personliga rekommendationer för hemmavård och klinikvård"
+        subtitle="Personliga rekommendationer för behandlingar och produkter"
       >
         <RecommendationControls
           onGenerateRecommendations={generateRecommendations}
           onClearRecommendations={clearAllRecommendations}
         />
 
-        {/* Tab Navigation */}
-        <div className="flex gap-4 mb-6">
-          <Button
-            variant={activeTab === 'homecare' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('homecare')}
-            className="flex items-center gap-2"
-          >
-            <Home className="h-4 w-4" />
-            Hemmavård
-          </Button>
-          <Button
-            variant={activeTab === 'cliniccare' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('cliniccare')}
-            className="flex items-center gap-2"
-          >
-            <Building2 className="h-4 w-4" />
-            Klinikvård
-          </Button>
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Treatments Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Behandlingar</span>
+                <Button onClick={() => setServiceModalOpen(true)} size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Lägg till
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {selectedServices.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">Inga behandlingar valda</p>
+              ) : (
+                selectedServices.map(service => (
+                  <div key={service.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="font-medium">{service.name}</h4>
+                        <p className="text-sm text-gray-600">{service.category}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setServiceConfigModal(service)}
+                        >
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => removeService(service.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {service.configuration && (
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <p>Handpiece: {service.configuration.selectedHandpiece}</p>
+                        <p>Sessioner: {service.configuration.numberOfSessions}</p>
+                        <p>Intervall: {service.configuration.intervalWeeks} veckor</p>
+                        <p className="font-medium">Pris: {service.configuration.totalPrice} kr</p>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Products Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Produkter</span>
+                <Button onClick={() => setProductModalOpen(true)} size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Lägg till
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {selectedProducts.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">Inga produkter valda</p>
+              ) : (
+                selectedProducts.map(product => (
+                  <div key={product.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="font-medium">{product.name}</h4>
+                        <p className="text-sm text-gray-600">{product.brand}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setProductConfigModal(product)}
+                        >
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => removeProduct(product.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {product.configuration && (
+                      <div className="text-sm text-gray-600 space-y-1">
+                        {product.configuration.selectedStrength && (
+                          <p>Styrka: {product.configuration.selectedStrength}</p>
+                        )}
+                        {product.configuration.selectedSPF && (
+                          <p>SPF: {product.configuration.selectedSPF}</p>
+                        )}
+                        {product.configuration.withMicrobeads && (
+                          <p>Med mikrobeads</p>
+                        )}
+                        <p className="font-medium">Pris: {product.configuration.finalPrice} kr</p>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
         </div>
-
-        {/* Homecare Tab */}
-        {activeTab === 'homecare' && (
-          <HomecareTab
-            treatmentPlan={treatmentPlan}
-            mockProducts={MOCK_PRODUCTS}
-            onProductToggle={toggleProduct}
-          />
-        )}
-
-        {/* Cliniccare Tab */}
-        {activeTab === 'cliniccare' && (
-          <CliniccareTab
-            treatmentPlan={treatmentPlan}
-            mockTreatments={MOCK_TREATMENTS}
-            onTreatmentToggle={toggleTreatment}
-          />
-        )}
 
         {/* Notes */}
         <Card>
@@ -298,16 +345,45 @@ export function TreatmentPlanStep({
           <AlertDescription className="text-blue-800">
             <div className="flex justify-between items-center">
               <span>
-                <strong>Sammanfattning:</strong> Hemmavård ({treatmentPlan.totalHomecarePrice} kr) + 
-                Klinikvård ({treatmentPlan.totalClinicPrice} kr)
+                <strong>Sammanfattning:</strong> Behandlingar ({totalTreatmentPrice} kr) + 
+                Produkter ({totalProductPrice} kr)
               </span>
               <span className="font-bold">
-                Totalt: {treatmentPlan.totalHomecarePrice + treatmentPlan.totalClinicPrice} kr
+                Totalt: {totalTreatmentPrice + totalProductPrice} kr
               </span>
             </div>
           </AlertDescription>
         </Alert>
       </StepWrapper>
+
+      {/* Modals */}
+      <ServiceSelectionModal
+        isOpen={serviceModalOpen}
+        onClose={() => setServiceModalOpen(false)}
+        availableServices={MOCK_DETAILED_TREATMENTS}
+        onServiceSelect={handleServiceSelect}
+      />
+
+      <ServiceConfigurationModal
+        isOpen={!!serviceConfigModal}
+        onClose={() => setServiceConfigModal(null)}
+        service={serviceConfigModal}
+        onConfirm={handleServiceConfirm}
+      />
+
+      <ProductSelectionModal
+        isOpen={productModalOpen}
+        onClose={() => setProductModalOpen(false)}
+        availableProducts={MOCK_DETAILED_PRODUCTS}
+        onProductSelect={handleProductSelect}
+      />
+
+      <ProductConfigurationModal
+        isOpen={!!productConfigModal}
+        onClose={() => setProductConfigModal(null)}
+        product={productConfigModal}
+        onConfirm={handleProductConfirm}
+      />
     </div>
   );
 }
