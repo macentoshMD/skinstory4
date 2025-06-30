@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
 import { GeneralDetailsData } from '@/types/consultation';
@@ -28,7 +29,7 @@ export function GeneralDetailsStep({
   ];
 
   const isFormValid = () => {
-    return generalDetails.whenProblemStartsYear &&
+    const baseValidation = generalDetails.whenProblemStartsYear &&
            generalDetails.whenProblemStartsMonth &&
            generalDetails.skinStatusAtMoment &&
            generalDetails.treatProblemBefore &&
@@ -38,6 +39,13 @@ export function GeneralDetailsStep({
            generalDetails.makeupRoutine &&
            generalDetails.occupation.trim() &&
            generalDetails.lifestyle;
+    
+    // If "Ja" is selected for treatProblemBefore, also require treatmentDetails
+    if (generalDetails.treatProblemBefore === 'yes') {
+      return baseValidation && generalDetails.treatmentDetails.trim();
+    }
+    
+    return baseValidation;
   };
 
   const RadioGroup = ({ 
@@ -160,7 +168,7 @@ export function GeneralDetailsStep({
 
         {/* Treat problem before */}
         <Card className="p-4">
-          <CardContent className="p-0">
+          <CardContent className="p-0 space-y-4">
             <RadioGroup
               title="Behandlat problemet tidigare"
               field="treatProblemBefore"
@@ -169,6 +177,21 @@ export function GeneralDetailsStep({
                 { value: 'no', label: 'Nej' }
               ]}
             />
+            
+            {/* Conditional text input when "Ja" is selected */}
+            {generalDetails.treatProblemBefore === 'yes' && (
+              <div className="space-y-2 mt-4">
+                <Label className="text-sm font-medium text-gray-700">
+                  Beskriv hur problemet behandlats tidigare
+                </Label>
+                <Textarea
+                  placeholder="Beskriv vilka behandlingar, produkter eller metoder som använts tidigare..."
+                  value={generalDetails.treatmentDetails}
+                  onChange={(e) => onGeneralDetailsChange('treatmentDetails', e.target.value)}
+                  className="min-h-[100px]"
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
 

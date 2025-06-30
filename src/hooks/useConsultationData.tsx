@@ -41,6 +41,7 @@ export function useConsultationData(customerName: string, customerId?: string) {
       whenProblemStartsMonth: '',
       skinStatusAtMoment: '',
       treatProblemBefore: '',
+      treatmentDetails: '',
       skinTexture: '',
       skinSensitivity: '',
       birthControlPills: '',

@@ -1,3 +1,4 @@
+
 export interface CustomerFormData {
   personalNumber: string;
   firstName: string;
@@ -22,6 +23,7 @@ export interface GeneralDetailsData {
   whenProblemStartsMonth: string;
   skinStatusAtMoment: 'worse' | 'same' | 'better' | '';
   treatProblemBefore: 'yes' | 'no' | '';
+  treatmentDetails: string;
   skinTexture: 'dry' | 'oily' | 'combination' | '';
   skinSensitivity: 'low' | 'medium' | 'high' | '';
   birthControlPills: 'yes' | 'no' | '';
