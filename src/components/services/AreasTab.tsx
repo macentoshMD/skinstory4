@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { BODY_REGIONS, TREATMENT_AREAS, TREATMENT_ZONES } from "@/types/base-services";
+import { BODY_REGIONS, TREATMENT_AREAS, TREATMENT_ZONES } from "@/types/treatment-areas-data";
 import { Plus, Search, Filter, Edit, Trash2, ChevronDown, ChevronRight, MapPin, Star, Target } from "lucide-react";
 
 interface AreasTabProps {
