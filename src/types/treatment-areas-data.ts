@@ -37,12 +37,6 @@ export const TREATMENT_AREAS: TreatmentArea[] = [
     description: 'Hela ansiktsområdet'
   },
   {
-    id: 'whole-face',
-    name: 'Hela ansikte',
-    regionId: 'head',
-    description: 'Komplett ansiktsbehandling'
-  },
-  {
     id: 'neck',
     name: 'Hals',
     regionId: 'head',
@@ -79,24 +73,6 @@ export const TREATMENT_AREAS: TreatmentArea[] = [
     name: 'Rygg',
     regionId: 'upper-body',
     description: 'Ryggens olika områden'
-  },
-  {
-    id: 'whole-back',
-    name: 'Hela ryggen',
-    regionId: 'upper-body',
-    description: 'Komplett ryggbehandling'
-  },
-  {
-    id: 'lower-back',
-    name: 'Svank',
-    regionId: 'upper-body',
-    description: 'Nedre ryggen'
-  },
-  {
-    id: 'upper-back',
-    name: 'Övre rygg',
-    regionId: 'upper-body',
-    description: 'Övre delen av ryggen'
   },
   
   // Lower body region
@@ -167,6 +143,12 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
     name: 'Käklinje',
     areaId: 'face'
   },
+  {
+    id: 'whole-face',
+    name: 'Hela ansikte',
+    areaId: 'face',
+    description: 'Komplett ansiktsbehandling'
+  },
   
   // Neck zones
   {
@@ -209,6 +191,38 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
     areaId: 'arms'
   },
   
+  // Hands zones
+  {
+    id: 'hands-full',
+    name: 'Hela händer',
+    areaId: 'hands'
+  },
+  {
+    id: 'fingers',
+    name: 'Fingrar',
+    areaId: 'hands'
+  },
+  
+  // Back zones
+  {
+    id: 'whole-back',
+    name: 'Hela ryggen',
+    areaId: 'back',
+    description: 'Komplett ryggbehandling'
+  },
+  {
+    id: 'lower-back',
+    name: 'Svank/Ländrygg',
+    areaId: 'back',
+    description: 'Nedre ryggen'
+  },
+  {
+    id: 'upper-back',
+    name: 'Överdel rygg',
+    areaId: 'back',
+    description: 'Övre delen av ryggen'
+  },
+  
   // Legs zones
   {
     id: 'thighs',
@@ -224,6 +238,18 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
     id: 'knees',
     name: 'Knän',
     areaId: 'legs'
+  },
+  
+  // Feet zones
+  {
+    id: 'feet-full',
+    name: 'Hela fötter',
+    areaId: 'feet'
+  },
+  {
+    id: 'toes',
+    name: 'Tår',
+    areaId: 'feet'
   },
   
   // Bikini zones
