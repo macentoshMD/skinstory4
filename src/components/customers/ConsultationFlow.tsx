@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProblemSelection } from './ProblemSelection';
 import { PersonalNumberStep } from './PersonalNumberStep';
@@ -7,7 +6,7 @@ import { DiagnosisMethodStep } from './DiagnosisMethodStep';
 import { ProblemDetailsStep } from './ProblemDetailsStep';
 import { AreaSelectionStep } from './AreaSelectionStep';
 import { GeneralDetailsStep } from './GeneralDetailsStep';
-import { ContraIndicationsStep } from './ContraIndicationsStep';
+import { ModernContraIndicationsStep } from './ModernContraIndicationsStep';
 import { FinalConfirmationStep } from './FinalConfirmationStep';
 import { useConsultationData } from '@/hooks/useConsultationData';
 import { useConsultationStepManager } from './ConsultationStepManager';
@@ -143,7 +142,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
 
         {step === 8 && (
           <div className="p-0">
-            <ContraIndicationsStep
+            <ModernContraIndicationsStep
               selectedContraindications={contraindicationsData.selectedContraindications}
               selectedProblems={diagnosisData.selectedProblems}
               onContraindicationToggle={updateContraindicationToggle}
