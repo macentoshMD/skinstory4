@@ -11,6 +11,7 @@ import { EQUIPMENT } from "@/types/services";
 import { BASE_SERVICES, PROBLEM_AREAS, TREATMENT_AREAS } from "@/types/base-services";
 import { CONTRAINDICATIONS, CONTRAINDICATION_CATEGORIES } from "@/data/contraindications";
 import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag, AlertTriangle } from "lucide-react";
+import { AreasTab } from "@/components/services/AreasTab";
 
 export default function Services() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -426,80 +427,12 @@ export default function Services() {
           </Card>
         </TabsContent>
 
-        {/* Områden Tab */}
+        {/* Områden Tab - Updated */}
         <TabsContent value="areas" className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Sök områden..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
-              </div>
-              <Select value={selectedAreaRegion} onValueChange={setSelectedAreaRegion}>
-                <SelectTrigger className="w-[200px]">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {bodyRegions.map(region => <SelectItem key={region.id} value={region.id}>
-                      {region.name}
-                    </SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex gap-2">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Nytt område
-              </Button>
-            </div>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Behandlingsområden ({filteredAreas.length})</CardTitle>
-              <CardDescription>
-                Kroppsområden som kan behandlas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="relative w-full overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Namn</TableHead>
-                      <TableHead>Kroppsregion</TableHead>
-                      <TableHead>Åtgärder</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredAreas.map(area => <TableRow key={area.id} className="cursor-pointer hover:bg-muted/50">
-                        <TableCell className="font-medium">
-                          {area.name}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getBodyRegionColor(area.bodyRegion)}>
-                            {area.bodyRegion}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>)}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+          <AreasTab searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </TabsContent>
 
-        {/* Kontraindikationer Tab - Updated */}
+        {/* Kontraindikationer Tab */}
         <TabsContent value="contraindications" className="space-y-6">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
