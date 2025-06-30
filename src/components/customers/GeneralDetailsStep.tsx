@@ -35,10 +35,7 @@ export function GeneralDetailsStep({
            generalDetails.treatProblemBefore &&
            generalDetails.skinTexture &&
            generalDetails.skinSensitivity &&
-           generalDetails.birthControlPills &&
-           generalDetails.makeupRoutine &&
-           generalDetails.occupation.trim() &&
-           generalDetails.lifestyle;
+           generalDetails.occupation.trim();
     
     // If "Ja" is selected for treatProblemBefore, also require treatmentDetails
     if (generalDetails.treatProblemBefore === 'yes') {
@@ -225,35 +222,6 @@ export function GeneralDetailsStep({
           </CardContent>
         </Card>
 
-        {/* Birth control pills */}
-        <Card className="p-4">
-          <CardContent className="p-0">
-            <RadioGroup
-              title="P-piller"
-              field="birthControlPills"
-              options={[
-                { value: 'yes', label: 'Ja' },
-                { value: 'no', label: 'Nej' }
-              ]}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Makeup routine */}
-        <Card className="p-4">
-          <CardContent className="p-0">
-            <RadioGroup
-              title="Sminkrutin"
-              field="makeupRoutine"
-              options={[
-                { value: 'rarely', label: 'Sällan' },
-                { value: 'moderate', label: 'Måttligt' },
-                { value: 'often', label: 'Ofta' }
-              ]}
-            />
-          </CardContent>
-        </Card>
-
         {/* Occupation */}
         <Card className="p-4">
           <CardContent className="p-0 space-y-3">
@@ -262,21 +230,6 @@ export function GeneralDetailsStep({
               placeholder="Ange yrke"
               value={generalDetails.occupation}
               onChange={(e) => onGeneralDetailsChange('occupation', e.target.value)}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Lifestyle */}
-        <Card className="p-4">
-          <CardContent className="p-0">
-            <RadioGroup
-              title="Livsstil"
-              field="lifestyle"
-              options={[
-                { value: 'calm', label: 'Lugn' },
-                { value: 'balanced', label: 'Balanserad' },
-                { value: 'stressful', label: 'Stressig' }
-              ]}
             />
           </CardContent>
         </Card>

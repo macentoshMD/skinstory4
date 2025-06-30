@@ -1,4 +1,5 @@
 
+
 export interface CustomerFormData {
   personalNumber: string;
   firstName: string;
@@ -26,10 +27,7 @@ export interface GeneralDetailsData {
   treatmentDetails: string;
   skinTexture: 'dry' | 'oily' | 'combination' | '';
   skinSensitivity: 'low' | 'medium' | 'high' | '';
-  birthControlPills: 'yes' | 'no' | '';
-  makeupRoutine: 'rarely' | 'moderate' | 'often' | '';
   occupation: string;
-  lifestyle: 'calm' | 'balanced' | 'stressful' | '';
 }
 
 export interface DiagnosisData {
