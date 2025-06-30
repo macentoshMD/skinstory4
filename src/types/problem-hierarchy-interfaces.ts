@@ -10,7 +10,6 @@ export interface SubProblem {
   id: string;
   name: string;
   description: string;
-  symptoms: Symptom[];
 }
 
 export interface BaseProblem {
@@ -18,6 +17,7 @@ export interface BaseProblem {
   name: string;
   description: string;
   category: string;
+  symptoms: Symptom[];
   subProblems: SubProblem[];
 }
 

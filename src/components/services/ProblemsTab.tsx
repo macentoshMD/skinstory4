@@ -4,10 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PROBLEM_HIERARCHY } from "@/types/problem-hierarchy-data";
-import { Plus, Search, Edit, Trash2, ChevronDown, ChevronRight, Stethoscope, User } from "lucide-react";
+import { Plus, Search, Edit, Trash2, ChevronDown, ChevronRight, Stethoscope, User, Activity } from "lucide-react";
 
 interface ProblemsTabProps {
   searchTerm: string;
@@ -16,7 +15,7 @@ interface ProblemsTabProps {
 
 export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
   const [expandedProblems, setExpandedProblems] = useState<string[]>([]);
-  const [expandedSubProblems, setExpandedSubProblems] = useState<string[]>([]);
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: string[]}>({});
 
   const toggleProblem = (problemId: string) => {
     setExpandedProblems(prev => 
@@ -26,23 +25,24 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
     );
   };
 
-  const toggleSubProblem = (subProblemId: string) => {
-    setExpandedSubProblems(prev => 
-      prev.includes(subProblemId) 
-        ? prev.filter(id => id !== subProblemId)
-        : [...prev, subProblemId]
-    );
+  const toggleSection = (problemId: string, section: 'symptoms' | 'subproblems') => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [problemId]: prev[problemId]?.includes(section) 
+        ? prev[problemId].filter(s => s !== section)
+        : [...(prev[problemId] || []), section]
+    }));
   };
 
   const filteredProblems = PROBLEM_HIERARCHY.filter(problem => {
     const matchesSearch = problem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          problem.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          problem.subProblems.some(sub => 
-                           sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           sub.symptoms.some(symptom => 
-                             symptom.medicalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             (symptom.commonName && symptom.commonName.toLowerCase().includes(searchTerm.toLowerCase()))
-                           )
+                           sub.name.toLowerCase().includes(searchTerm.toLowerCase())
+                         ) ||
+                         problem.symptoms.some(symptom => 
+                           symptom.medicalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (symptom.commonName && symptom.commonName.toLowerCase().includes(searchTerm.toLowerCase()))
                          );
     return matchesSearch;
   });
@@ -61,8 +61,7 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
   };
 
   const totalSubProblems = PROBLEM_HIERARCHY.reduce((total, problem) => total + problem.subProblems.length, 0);
-  const totalSymptoms = PROBLEM_HIERARCHY.reduce((total, problem) => 
-    total + problem.subProblems.reduce((subTotal, sub) => subTotal + sub.symptoms.length, 0), 0);
+  const totalSymptoms = PROBLEM_HIERARCHY.reduce((total, problem) => total + problem.symptoms.length, 0);
 
   return (
     <div className="space-y-6">
@@ -118,7 +117,7 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-100 rounded-lg">
-                <Search className="h-4 w-4 text-purple-600" />
+                <Activity className="h-4 w-4 text-purple-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Symtom</p>
@@ -133,7 +132,7 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
         <CardHeader>
           <CardTitle>Problemhierarki ({filteredProblems.length} grundproblem)</CardTitle>
           <CardDescription>
-            Hierarkisk struktur med grundproblem, underproblem och symtom
+            Hierarkisk struktur med grundproblem, tillhörande symtom och underproblem
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -165,6 +164,9 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
                       {problem.category}
                     </Badge>
                     <Badge variant="outline">
+                      {problem.symptoms.length} symtom
+                    </Badge>
+                    <Badge variant="outline">
                       {problem.subProblems.length} underproblem
                     </Badge>
                     <div className="flex gap-1">
@@ -178,52 +180,88 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
                   </div>
                 </div>
 
-                {/* Underproblem Level */}
+                {/* Expanded Content */}
                 {expandedProblems.includes(problem.id) && (
-                  <div className="ml-6 space-y-3 border-l-2 border-muted pl-4">
-                    {problem.subProblems.map(subProblem => (
-                      <div key={subProblem.id} className="space-y-2">
-                        <Collapsible>
-                          <CollapsibleTrigger 
-                            className="flex items-center justify-between w-full hover:bg-muted/50 p-2 rounded-md transition-colors"
-                            onClick={() => toggleSubProblem(subProblem.id)}
-                          >
-                            <div className="flex items-center gap-2">
-                              {expandedSubProblems.includes(subProblem.id) ? 
-                                <ChevronDown className="h-3 w-3" /> : 
-                                <ChevronRight className="h-3 w-3" />
-                              }
-                              <div className="text-left">
-                                <h4 className="font-medium">{subProblem.name}</h4>
-                                <p className="text-xs text-muted-foreground">{subProblem.description}</p>
-                              </div>
-                            </div>
-                            <Badge variant="outline" className="text-xs">
-                              {subProblem.symptoms.length} symtom
-                            </Badge>
-                          </CollapsibleTrigger>
-                        </Collapsible>
+                  <div className="ml-6 space-y-4 border-l-2 border-muted pl-4">
+                    
+                    {/* Symtom Section */}
+                    <div className="space-y-2">
+                      <Collapsible>
+                        <CollapsibleTrigger 
+                          className="flex items-center justify-between w-full hover:bg-muted/50 p-2 rounded-md transition-colors"
+                          onClick={() => toggleSection(problem.id, 'symptoms')}
+                        >
+                          <div className="flex items-center gap-2">
+                            {expandedSections[problem.id]?.includes('symptoms') ? 
+                              <ChevronDown className="h-3 w-3" /> : 
+                              <ChevronRight className="h-3 w-3" />
+                            }
+                            <Activity className="h-4 w-4 text-purple-600" />
+                            <h4 className="font-medium">Symtom ({problem.symptoms.length})</h4>
+                          </div>
+                        </CollapsibleTrigger>
+                      </Collapsible>
 
-                        {/* Symtom Level */}
-                        {expandedSubProblems.includes(subProblem.id) && (
-                          <div className="ml-6 space-y-2 border-l border-muted pl-3">
-                            {subProblem.symptoms.map(symptom => (
-                              <div key={symptom.id} className="flex items-center justify-between p-2 bg-muted/30 rounded-md">
-                                <div className="flex items-center gap-3">
-                                  <Stethoscope className="h-3 w-3 text-muted-foreground" />
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-medium text-sm">{symptom.medicalName}</span>
-                                      {symptom.commonName && (
-                                        <Badge variant="secondary" className="text-xs">
-                                          {symptom.commonName}
-                                        </Badge>
-                                      )}
-                                    </div>
-                                    {symptom.description && (
-                                      <p className="text-xs text-muted-foreground">{symptom.description}</p>
+                      {expandedSections[problem.id]?.includes('symptoms') && (
+                        <div className="ml-6 space-y-2 border-l border-muted pl-3">
+                          {problem.symptoms.map(symptom => (
+                            <div key={symptom.id} className="flex items-center justify-between p-2 bg-purple-50/50 rounded-md">
+                              <div className="flex items-center gap-3">
+                                <Stethoscope className="h-3 w-3 text-muted-foreground" />
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-sm">{symptom.medicalName}</span>
+                                    {symptom.commonName && (
+                                      <Badge variant="secondary" className="text-xs">
+                                        {symptom.commonName}
+                                      </Badge>
                                     )}
                                   </div>
+                                  {symptom.description && (
+                                    <p className="text-xs text-muted-foreground">{symptom.description}</p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex gap-1">
+                                <Button variant="ghost" size="sm">
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                                <Button variant="ghost" size="sm">
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Underproblem Section */}
+                    <div className="space-y-2">
+                      <Collapsible>
+                        <CollapsibleTrigger 
+                          className="flex items-center justify-between w-full hover:bg-muted/50 p-2 rounded-md transition-colors"
+                          onClick={() => toggleSection(problem.id, 'subproblems')}
+                        >
+                          <div className="flex items-center gap-2">
+                            {expandedSections[problem.id]?.includes('subproblems') ? 
+                              <ChevronDown className="h-3 w-3" /> : 
+                              <ChevronRight className="h-3 w-3" />
+                            }
+                            <User className="h-4 w-4 text-green-600" />
+                            <h4 className="font-medium">Underproblem ({problem.subProblems.length})</h4>
+                          </div>
+                        </CollapsibleTrigger>
+                      </Collapsible>
+
+                      {expandedSections[problem.id]?.includes('subproblems') && (
+                        <div className="ml-6 space-y-2 border-l border-muted pl-3">
+                          {problem.subProblems.map(subProblem => (
+                            <div key={subProblem.id} className="p-2 bg-green-50/50 rounded-md">
+                              <div className="flex items-center justify-between">
+                                <div className="text-left">
+                                  <h5 className="font-medium text-sm">{subProblem.name}</h5>
+                                  <p className="text-xs text-muted-foreground">{subProblem.description}</p>
                                 </div>
                                 <div className="flex gap-1">
                                   <Button variant="ghost" size="sm">
@@ -234,11 +272,11 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
                                   </Button>
                                 </div>
                               </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

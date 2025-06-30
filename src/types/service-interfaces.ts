@@ -1,3 +1,4 @@
+
 export interface BaseService {
   id: string;
   name: string;
@@ -46,33 +47,4 @@ export interface CompositeService {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface ProblemArea {
-  id: string;
-  name: string;
-  description: string;
-}
-
-// New hierarchy interfaces
-export interface Symptom {
-  id: string;
-  medicalName: string;
-  commonName?: string;
-  description?: string;
-}
-
-export interface SubProblem {
-  id: string;
-  name: string;
-  description: string;
-  symptoms: Symptom[];
-}
-
-export interface BaseProblem {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  subProblems: SubProblem[];
 }
