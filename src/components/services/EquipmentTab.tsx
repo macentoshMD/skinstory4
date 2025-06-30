@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -113,9 +114,9 @@ export function EquipmentTab({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Märke & Modell</TableHead>
+                  <TableHead>Märke och modell</TableHead>
                   <TableHead>Kategori</TableHead>
-                  <TableHead>Tekniker</TableHead>
+                  <TableHead>Teknik</TableHead>
                   <TableHead>Tekniska specifikationer</TableHead>
                   <TableHead>Åtgärder</TableHead>
                 </TableRow>
@@ -125,9 +126,6 @@ export function EquipmentTab({
                     <TableCell>
                       <div>
                         <div className="font-medium">{equipment.brand} - {equipment.model}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {equipment.name}
-                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
