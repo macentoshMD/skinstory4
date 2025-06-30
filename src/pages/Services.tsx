@@ -37,7 +37,7 @@ export default function Services() {
   });
   const filteredAreas = TREATMENT_AREAS.filter(area => {
     const matchesSearch = area.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRegion = selectedAreaRegion === "all" || area.bodyRegion === selectedAreaRegion;
+    const matchesRegion = selectedAreaRegion === "all" || area.regionId === selectedAreaRegion;
     return matchesSearch && matchesRegion;
   });
 
