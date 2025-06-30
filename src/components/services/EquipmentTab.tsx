@@ -109,10 +109,10 @@ export function EquipmentTab({
                   <TableHead>Märke & Modell</TableHead>
                   <TableHead>Kategori</TableHead>
                   <TableHead>Tekniker</TableHead>
-                  <TableHead>Tekniska specifikationer</TableHead>
-                  <TableHead>Kylsystem</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Åtgärder</TableHead>
+                  
+                  
+                  
+                  
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -141,18 +141,10 @@ export function EquipmentTab({
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="max-w-xs">
-                        {formatTechnicalSpecs(equipment) || 'Ej specificerat'}
-                      </div>
+                      
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {equipment.coolingSystem || 'Ej specificerat'}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={equipment.maintenanceRequired ? "destructive" : "default"}>
-                        {equipment.maintenanceRequired ? "Underhåll krävs" : "Funktionsduglig"}
-                      </Badge>
-                    </TableCell>
+                    
+                    
                     <TableCell>
                       <div className="flex gap-1">
                         <Dialog>
