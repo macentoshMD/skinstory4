@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +14,7 @@ import { TREATMENT_AREAS } from "@/types/treatment-areas-index";
 import { CONTRAINDICATIONS, CONTRAINDICATION_CATEGORIES } from "@/data/contraindications";
 import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag, AlertTriangle } from "lucide-react";
 import { AreasTab } from "@/components/services/AreasTab";
+import { ProblemsTab } from "@/components/services/ProblemsTab";
 
 export default function Services() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -370,64 +370,9 @@ export default function Services() {
           </Card>
         </TabsContent>
 
-        {/* Problem Tab */}
+        {/* Problem Tab - Updated */}
         <TabsContent value="problems" className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Sök problem..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Nytt problem
-              </Button>
-            </div>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Hudproblem ({filteredProblems.length})</CardTitle>
-              <CardDescription>
-                Problem som kan behandlas med olika tjänster
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="relative w-full overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Namn</TableHead>
-                      <TableHead>Beskrivning</TableHead>
-                      <TableHead>Åtgärder</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredProblems.map(problem => <TableRow key={problem.id} className="cursor-pointer hover:bg-muted/50">
-                        <TableCell className="font-medium">
-                          {problem.name}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {problem.description}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>)}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+          <ProblemsTab searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </TabsContent>
 
         {/* Områden Tab - Updated */}

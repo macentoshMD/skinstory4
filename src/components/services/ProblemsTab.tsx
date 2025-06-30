@@ -1,10 +1,13 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PROBLEM_AREAS } from "@/types/problem-areas-data";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { PROBLEM_HIERARCHY } from "@/types/problem-hierarchy-data";
+import { Plus, Search, Edit, Trash2, ChevronDown, ChevronRight, Stethoscope, User } from "lucide-react";
 
 interface ProblemsTabProps {
   searchTerm: string;
@@ -12,10 +15,54 @@ interface ProblemsTabProps {
 }
 
 export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
-  const filteredProblems = PROBLEM_AREAS.filter(problem => {
-    const matchesSearch = problem.name.toLowerCase().includes(searchTerm.toLowerCase());
+  const [expandedProblems, setExpandedProblems] = useState<string[]>([]);
+  const [expandedSubProblems, setExpandedSubProblems] = useState<string[]>([]);
+
+  const toggleProblem = (problemId: string) => {
+    setExpandedProblems(prev => 
+      prev.includes(problemId) 
+        ? prev.filter(id => id !== problemId)
+        : [...prev, problemId]
+    );
+  };
+
+  const toggleSubProblem = (subProblemId: string) => {
+    setExpandedSubProblems(prev => 
+      prev.includes(subProblemId) 
+        ? prev.filter(id => id !== subProblemId)
+        : [...prev, subProblemId]
+    );
+  };
+
+  const filteredProblems = PROBLEM_HIERARCHY.filter(problem => {
+    const matchesSearch = problem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         problem.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         problem.subProblems.some(sub => 
+                           sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           sub.symptoms.some(symptom => 
+                             symptom.medicalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             (symptom.commonName && symptom.commonName.toLowerCase().includes(searchTerm.toLowerCase()))
+                           )
+                         );
     return matchesSearch;
   });
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'inflammatory':
+        return 'bg-red-100 text-red-800';
+      case 'pigmentary':
+        return 'bg-orange-100 text-orange-800';
+      case 'aging':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const totalSubProblems = PROBLEM_HIERARCHY.reduce((total, problem) => total + problem.subProblems.length, 0);
+  const totalSymptoms = PROBLEM_HIERARCHY.reduce((total, problem) => 
+    total + problem.subProblems.reduce((subTotal, sub) => subTotal + sub.symptoms.length, 0), 0);
 
   return (
     <div className="space-y-6">
@@ -24,7 +71,7 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Sök problem..." 
+              placeholder="Sök problem, symtom..." 
               value={searchTerm} 
               onChange={e => setSearchTerm(e.target.value)} 
               className="pl-10" 
@@ -34,51 +81,168 @@ export function ProblemsTab({ searchTerm, setSearchTerm }: ProblemsTabProps) {
         <div className="flex gap-2">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Nytt problem
+            Nytt grundproblem
           </Button>
         </div>
       </div>
 
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Stethoscope className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Grundproblem</p>
+                <p className="text-2xl font-bold">{PROBLEM_HIERARCHY.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <User className="h-4 w-4 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Underproblem</p>
+                <p className="text-2xl font-bold">{totalSubProblems}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Search className="h-4 w-4 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Symtom</p>
+                <p className="text-2xl font-bold">{totalSymptoms}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Hudproblem ({filteredProblems.length})</CardTitle>
+          <CardTitle>Problemhierarki ({filteredProblems.length} grundproblem)</CardTitle>
           <CardDescription>
-            Problem som kan behandlas med olika tjänster
+            Hierarkisk struktur med grundproblem, underproblem och symtom
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative w-full overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Namn</TableHead>
-                  <TableHead>Beskrivning</TableHead>
-                  <TableHead>Åtgärder</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProblems.map(problem => (
-                  <TableRow key={problem.id} className="cursor-pointer hover:bg-muted/50">
-                    <TableCell className="font-medium">
-                      {problem.name}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {problem.description}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+          <div className="space-y-4">
+            {filteredProblems.map(problem => (
+              <div key={problem.id} className="border rounded-lg p-4 space-y-3">
+                {/* Grundproblem Level */}
+                <div className="flex items-center justify-between">
+                  <Collapsible>
+                    <CollapsibleTrigger 
+                      className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md transition-colors w-full justify-start"
+                      onClick={() => toggleProblem(problem.id)}
+                    >
+                      {expandedProblems.includes(problem.id) ? 
+                        <ChevronDown className="h-4 w-4" /> : 
+                        <ChevronRight className="h-4 w-4" />
+                      }
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <h3 className="font-semibold text-lg">{problem.name}</h3>
+                          <p className="text-sm text-muted-foreground">{problem.description}</p>
+                        </div>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </CollapsibleTrigger>
+                  </Collapsible>
+                  
+                  <div className="flex items-center gap-2">
+                    <Badge className={getCategoryColor(problem.category)}>
+                      {problem.category}
+                    </Badge>
+                    <Badge variant="outline">
+                      {problem.subProblems.length} underproblem
+                    </Badge>
+                    <div className="flex gap-1">
+                      <Button variant="outline" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Underproblem Level */}
+                {expandedProblems.includes(problem.id) && (
+                  <div className="ml-6 space-y-3 border-l-2 border-muted pl-4">
+                    {problem.subProblems.map(subProblem => (
+                      <div key={subProblem.id} className="space-y-2">
+                        <Collapsible>
+                          <CollapsibleTrigger 
+                            className="flex items-center justify-between w-full hover:bg-muted/50 p-2 rounded-md transition-colors"
+                            onClick={() => toggleSubProblem(subProblem.id)}
+                          >
+                            <div className="flex items-center gap-2">
+                              {expandedSubProblems.includes(subProblem.id) ? 
+                                <ChevronDown className="h-3 w-3" /> : 
+                                <ChevronRight className="h-3 w-3" />
+                              }
+                              <div className="text-left">
+                                <h4 className="font-medium">{subProblem.name}</h4>
+                                <p className="text-xs text-muted-foreground">{subProblem.description}</p>
+                              </div>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {subProblem.symptoms.length} symtom
+                            </Badge>
+                          </CollapsibleTrigger>
+                        </Collapsible>
+
+                        {/* Symtom Level */}
+                        {expandedSubProblems.includes(subProblem.id) && (
+                          <div className="ml-6 space-y-2 border-l border-muted pl-3">
+                            {subProblem.symptoms.map(symptom => (
+                              <div key={symptom.id} className="flex items-center justify-between p-2 bg-muted/30 rounded-md">
+                                <div className="flex items-center gap-3">
+                                  <Stethoscope className="h-3 w-3 text-muted-foreground" />
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-sm">{symptom.medicalName}</span>
+                                      {symptom.commonName && (
+                                        <Badge variant="secondary" className="text-xs">
+                                          {symptom.commonName}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    {symptom.description && (
+                                      <p className="text-xs text-muted-foreground">{symptom.description}</p>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex gap-1">
+                                  <Button variant="ghost" size="sm">
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                  <Button variant="ghost" size="sm">
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
