@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProblemSelection } from './ProblemSelection';
 import { PersonalNumberStep } from './PersonalNumberStep';
@@ -8,8 +7,8 @@ import { DiagnosisMethodStep } from './DiagnosisMethodStep';
 import { ProblemDetailsStep } from './ProblemDetailsStep';
 import { AreaSelectionStep } from './AreaSelectionStep';
 import { GeneralDetailsStep } from './GeneralDetailsStep';
-import { CustomerFormData, DiagnosisData } from '@/types/consultation';
-import { useToast } from '@/hooks/use-toast';
+import { useConsultationData } from '@/hooks/useConsultationData';
+import { useConsultationStepManager } from './ConsultationStepManager';
 
 interface ConsultationFlowProps {
   isOpen: boolean;
@@ -18,181 +17,40 @@ interface ConsultationFlowProps {
   customerId?: string;
 }
 
-interface ConsultationData {
-  customer: CustomerFormData;
-  diagnosis: DiagnosisData;
-  selectedAreas: string[];
-  selectedZones: string[];
-  completedAt: Date;
-}
-
 export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: ConsultationFlowProps) {
-  const [step, setStep] = useState(1);
-  const { toast } = useToast();
-  
-  const [formData, setFormData] = useState<CustomerFormData>({
-    personalNumber: '',
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
-    birthDay: '',
-    birthMonth: '',
-    birthYear: '',
-    gender: '',
-    language: '',
-    howFoundUs: ''
-  });
+  const consultationData = useConsultationData(customerName, customerId);
+  const stepManager = useConsultationStepManager();
 
-  const [diagnosisData, setDiagnosisData] = useState<DiagnosisData>({
-    method: '',
-    selectedProblems: [],
-    aiPhoto: undefined,
-    problemSeverity: '',
-    problemSubcategory: '',
-    symptoms: [],
-    skinScore: 0,
-    generalDetails: {
-      whenProblemStartsYear: '',
-      whenProblemStartsMonth: '',
-      skinStatusAtMoment: '',
-      treatProblemBefore: '',
-      skinTexture: '',
-      skinSensitivity: '',
-      birthControlPills: '',
-      makeupRoutine: '',
-      occupation: '',
-      lifestyle: ''
-    }
-  });
+  const {
+    formData,
+    diagnosisData,
+    selectedAreas,
+    selectedZones,
+    setSelectedAreas,
+    setSelectedZones,
+    updateFormData,
+    updateDiagnosisMethod,
+    updateProblemSubcategory,
+    updateSymptomSeverity,
+    updateSkinScore,
+    updateGeneralDetails,
+    handleProblemToggle,
+    initializeCustomerData,
+    saveConsultation
+  } = consultationData;
 
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-  const [selectedZones, setSelectedZones] = useState<string[]>([]);
-
-  const handlePersonalNumberSubmit = () => {
-    const [firstName, lastName] = customerName.split(' ');
-    setFormData(prev => ({
-      ...prev,
-      firstName: firstName || '',
-      lastName: lastName || '',
-      email: `${firstName?.toLowerCase()}.${lastName?.toLowerCase()}@email.se`,
-      phone: '+46 70 123 45 67'
-    }));
-    setStep(2);
-  };
-
-  const handleCustomerFormSubmit = () => {
-    console.log('Customer form submitted:', formData);
-    setStep(3);
-  };
-
-  const handleDiagnosisMethodSelect = () => {
-    if (diagnosisData.method === 'manual') {
-      setStep(4);
-    } else if (diagnosisData.method === 'ai') {
-      toast({
-        title: "AI-diagnos",
-        description: "AI-diagnostik kommer snart. Använd manuell metod för tillfället.",
-        variant: "default"
-      });
-    }
-  };
-
-  const handleProblemToggle = (problemId: string) => {
-    setDiagnosisData(prev => ({
-      ...prev,
-      selectedProblems: prev.selectedProblems.includes(problemId)
-        ? prev.selectedProblems.filter(id => id !== problemId)
-        : [...prev.selectedProblems, problemId]
-    }));
-  };
-
-  const handleProblemSelectionSubmit = () => {
-    console.log('Problems selected:', diagnosisData.selectedProblems);
-    setStep(5);
-  };
-
-  const handleProblemDetailsSubmit = () => {
-    console.log('Problem details submitted:', diagnosisData);
-    setStep(6); // Go to area selection
-  };
-
-  const handleAreaSelectionSubmit = () => {
-    console.log('Areas selected:', { selectedAreas, selectedZones });
-    setStep(7); // Go to general details
-  };
-
-  const handleGeneralDetailsSubmit = () => {
-    const consultationData: ConsultationData = {
-      customer: formData,
-      diagnosis: diagnosisData,
-      selectedAreas,
-      selectedZones,
-      completedAt: new Date()
-    };
-    
-    console.log('Complete consultation data:', consultationData);
-    
-    // Simulate saving consultation data
-    if (customerId) {
-      const savedConsultations = JSON.parse(localStorage.getItem('customer-consultations') || '{}');
-      if (!savedConsultations[customerId]) {
-        savedConsultations[customerId] = [];
-      }
-      savedConsultations[customerId].push(consultationData);
-      localStorage.setItem('customer-consultations', JSON.stringify(savedConsultations));
-      
-      toast({
-        title: "Konsultation sparad",
-        description: `Konsultation för ${customerName} har sparats framgångsrikt.`,
-        variant: "default"
-      });
-    }
-    
-    onClose();
-  };
-
-  const updateFormData = (field: keyof CustomerFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const updateDiagnosisMethod = (method: 'ai' | 'manual') => {
-    setDiagnosisData(prev => ({ ...prev, method }));
-  };
-
-  const updateProblemSubcategory = (subcategory: string) => {
-    setDiagnosisData(prev => ({ ...prev, problemSubcategory: subcategory }));
-  };
-
-  const updateSymptomSeverity = (symptomId: string, severity: number) => {
-    setDiagnosisData(prev => ({
-      ...prev,
-      symptoms: prev.symptoms.some(s => s.symptomId === symptomId)
-        ? prev.symptoms.map(s => s.symptomId === symptomId ? { ...s, severity } : s)
-        : [...prev.symptoms, { symptomId, severity }]
-    }));
-  };
-
-  const updateSkinScore = (score: number) => {
-    setDiagnosisData(prev => ({ ...prev, skinScore: score }));
-  };
-
-  const updateGeneralDetails = (field: keyof typeof diagnosisData.generalDetails, value: string) => {
-    setDiagnosisData(prev => ({
-      ...prev,
-      generalDetails: { ...prev.generalDetails, [field]: value }
-    }));
-  };
-
-  const getDialogTitle = () => {
-    switch (step) {
-      case 4: return 'Välj Hudproblem';
-      case 5: return 'Problem Detaljer';
-      case 6: return 'Välj Behandlingsområden';
-      case 7: return 'Generell Information';
-      default: return `Starta Konsultation - Steg ${step} av ${step <= 3 ? 3 : 7}`;
-    }
-  };
+  const {
+    step,
+    setStep,
+    handlePersonalNumberSubmit,
+    handleCustomerFormSubmit,
+    handleDiagnosisMethodSelect,
+    handleProblemSelectionSubmit,
+    handleProblemDetailsSubmit,
+    handleAreaSelectionSubmit,
+    handleGeneralDetailsSubmit,
+    getDialogTitle
+  } = stepManager;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -205,7 +63,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
           <PersonalNumberStep
             personalNumber={formData.personalNumber}
             onPersonalNumberChange={(value) => updateFormData('personalNumber', value)}
-            onSubmit={handlePersonalNumberSubmit}
+            onSubmit={() => handlePersonalNumberSubmit(initializeCustomerData)}
           />
         )}
 
@@ -214,7 +72,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
             formData={formData}
             onFormDataChange={updateFormData}
             onBack={() => setStep(1)}
-            onSubmit={handleCustomerFormSubmit}
+            onSubmit={() => handleCustomerFormSubmit(formData)}
           />
         )}
 
@@ -223,7 +81,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
             selectedMethod={diagnosisData.method}
             onMethodChange={updateDiagnosisMethod}
             onBack={() => setStep(2)}
-            onContinue={handleDiagnosisMethodSelect}
+            onContinue={() => handleDiagnosisMethodSelect(diagnosisData.method)}
           />
         )}
 
@@ -233,7 +91,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
               selectedProblems={diagnosisData.selectedProblems}
               onProblemToggle={handleProblemToggle}
               onBack={() => setStep(3)}
-              onContinue={handleProblemSelectionSubmit}
+              onContinue={() => handleProblemSelectionSubmit(diagnosisData.selectedProblems)}
             />
           </div>
         )}
@@ -243,7 +101,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
             <ProblemDetailsStep
               diagnosisData={diagnosisData}
               onBack={() => setStep(4)}
-              onContinue={handleProblemDetailsSubmit}
+              onContinue={() => handleProblemDetailsSubmit(diagnosisData)}
               onSubcategoryChange={updateProblemSubcategory}
               onSymptomSeverityChange={updateSymptomSeverity}
               onSkinScoreChange={updateSkinScore}
@@ -259,7 +117,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
               onAreasChange={setSelectedAreas}
               onZonesChange={setSelectedZones}
               onBack={() => setStep(5)}
-              onContinue={handleAreaSelectionSubmit}
+              onContinue={() => handleAreaSelectionSubmit(selectedAreas, selectedZones)}
             />
           </div>
         )}
@@ -269,7 +127,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
             <GeneralDetailsStep
               generalDetails={diagnosisData.generalDetails}
               onBack={() => setStep(6)}
-              onContinue={handleGeneralDetailsSubmit}
+              onContinue={() => handleGeneralDetailsSubmit(saveConsultation, onClose)}
               onGeneralDetailsChange={updateGeneralDetails}
             />
           </div>
