@@ -8,22 +8,26 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_BRANDS } from "@/types/services";
 import { Plus, Search, Filter, Settings, Edit, Wrench, Trash2, Eye } from "lucide-react";
+
 interface EquipmentTabProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
+
 export function EquipmentTab({
   searchTerm,
   setSearchTerm
 }: EquipmentTabProps) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedBrand, setSelectedBrand] = useState("all");
+
   const filteredEquipment = EQUIPMENT.filter(equipment => {
     const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) || equipment.model.toLowerCase().includes(searchTerm.toLowerCase()) || equipment.brand.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || equipment.mainCategory === selectedCategory;
     const matchesBrand = selectedBrand === "all" || equipment.brand === selectedBrand;
     return matchesSearch && matchesCategory && matchesBrand;
   });
+
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'laser':
@@ -42,6 +46,7 @@ export function EquipmentTab({
         return 'bg-gray-100 text-gray-800';
     }
   };
+
   const formatTechnicalSpecs = (equipment: any) => {
     const specs = [];
     if (equipment.wavelength) specs.push(`λ: ${equipment.wavelength}`);
@@ -51,7 +56,9 @@ export function EquipmentTab({
     }
     return specs.join(' | ');
   };
-  return <div className="space-y-6">
+
+  return (
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
           <div className="relative flex-1 max-w-sm">
@@ -109,7 +116,7 @@ export function EquipmentTab({
                   <TableHead>Märke & Modell</TableHead>
                   <TableHead>Kategori</TableHead>
                   <TableHead>Tekniker</TableHead>
-                  
+                  <TableHead>Tekniska specifikationer</TableHead>
                   <TableHead>Åtgärder</TableHead>
                 </TableRow>
               </TableHeader>
@@ -138,7 +145,9 @@ export function EquipmentTab({
                           </Badge>}
                       </div>
                     </TableCell>
-                    
+                    <TableCell className="text-sm">
+                      {formatTechnicalSpecs(equipment)}
+                    </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
                         <Dialog>
@@ -201,5 +210,6 @@ export function EquipmentTab({
           </div>
         </CardContent>
       </Card>
-    </div>;
+    </div>
+  );
 }
