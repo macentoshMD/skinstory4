@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PROBLEM_AREAS } from "@/types/base-services";
+import { PROBLEM_AREAS } from "@/types/problem-areas-data";
 import { Plus, Search, Edit, Trash2 } from "lucide-react";
 
 interface ProblemsTabProps {

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { BASE_SERVICES } from "@/types/base-services";
+import { BASE_SERVICES } from "@/types/base-services-data";
 import { SERVICES } from "@/data/services";
 import { Plus, Search, Edit, Trash2 } from "lucide-react";
 
