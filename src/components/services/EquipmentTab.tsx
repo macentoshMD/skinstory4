@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,25 +8,22 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_BRANDS } from "@/types/services";
 import { Plus, Search, Filter, Settings, Edit, Wrench, Trash2, Eye } from "lucide-react";
-
 interface EquipmentTabProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
-
-export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
+export function EquipmentTab({
+  searchTerm,
+  setSearchTerm
+}: EquipmentTabProps) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedBrand, setSelectedBrand] = useState("all");
-
   const filteredEquipment = EQUIPMENT.filter(equipment => {
-    const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         equipment.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         equipment.brand.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) || equipment.model.toLowerCase().includes(searchTerm.toLowerCase()) || equipment.brand.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || equipment.mainCategory === selectedCategory;
     const matchesBrand = selectedBrand === "all" || equipment.brand === selectedBrand;
     return matchesSearch && matchesCategory && matchesBrand;
   });
-
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'laser':
@@ -46,7 +42,6 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
         return 'bg-gray-100 text-gray-800';
     }
   };
-
   const formatTechnicalSpecs = (equipment: any) => {
     const specs = [];
     if (equipment.wavelength) specs.push(`λ: ${equipment.wavelength}`);
@@ -56,19 +51,12 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
     }
     return specs.join(' | ');
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Sök utrustning..." 
-              value={searchTerm} 
-              onChange={e => setSearchTerm(e.target.value)} 
-              className="pl-10" 
-            />
+            <Input placeholder="Sök utrustning..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
           </div>
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-[180px]">
@@ -77,11 +65,9 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Alla kategorier</SelectItem>
-              {EQUIPMENT_CATEGORIES.map(category => (
-                <SelectItem key={category.id} value={category.id}>
+              {EQUIPMENT_CATEGORIES.map(category => <SelectItem key={category.id} value={category.id}>
                   {category.name}
-                </SelectItem>
-              ))}
+                </SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={selectedBrand} onValueChange={setSelectedBrand}>
@@ -90,11 +76,9 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Alla märken</SelectItem>
-              {EQUIPMENT_BRANDS.map(brand => (
-                <SelectItem key={brand} value={brand}>
+              {EQUIPMENT_BRANDS.map(brand => <SelectItem key={brand} value={brand}>
                   {brand}
-                </SelectItem>
-              ))}
+                </SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -122,7 +106,7 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Utrustning</TableHead>
+                  <TableHead>Märke & Modell</TableHead>
                   <TableHead>Kategori</TableHead>
                   <TableHead>Tekniker</TableHead>
                   <TableHead>Tekniska specifikationer</TableHead>
@@ -132,8 +116,7 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredEquipment.map(equipment => (
-                  <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
+                {filteredEquipment.map(equipment => <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
                     <TableCell>
                       <div>
                         <div className="font-medium">{equipment.name}</div>
@@ -149,16 +132,12 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {equipment.subCategories.slice(0, 2).map((tech, idx) => (
-                          <Badge key={idx} variant="outline" className="text-xs">
+                        {equipment.subCategories.slice(0, 2).map((tech, idx) => <Badge key={idx} variant="outline" className="text-xs">
                             {tech}
-                          </Badge>
-                        ))}
-                        {equipment.subCategories.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
+                          </Badge>)}
+                        {equipment.subCategories.length > 2 && <Badge variant="outline" className="text-xs">
                             +{equipment.subCategories.length - 2}
-                          </Badge>
-                        )}
+                          </Badge>}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">
@@ -204,18 +183,14 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
                                 <div className="space-y-1 text-sm">
                                   {equipment.wavelength && <div><strong>Våglängd:</strong> {equipment.wavelength}</div>}
                                   {equipment.maxPower && <div><strong>Max effekt:</strong> {equipment.maxPower}</div>}
-                                  {equipment.spotSizeMin && equipment.spotSizeMax && (
-                                    <div><strong>Spot-storlek:</strong> {equipment.spotSizeMin}-{equipment.spotSizeMax}mm</div>
-                                  )}
+                                  {equipment.spotSizeMin && equipment.spotSizeMax && <div><strong>Spot-storlek:</strong> {equipment.spotSizeMin}-{equipment.spotSizeMax}mm</div>}
                                   {equipment.coolingSystem && <div><strong>Kylsystem:</strong> {equipment.coolingSystem}</div>}
                                 </div>
                               </div>
-                              {equipment.otherSpecs && (
-                                <div className="col-span-2">
+                              {equipment.otherSpecs && <div className="col-span-2">
                                   <h4 className="font-medium mb-2">Övriga specifikationer</h4>
                                   <p className="text-sm text-muted-foreground">{equipment.otherSpecs}</p>
-                                </div>
-                              )}
+                                </div>}
                               <div className="col-span-2">
                                 <h4 className="font-medium mb-2">Beskrivning</h4>
                                 <p className="text-sm text-muted-foreground">{equipment.description}</p>
@@ -234,13 +209,11 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
                         </Button>
                       </div>
                     </TableCell>
-                  </TableRow>
-                ))}
+                  </TableRow>)}
               </TableBody>
             </Table>
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 }
