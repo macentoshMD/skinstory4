@@ -9,7 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { SERVICES } from "@/data/services";
 import { EQUIPMENT } from "@/types/services";
 import { BASE_SERVICES, PROBLEM_AREAS, TREATMENT_AREAS } from "@/types/base-services";
-import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag } from "lucide-react";
+import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag, AlertTriangle } from "lucide-react";
+
 export default function Services() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -36,6 +37,58 @@ export default function Services() {
     const matchesRegion = selectedAreaRegion === "all" || area.bodyRegion === selectedAreaRegion;
     return matchesSearch && matchesRegion;
   });
+
+  // Hårdkodade kontraindikationer för nu
+  const contraindications = [
+    {
+      id: 'pregnancy',
+      name: 'Graviditet',
+      description: 'Behandling under graviditet',
+      severity: 'high',
+      category: 'medical'
+    },
+    {
+      id: 'active_acne',
+      name: 'Aktiv akne',
+      description: 'Inflammatorisk akne med aktiva utbrott',
+      severity: 'medium',
+      category: 'skin'
+    },
+    {
+      id: 'blood_thinners',
+      name: 'Antikoagulantia',
+      description: 'Medicinering med blodförtunnande medel',
+      severity: 'high',
+      category: 'medication'
+    },
+    {
+      id: 'active_infection',
+      name: 'Aktiv infektion',
+      description: 'Pågående hudinfektioner i behandlingsområdet',
+      severity: 'high',
+      category: 'medical'
+    },
+    {
+      id: 'sunburn',
+      name: 'Solbränna',
+      description: 'Akut solbränna eller inflammation',
+      severity: 'medium',
+      category: 'skin'
+    },
+    {
+      id: 'recent_laser',
+      name: 'Nyligen genomförd laserbehandling',
+      description: 'Laser- eller IPL-behandling inom 2 veckor',
+      severity: 'medium',
+      category: 'treatment'
+    }
+  ];
+
+  const filteredContraindications = contraindications.filter(contra => {
+    const matchesSearch = contra.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
   const equipmentTypes = [{
     id: "all",
     name: "All utrustning"
@@ -83,6 +136,7 @@ export default function Services() {
     id: "back",
     name: "Rygg"
   }];
+
   const getEquipmentTypeColor = (type: string) => {
     switch (type) {
       case 'laser':
@@ -121,6 +175,35 @@ export default function Services() {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'medical':
+        return 'bg-purple-100 text-purple-800';
+      case 'medication':
+        return 'bg-blue-100 text-blue-800';
+      case 'skin':
+        return 'bg-orange-100 text-orange-800';
+      case 'treatment':
+        return 'bg-cyan-100 text-cyan-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Tjänsteadministration</h1>
@@ -130,11 +213,12 @@ export default function Services() {
       </div>
 
       <Tabs defaultValue="base-services" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="base-services">Grundtjänster</TabsTrigger>
           <TabsTrigger value="equipment">Utrustning</TabsTrigger>
           <TabsTrigger value="problems">Problem</TabsTrigger>
           <TabsTrigger value="areas">Områden</TabsTrigger>
+          <TabsTrigger value="contraindications">Kontraindikationer</TabsTrigger>
           <TabsTrigger value="examples">Exempel</TabsTrigger>
         </TabsList>
 
@@ -429,6 +513,84 @@ export default function Services() {
                         <TableCell>
                           <Badge className={getBodyRegionColor(area.bodyRegion)}>
                             {area.bodyRegion}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>)}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Ny Kontraindikationer Tab */}
+        <TabsContent value="contraindications" className="space-y-6">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Sök kontraindikationer..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Ny kontraindikation
+              </Button>
+            </div>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Kontraindikationer ({filteredContraindications.length})</CardTitle>
+              <CardDescription>
+                Medicinska och andra förhållanden som kan påverka behandlingar
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative w-full overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Namn</TableHead>
+                      <TableHead>Beskrivning</TableHead>
+                      <TableHead>Allvarlighetsgrad</TableHead>
+                      <TableHead>Kategori</TableHead>
+                      <TableHead>Åtgärder</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredContraindications.map(contra => <TableRow key={contra.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-orange-500" />
+                            {contra.name}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {contra.description}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getSeverityColor(contra.severity)}>
+                            {contra.severity === 'high' ? 'Hög' : contra.severity === 'medium' ? 'Medel' : 'Låg'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getCategoryColor(contra.category)} variant="outline">
+                            {contra.category === 'medical' ? 'Medicinsk' : 
+                             contra.category === 'medication' ? 'Medicin' :
+                             contra.category === 'skin' ? 'Hud' : 
+                             contra.category === 'treatment' ? 'Behandling' : contra.category}
                           </Badge>
                         </TableCell>
                         <TableCell>
