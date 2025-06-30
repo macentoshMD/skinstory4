@@ -63,14 +63,15 @@ const CustomerProfile = () => {
       <div className="flex">
         {/* Left sidebar with customer info */}
         <div className="w-80 bg-white border-r border-gray-200 min-h-screen">
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4">
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => navigate('/kunder')}
-              className="flex items-center gap-2 mb-4"
+              className="flex items-center gap-2 mb-6 -ml-2 hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm font-medium">Tillbaka</span>
             </Button>
           </div>
           <CustomerProfileHeader customer={customer} />
