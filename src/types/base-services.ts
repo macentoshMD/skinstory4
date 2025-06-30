@@ -279,7 +279,7 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
   },
   {
     id: 'back-neck',
-    name: 'Bakre hals',
+    name: 'Nacke',
     areaId: 'neck'
   },
   
