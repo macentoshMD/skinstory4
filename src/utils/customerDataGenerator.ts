@@ -51,6 +51,11 @@ export const generateCustomersFromActivities = (activities: ExtendedActivityLog[
         b.timestamp.getTime() - a.timestamp.getTime()
       )[0];
       
+      // Get earliest activity (created date)
+      const earliestActivity = customerActivities.sort((a, b) => 
+        a.timestamp.getTime() - b.timestamp.getTime()
+      )[0];
+      
       // Determine status
       const hasRecentBooking = customerActivities.some(a => 
         a.category === 'bokningar' && 
@@ -100,6 +105,7 @@ export const generateCustomersFromActivities = (activities: ExtendedActivityLog[
         email: `${customerName.toLowerCase().replace(' ', '.')}@email.se`,
         phone: `+46 70 ${Math.floor(Math.random() * 900) + 100} ${Math.floor(Math.random() * 90) + 10}${Math.floor(Math.random() * 90) + 10}`,
         status,
+        created: earliestActivity.timestamp.toISOString().split('T')[0],
         lastActivity: latestActivity.timestamp.toISOString().split('T')[0],
         value: totalValue > 0 ? `${(totalValue / 100).toLocaleString('sv-SE')} kr` : '0 kr',
         orders,

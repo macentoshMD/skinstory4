@@ -220,6 +220,16 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
                 </Button>
               </TableHead>
               <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('created')} className="h-auto p-0 font-medium">
+                  Created <ArrowUpDown className="ml-1 h-3 w-3" />
+                </Button>
+              </TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('lastActivity')} className="h-auto p-0 font-medium">
+                  Last Activity <ArrowUpDown className="ml-1 h-3 w-3" />
+                </Button>
+              </TableHead>
+              <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('orders')} className="h-auto p-0 font-medium">
                   Orders <ArrowUpDown className="ml-1 h-3 w-3" />
                 </Button>
@@ -262,6 +272,8 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
                     {customer.status}
                   </Badge>
                 </TableCell>
+                <TableCell className="text-sm text-gray-600">{customer.created}</TableCell>
+                <TableCell className="text-sm text-gray-600">{customer.lastActivity}</TableCell>
                 <TableCell>
                   <span className="font-semibold text-blue-600">{customer.orders}</span>
                 </TableCell>

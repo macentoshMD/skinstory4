@@ -6,6 +6,7 @@ export interface Customer {
   email: string;
   phone: string;
   status: 'Aktiv' | 'Potentiell' | 'Inaktiv';
+  created: string;
   lastActivity: string;
   value: string;
   orders: number;
