@@ -1,11 +1,10 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ConsultationHeader } from './ConsultationHeader';
 import { StepWrapper } from './StepWrapper';
-import { CheckCircle, AlertTriangle, User, Calendar, Phone, Mail, MapPin, Activity, Stethoscope, Clock, Palette } from 'lucide-react';
-import { DiagnosisData, GeneralDetailsData } from '@/types/consultation';
+import { CheckCircle, AlertTriangle, User, Calendar, Phone, Mail, MapPin, Activity, Stethoscope, Clock, Palette, Camera, Home, Building2 } from 'lucide-react';
+import { DiagnosisData, GeneralDetailsData, PhotoDocumentation, TreatmentPlan } from '@/types/consultation';
 
 interface FinalConfirmationStepProps {
   customerName: string;
@@ -25,6 +24,8 @@ interface FinalConfirmationStepProps {
   selectedZones: string[];
   riskLevel: string;
   selectedContraindications: string[];
+  photos?: PhotoDocumentation[];
+  treatmentPlan?: TreatmentPlan;
   onBack: () => void;
   onFinish: () => void;
 }
@@ -37,6 +38,8 @@ export function FinalConfirmationStep({
   selectedZones,
   riskLevel,
   selectedContraindications,
+  photos = [],
+  treatmentPlan,
   onBack,
   onFinish
 }: FinalConfirmationStepProps) {
@@ -98,8 +101,8 @@ export function FinalConfirmationStep({
         onBack={onBack}
         onContinue={onFinish}
         canContinue={true}
-        currentStep={9}
-        totalSteps={9}
+        currentStep={11}
+        totalSteps={11}
         continueText="Slutför konsultation"
       />
 
@@ -248,6 +251,93 @@ export function FinalConfirmationStep({
             </CardContent>
           </Card>
 
+          {/* Photo Documentation */}
+          {photos.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Camera className="h-5 w-5 text-pink-600" />
+                  Fotodokumentation
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {photos.slice(0, 4).map(photo => (
+                    <div key={photo.id} className="relative">
+                      <img
+                        src={photo.url}
+                        alt="Konsultationsfoto"
+                        className="w-full h-24 object-cover rounded-lg"
+                      />
+                      <Badge className="absolute bottom-1 left-1 text-xs">
+                        {photo.category}
+                      </Badge>
+                    </div>
+                  ))}
+                  {photos.length > 4 && (
+                    <div className="flex items-center justify-center bg-gray-100 rounded-lg h-24">
+                      <span className="text-sm text-gray-600">+{photos.length - 4} bilder</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Treatment Plan */}
+          {treatmentPlan && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5 text-indigo-600" />
+                  Behandlingsplan & Rekommendationer
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Homecare */}
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2">
+                      <Home className="h-4 w-4" />
+                      Hemmavård
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <p>Morgonrutin: {treatmentPlan.homecare.morning.length} produkter</p>
+                      <p>Kvällsrutin: {treatmentPlan.homecare.evening.length} produkter</p>
+                      <p>Veckobehandlingar: {treatmentPlan.homecare.weekly.length} produkter</p>
+                      <Badge variant="outline" className="bg-green-50">
+                        Totalt: {treatmentPlan.totalHomecarePrice} kr
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Cliniccare */}
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2">
+                      <Building2 className="h-4 w-4" />
+                      Klinikvård
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <p>Behandlingar: {treatmentPlan.cliniccare.treatments.length} st</p>
+                      <p>Schema: {treatmentPlan.cliniccare.schedule}</p>
+                      <p>Uppföljning: {treatmentPlan.cliniccare.followUp}</p>
+                      <Badge variant="outline" className="bg-purple-50">
+                        Totalt: {treatmentPlan.totalClinicPrice} kr
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {treatmentPlan.notes && (
+                  <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                    <h4 className="font-medium mb-2">Behandlingsanteckningar:</h4>
+                    <p className="text-sm text-gray-700">{treatmentPlan.notes}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Risk Assessment */}
           <Card>
             <CardHeader>
@@ -315,6 +405,10 @@ export function FinalConfirmationStep({
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   Behandlingsplan skapas baserat på bedömning
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  Fotodokumentation arkiveras
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600" />

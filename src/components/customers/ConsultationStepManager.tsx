@@ -54,7 +54,17 @@ export function useConsultationStepManager() {
 
   const handleContraindicationsSubmit = () => {
     console.log('Contraindications submitted');
-    setStep(9); // Go to final step
+    setStep(9); // Go to photo documentation
+  };
+
+  const handlePhotoDocumentationSubmit = () => {
+    console.log('Photo documentation submitted');
+    setStep(10); // Go to treatment plan
+  };
+
+  const handleTreatmentPlanSubmit = () => {
+    console.log('Treatment plan submitted');
+    setStep(11); // Go to final step
   };
 
   const handleFinalSubmit = (saveConsultation: () => void, onClose: () => void) => {
@@ -72,7 +82,9 @@ export function useConsultationStepManager() {
       case 6: return 'Välj Behandlingsområden';
       case 7: return 'Generell Information';
       case 8: return 'Kontraindikationer';
-      case 9: return 'Slutför Konsultation';
+      case 9: return 'Fotodokumentation';
+      case 10: return 'Behandlingsplan';
+      case 11: return 'Slutför Konsultation';
       default: return 'Konsultation';
     }
   };
@@ -89,6 +101,8 @@ export function useConsultationStepManager() {
     handleAreaSelectionSubmit,
     handleGeneralDetailsSubmit,
     handleContraindicationsSubmit,
+    handlePhotoDocumentationSubmit,
+    handleTreatmentPlanSubmit,
     handleFinalSubmit,
     getDialogTitle
   };

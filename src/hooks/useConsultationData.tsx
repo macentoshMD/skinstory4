@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { CustomerFormData, DiagnosisData, ContraIndicationsData } from '@/types/consultation';
+import { CustomerFormData, DiagnosisData, ContraIndicationsData, PhotoDocumentation, TreatmentPlan } from '@/types/consultation';
 import { useToast } from '@/hooks/use-toast';
 import { CONTRAINDICATIONS } from '@/data/contraindications';
 
@@ -7,6 +8,8 @@ interface ConsultationData {
   customer: CustomerFormData;
   diagnosis: DiagnosisData;
   contraindications: ContraIndicationsData;
+  photos: PhotoDocumentation[];
+  treatmentPlan: TreatmentPlan;
   selectedAreas: string[];
   selectedZones: string[];
   completedAt: Date;
@@ -52,6 +55,24 @@ export function useConsultationData(customerName: string, customerId?: string) {
     selectedContraindications: [],
     riskLevel: 'none',
     notes: ''
+  });
+
+  const [photos, setPhotos] = useState<PhotoDocumentation[]>([]);
+
+  const [treatmentPlan, setTreatmentPlan] = useState<TreatmentPlan>({
+    homecare: {
+      morning: [],
+      evening: [],
+      weekly: []
+    },
+    cliniccare: {
+      treatments: [],
+      schedule: '',
+      followUp: ''
+    },
+    notes: '',
+    totalHomecarePrice: 0,
+    totalClinicPrice: 0
   });
 
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
@@ -122,6 +143,14 @@ export function useConsultationData(customerName: string, customerId?: string) {
     });
   };
 
+  const updatePhotos = (newPhotos: PhotoDocumentation[]) => {
+    setPhotos(newPhotos);
+  };
+
+  const updateTreatmentPlan = (newPlan: TreatmentPlan) => {
+    setTreatmentPlan(newPlan);
+  };
+
   const initializeCustomerData = () => {
     const [firstName, lastName] = customerName.split(' ');
     setFormData(prev => ({
@@ -138,6 +167,8 @@ export function useConsultationData(customerName: string, customerId?: string) {
       customer: formData,
       diagnosis: diagnosisData,
       contraindications: contraindicationsData,
+      photos,
+      treatmentPlan,
       selectedAreas,
       selectedZones,
       completedAt: new Date()
@@ -165,6 +196,8 @@ export function useConsultationData(customerName: string, customerId?: string) {
     formData,
     diagnosisData,
     contraindicationsData,
+    photos,
+    treatmentPlan,
     selectedAreas,
     selectedZones,
     setSelectedAreas,
@@ -177,6 +210,8 @@ export function useConsultationData(customerName: string, customerId?: string) {
     updateGeneralDetails,
     handleProblemToggle,
     updateContraindicationToggle,
+    updatePhotos,
+    updateTreatmentPlan,
     initializeCustomerData,
     saveConsultation
   };

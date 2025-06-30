@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProblemSelection } from './ProblemSelection';
 import { PersonalNumberStep } from './PersonalNumberStep';
@@ -7,6 +8,8 @@ import { ProblemDetailsStep } from './ProblemDetailsStep';
 import { AreaSelectionStep } from './AreaSelectionStep';
 import { GeneralDetailsStep } from './GeneralDetailsStep';
 import { ModernContraIndicationsStep } from './ModernContraIndicationsStep';
+import { PhotoDocumentationStep } from './PhotoDocumentationStep';
+import { TreatmentPlanStep } from './TreatmentPlanStep';
 import { FinalConfirmationStep } from './FinalConfirmationStep';
 import { useConsultationData } from '@/hooks/useConsultationData';
 import { useConsultationStepManager } from './ConsultationStepManager';
@@ -26,6 +29,8 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
     formData,
     diagnosisData,
     contraindicationsData,
+    photos,
+    treatmentPlan,
     selectedAreas,
     selectedZones,
     setSelectedAreas,
@@ -38,6 +43,8 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
     updateGeneralDetails,
     handleProblemToggle,
     updateContraindicationToggle,
+    updatePhotos,
+    updateTreatmentPlan,
     initializeCustomerData,
     saveConsultation
   } = consultationData;
@@ -54,6 +61,8 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
     handleAreaSelectionSubmit,
     handleGeneralDetailsSubmit,
     handleContraindicationsSubmit,
+    handlePhotoDocumentationSubmit,
+    handleTreatmentPlanSubmit,
     handleFinalSubmit,
     getDialogTitle
   } = stepManager;
@@ -154,6 +163,31 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
 
         {step === 9 && (
           <div className="p-0">
+            <PhotoDocumentationStep
+              photos={photos}
+              onPhotosChange={updatePhotos}
+              onBack={() => setStep(8)}
+              onContinue={handlePhotoDocumentationSubmit}
+            />
+          </div>
+        )}
+
+        {step === 10 && (
+          <div className="p-0">
+            <TreatmentPlanStep
+              treatmentPlan={treatmentPlan}
+              onTreatmentPlanChange={updateTreatmentPlan}
+              selectedProblems={diagnosisData.selectedProblems}
+              skinScore={diagnosisData.skinScore}
+              riskLevel={contraindicationsData.riskLevel}
+              onBack={() => setStep(9)}
+              onContinue={handleTreatmentPlanSubmit}
+            />
+          </div>
+        )}
+
+        {step === 11 && (
+          <div className="p-0">
             <FinalConfirmationStep
               customerName={customerName}
               customerData={formData}
@@ -162,7 +196,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
               selectedZones={selectedZones}
               riskLevel={contraindicationsData.riskLevel}
               selectedContraindications={contraindicationsData.selectedContraindications}
-              onBack={() => setStep(8)}
+              onBack={() => setStep(10)}
               onFinish={() => handleFinalSubmit(saveConsultation, onClose)}
             />
           </div>

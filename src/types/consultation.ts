@@ -1,3 +1,4 @@
+
 export interface CustomerFormData {
   personalNumber: string;
   firstName: string;
@@ -25,6 +26,54 @@ export interface GeneralDetailsData {
   treatmentDetails: string;
   skinTexture: 'dry' | 'oily' | 'combination' | '';
   skinSensitivity: 'low' | 'medium' | 'high' | '';
+}
+
+export interface PhotoDocumentation {
+  id: string;
+  file: File;
+  url: string;
+  category: 'before' | 'problem-area' | 'general';
+  angle: 'front' | 'left' | 'right' | 'close-up';
+  notes: string;
+  timestamp: Date;
+}
+
+export interface ProductRecommendation {
+  id: string;
+  name: string;
+  brand: string;
+  type: 'cleanser' | 'serum' | 'moisturizer' | 'sunscreen' | 'treatment';
+  usage: string;
+  price: number;
+  priority: 'essential' | 'recommended' | 'optional';
+  description: string;
+}
+
+export interface TreatmentRecommendation {
+  id: string;
+  name: string;
+  sessions: number;
+  frequency: string;
+  price: number;
+  priority: 'essential' | 'recommended' | 'optional';
+  contraindications: string[];
+  description: string;
+}
+
+export interface TreatmentPlan {
+  homecare: {
+    morning: ProductRecommendation[];
+    evening: ProductRecommendation[];
+    weekly: ProductRecommendation[];
+  };
+  cliniccare: {
+    treatments: TreatmentRecommendation[];
+    schedule: string;
+    followUp: string;
+  };
+  notes: string;
+  totalHomecarePrice: number;
+  totalClinicPrice: number;
 }
 
 export interface DiagnosisData {
