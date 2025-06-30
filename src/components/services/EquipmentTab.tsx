@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { EQUIPMENT } from "@/types/services";
-import { Plus, Search, Filter, Settings, Edit, Wrench, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_BRANDS } from "@/types/services";
+import { Plus, Search, Filter, Settings, Edit, Wrench, Trash2, Eye } from "lucide-react";
 
 interface EquipmentTabProps {
   searchTerm: string;
@@ -15,41 +16,45 @@ interface EquipmentTabProps {
 }
 
 export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
-  const [selectedEquipmentType, setSelectedEquipmentType] = useState("all");
-
-  const equipmentTypes = [
-    { id: "all", name: "All utrustning" },
-    { id: "laser", name: "Laser" },
-    { id: "hydrafacial", name: "HydraFacial" },
-    { id: "microneedling", name: "Microneedling" },
-    { id: "analysis", name: "Analys" },
-    { id: "ipl", name: "IPL" },
-    { id: "radiofrequency", name: "Radiofrekvens" }
-  ];
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedBrand, setSelectedBrand] = useState("all");
 
   const filteredEquipment = EQUIPMENT.filter(equipment => {
-    const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedEquipmentType === "all" || equipment.type === selectedEquipmentType;
-    return matchesSearch && matchesType;
+    const matchesSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         equipment.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         equipment.brand.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || equipment.mainCategory === selectedCategory;
+    const matchesBrand = selectedBrand === "all" || equipment.brand === selectedBrand;
+    return matchesSearch && matchesCategory && matchesBrand;
   });
 
-  const getEquipmentTypeColor = (type: string) => {
-    switch (type) {
+  const getCategoryColor = (category: string) => {
+    switch (category) {
       case 'laser':
         return 'bg-blue-100 text-blue-800';
-      case 'hydrafacial':
-        return 'bg-cyan-100 text-cyan-800';
-      case 'microneedling':
-        return 'bg-purple-100 text-purple-800';
-      case 'analysis':
-        return 'bg-orange-100 text-orange-800';
       case 'ipl':
-        return 'bg-pink-100 text-pink-800';
+        return 'bg-cyan-100 text-cyan-800';
       case 'radiofrequency':
-        return 'bg-red-100 text-red-800';
+        return 'bg-purple-100 text-purple-800';
+      case 'microneedling':
+        return 'bg-green-100 text-green-800';
+      case 'chemical_peeling':
+        return 'bg-orange-100 text-orange-800';
+      case 'cryotherapy':
+        return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const formatTechnicalSpecs = (equipment: any) => {
+    const specs = [];
+    if (equipment.wavelength) specs.push(`λ: ${equipment.wavelength}`);
+    if (equipment.maxPower) specs.push(`Max: ${equipment.maxPower}`);
+    if (equipment.spotSizeMin && equipment.spotSizeMax) {
+      specs.push(`Spot: ${equipment.spotSizeMin}-${equipment.spotSizeMax}mm`);
+    }
+    return specs.join(' | ');
   };
 
   return (
@@ -65,15 +70,29 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
               className="pl-10" 
             />
           </div>
-          <Select value={selectedEquipmentType} onValueChange={setSelectedEquipmentType}>
-            <SelectTrigger className="w-[200px]">
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-[180px]">
               <Filter className="h-4 w-4 mr-2" />
-              <SelectValue />
+              <SelectValue placeholder="Kategori" />
             </SelectTrigger>
             <SelectContent>
-              {equipmentTypes.map(type => (
-                <SelectItem key={type.id} value={type.id}>
-                  {type.name}
+              <SelectItem value="all">Alla kategorier</SelectItem>
+              {EQUIPMENT_CATEGORIES.map(category => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Märke" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alla märken</SelectItem>
+              {EQUIPMENT_BRANDS.map(brand => (
+                <SelectItem key={brand} value={brand}>
+                  {brand}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -82,7 +101,7 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
             <Settings className="h-4 w-4 mr-2" />
-            Underhåll
+            Inställningar
           </Button>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
@@ -93,9 +112,9 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Tillgänglig utrustning ({filteredEquipment.length})</CardTitle>
+          <CardTitle>Utrustningsregister ({filteredEquipment.length})</CardTitle>
           <CardDescription>
-            Utrustning som kan användas i behandlingar
+            Teknisk dokumentation för all tillgänglig utrustning
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -103,11 +122,11 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Namn</TableHead>
-                  <TableHead>Typ</TableHead>
-                  <TableHead>Märke & Modell</TableHead>
-                  <TableHead>Beskrivning</TableHead>
-                  <TableHead>Kapacitet</TableHead>
+                  <TableHead>Utrustning</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Tekniker</TableHead>
+                  <TableHead>Tekniska specifikationer</TableHead>
+                  <TableHead>Kylsystem</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Åtgärder</TableHead>
                 </TableRow>
@@ -115,36 +134,40 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
               <TableBody>
                 {filteredEquipment.map(equipment => (
                   <TableRow key={equipment.id} className="cursor-pointer hover:bg-muted/50">
-                    <TableCell className="font-medium">
-                      {equipment.name}
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{equipment.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {equipment.brand} {equipment.model}
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getEquipmentTypeColor(equipment.type)}>
-                        {equipment.type}
+                      <Badge className={getCategoryColor(equipment.mainCategory)}>
+                        {EQUIPMENT_CATEGORIES.find(c => c.id === equipment.mainCategory)?.name || equipment.mainCategory}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div>
-                        <div className="font-medium">{equipment.brand}</div>
-                        <div className="text-sm text-muted-foreground">{equipment.model}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground max-w-xs truncate">
-                      {equipment.description}
-                    </TableCell>
-                    <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {equipment.capabilities.slice(0, 2).map((cap, idx) => (
+                        {equipment.subCategories.slice(0, 2).map((tech, idx) => (
                           <Badge key={idx} variant="outline" className="text-xs">
-                            {cap.replace('_', ' ')}
+                            {tech}
                           </Badge>
                         ))}
-                        {equipment.capabilities.length > 2 && (
+                        {equipment.subCategories.length > 2 && (
                           <Badge variant="outline" className="text-xs">
-                            +{equipment.capabilities.length - 2}
+                            +{equipment.subCategories.length - 2}
                           </Badge>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      <div className="max-w-xs">
+                        {formatTechnicalSpecs(equipment) || 'Ej specificerat'}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {equipment.coolingSystem || 'Ej specificerat'}
                     </TableCell>
                     <TableCell>
                       <Badge variant={equipment.maintenanceRequired ? "destructive" : "default"}>
@@ -152,7 +175,54 @@ export function EquipmentTab({ searchTerm, setSearchTerm }: EquipmentTabProps) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
+                      <div className="flex gap-1">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-2xl">
+                            <DialogHeader>
+                              <DialogTitle>{equipment.name}</DialogTitle>
+                              <DialogDescription>
+                                {equipment.brand} {equipment.model}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid grid-cols-2 gap-4 py-4">
+                              <div>
+                                <h4 className="font-medium mb-2">Grunduppgifter</h4>
+                                <div className="space-y-1 text-sm">
+                                  <div><strong>Märke:</strong> {equipment.brand}</div>
+                                  <div><strong>Modell:</strong> {equipment.model}</div>
+                                  <div><strong>Huvudkategori:</strong> {EQUIPMENT_CATEGORIES.find(c => c.id === equipment.mainCategory)?.name}</div>
+                                  <div><strong>Tekniker:</strong> {equipment.subCategories.join(', ')}</div>
+                                </div>
+                              </div>
+                              <div>
+                                <h4 className="font-medium mb-2">Tekniska specifikationer</h4>
+                                <div className="space-y-1 text-sm">
+                                  {equipment.wavelength && <div><strong>Våglängd:</strong> {equipment.wavelength}</div>}
+                                  {equipment.maxPower && <div><strong>Max effekt:</strong> {equipment.maxPower}</div>}
+                                  {equipment.spotSizeMin && equipment.spotSizeMax && (
+                                    <div><strong>Spot-storlek:</strong> {equipment.spotSizeMin}-{equipment.spotSizeMax}mm</div>
+                                  )}
+                                  {equipment.coolingSystem && <div><strong>Kylsystem:</strong> {equipment.coolingSystem}</div>}
+                                </div>
+                              </div>
+                              {equipment.otherSpecs && (
+                                <div className="col-span-2">
+                                  <h4 className="font-medium mb-2">Övriga specifikationer</h4>
+                                  <p className="text-sm text-muted-foreground">{equipment.otherSpecs}</p>
+                                </div>
+                              )}
+                              <div className="col-span-2">
+                                <h4 className="font-medium mb-2">Beskrivning</h4>
+                                <p className="text-sm text-muted-foreground">{equipment.description}</p>
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                         <Button variant="outline" size="sm">
                           <Edit className="h-4 w-4" />
                         </Button>
