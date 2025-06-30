@@ -5,6 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { sv } from 'date-fns/locale';
 import { DetailedTreatmentRecommendation } from '@/types/consultation';
 
 interface ServiceConfigurationModalProps {
@@ -24,6 +31,9 @@ export function ServiceConfigurationModal({
   const [numberOfSessions, setNumberOfSessions] = useState<number[]>([4]);
   const [intervalWeeks, setIntervalWeeks] = useState<number[]>([2]);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [discount, setDiscount] = useState<number>(0);
+  const [treatmentDate, setTreatmentDate] = useState<Date>();
+  const [evaluationDate, setEvaluationDate] = useState<Date>();
 
   useEffect(() => {
     if (service) {
@@ -31,12 +41,18 @@ export function ServiceConfigurationModal({
       setNumberOfSessions([service.sessions]);
       setIntervalWeeks([2]);
       setSelectedAreas([]);
+      setDiscount(0);
+      setTreatmentDate(undefined);
+      setEvaluationDate(undefined);
     }
   }, [service]);
 
   if (!service) return null;
 
-  const totalPrice = service.price * numberOfSessions[0];
+  const pricePerTreatment = service.price;
+  const subtotal = pricePerTreatment * numberOfSessions[0];
+  const discountAmount = (subtotal * discount) / 100;
+  const totalPrice = subtotal - discountAmount;
 
   const handleConfirm = () => {
     const configuredService: DetailedTreatmentRecommendation = {
@@ -46,7 +62,13 @@ export function ServiceConfigurationModal({
         numberOfSessions: numberOfSessions[0],
         intervalWeeks: intervalWeeks[0],
         selectedAreas,
-        totalPrice
+        totalPrice,
+        discount,
+        treatmentDate,
+        evaluationDate,
+        pricePerTreatment,
+        subtotal,
+        discountAmount
       }
     };
     onConfirm(configuredService);
@@ -63,7 +85,7 @@ export function ServiceConfigurationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Konfigurera Behandling</DialogTitle>
         </DialogHeader>
@@ -78,92 +100,179 @@ export function ServiceConfigurationModal({
             <p className="text-sm text-gray-600">{service.description}</p>
           </div>
 
-          {/* Handpiece Selection */}
-          {service.availableHandpieces.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Handpiece</label>
-              <div className="grid grid-cols-2 gap-2">
-                {service.availableHandpieces.map(handpiece => (
-                  <button
-                    key={handpiece}
-                    onClick={() => setSelectedHandpiece(handpiece)}
-                    className={`p-3 border rounded-lg text-sm transition-colors ${
-                      selectedHandpiece === handpiece
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    {handpiece}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Number of Sessions */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Antal sessioner: {numberOfSessions[0]}
-            </label>
-            <Slider
-              value={numberOfSessions}
-              onValueChange={setNumberOfSessions}
-              max={12}
-              min={1}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>1</span>
-              <span>12</span>
-            </div>
-          </div>
-
-          {/* Interval */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Intervall: {intervalWeeks[0]} veckor
-            </label>
-            <Slider
-              value={intervalWeeks}
-              onValueChange={setIntervalWeeks}
-              max={8}
-              min={1}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>1 vecka</span>
-              <span>8 veckor</span>
-            </div>
-          </div>
-
-          {/* Treatment Areas */}
-          {service.treatmentAreas.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Behandlingsområden</label>
-              <div className="grid grid-cols-2 gap-2">
-                {service.treatmentAreas.map(area => (
-                  <div key={area} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={area}
-                      checked={selectedAreas.includes(area)}
-                      onCheckedChange={() => handleAreaToggle(area)}
-                    />
-                    <label htmlFor={area} className="text-sm">{area}</label>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Left Column */}
+            <div className="space-y-6">
+              {/* Handpiece Selection */}
+              {service.availableHandpieces.length > 0 && (
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Handpiece</Label>
+                  <div className="grid grid-cols-1 gap-2">
+                    {service.availableHandpieces.map(handpiece => (
+                      <button
+                        key={handpiece}
+                        onClick={() => setSelectedHandpiece(handpiece)}
+                        className={`p-3 border rounded-lg text-sm transition-colors text-left ${
+                          selectedHandpiece === handpiece
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {handpiece}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                </div>
+              )}
+
+              {/* Number of Sessions */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Antal sessioner: {numberOfSessions[0]}
+                </Label>
+                <Slider
+                  value={numberOfSessions}
+                  onValueChange={setNumberOfSessions}
+                  max={12}
+                  min={1}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>1</span>
+                  <span>12</span>
+                </div>
+              </div>
+
+              {/* Interval */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Intervall: {intervalWeeks[0]} veckor
+                </Label>
+                <Slider
+                  value={intervalWeeks}
+                  onValueChange={setIntervalWeeks}
+                  max={8}
+                  min={1}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>1 vecka</span>
+                  <span>8 veckor</span>
+                </div>
               </div>
             </div>
-          )}
+
+            {/* Right Column */}
+            <div className="space-y-6">
+              {/* Treatment Areas */}
+              {service.treatmentAreas.length > 0 && (
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Behandlingsområden</Label>
+                  <div className="grid grid-cols-1 gap-2">
+                    {service.treatmentAreas.map(area => (
+                      <div key={area} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={area}
+                          checked={selectedAreas.includes(area)}
+                          onCheckedChange={() => handleAreaToggle(area)}
+                        />
+                        <Label htmlFor={area} className="text-sm">{area}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Discount */}
+              <div>
+                <Label htmlFor="discount" className="text-sm font-medium mb-2 block">
+                  Rabatt (%)
+                </Label>
+                <Input
+                  id="discount"
+                  type="number"
+                  value={discount}
+                  onChange={(e) => setDiscount(Math.max(0, Math.min(100, Number(e.target.value))))}
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                />
+              </div>
+
+              {/* Treatment Booking Date */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Behandling bokad</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {treatmentDate ? format(treatmentDate, 'PPP', { locale: sv }) : 'Välj datum'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={treatmentDate}
+                      onSelect={setTreatmentDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Evaluation Booking Date */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Utvärdering bokad</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {evaluationDate ? format(evaluationDate, 'PPP', { locale: sv }) : 'Välj datum'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={evaluationDate}
+                      onSelect={setEvaluationDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </div>
 
           {/* Price Summary */}
-          <div className="border-t pt-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">
-                {service.price} kr × {numberOfSessions[0]} sessioner
-              </span>
-              <span className="text-lg font-bold">{totalPrice} kr</span>
+          <div className="border rounded-lg p-4 bg-gray-50">
+            <h4 className="font-medium mb-3">Prissammanfattning</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span>Pris per behandling:</span>
+                <span>{pricePerTreatment} kr</span>
+              </div>
+              <div className="flex justify-between">
+                <span>{numberOfSessions[0]} sessioner à {pricePerTreatment} kr:</span>
+                <span>{subtotal} kr</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Rabatt ({discount}%):</span>
+                  <span>-{discountAmount} kr</span>
+                </div>
+              )}
+              <div className="border-t pt-2 flex justify-between font-bold text-base">
+                <span>Totalt:</span>
+                <span>{totalPrice} kr</span>
+              </div>
             </div>
           </div>
         </div>

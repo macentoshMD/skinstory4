@@ -196,6 +196,12 @@ export interface DetailedTreatmentRecommendation extends TreatmentRecommendation
     intervalWeeks: number;
     selectedAreas: string[];
     totalPrice: number;
+    discount?: number;
+    treatmentDate?: Date;
+    evaluationDate?: Date;
+    pricePerTreatment?: number;
+    subtotal?: number;
+    discountAmount?: number;
   };
 }
 
