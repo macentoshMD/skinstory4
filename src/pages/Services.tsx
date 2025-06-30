@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { SERVICES } from "@/data/services";
 import { EQUIPMENT } from "@/types/services";
 import { BASE_SERVICES, PROBLEM_AREAS, TREATMENT_AREAS } from "@/types/base-services";
+import { CONTRAINDICATIONS, CONTRAINDICATION_CATEGORIES } from "@/data/contraindications";
 import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag, AlertTriangle } from "lucide-react";
 
 export default function Services() {
@@ -17,6 +18,7 @@ export default function Services() {
   const [selectedEquipmentType, setSelectedEquipmentType] = useState("all");
   const [selectedProblemCategory, setSelectedProblemCategory] = useState("all");
   const [selectedAreaRegion, setSelectedAreaRegion] = useState("all");
+  const [selectedContraCategory, setSelectedContraCategory] = useState("all");
 
   // Filter functions
   const filteredServices = SERVICES.filter(service => {
@@ -38,55 +40,11 @@ export default function Services() {
     return matchesSearch && matchesRegion;
   });
 
-  // Hårdkodade kontraindikationer för nu
-  const contraindications = [
-    {
-      id: 'pregnancy',
-      name: 'Graviditet',
-      description: 'Behandling under graviditet',
-      severity: 'high',
-      category: 'medical'
-    },
-    {
-      id: 'active_acne',
-      name: 'Aktiv akne',
-      description: 'Inflammatorisk akne med aktiva utbrott',
-      severity: 'medium',
-      category: 'skin'
-    },
-    {
-      id: 'blood_thinners',
-      name: 'Antikoagulantia',
-      description: 'Medicinering med blodförtunnande medel',
-      severity: 'high',
-      category: 'medication'
-    },
-    {
-      id: 'active_infection',
-      name: 'Aktiv infektion',
-      description: 'Pågående hudinfektioner i behandlingsområdet',
-      severity: 'high',
-      category: 'medical'
-    },
-    {
-      id: 'sunburn',
-      name: 'Solbränna',
-      description: 'Akut solbränna eller inflammation',
-      severity: 'medium',
-      category: 'skin'
-    },
-    {
-      id: 'recent_laser',
-      name: 'Nyligen genomförd laserbehandling',
-      description: 'Laser- eller IPL-behandling inom 2 veckor',
-      severity: 'medium',
-      category: 'treatment'
-    }
-  ];
-
-  const filteredContraindications = contraindications.filter(contra => {
-    const matchesSearch = contra.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+  const filteredContraindications = CONTRAINDICATIONS.filter(contra => {
+    const matchesSearch = contra.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         contra.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedContraCategory === "all" || contra.mainCategory === selectedContraCategory;
+    return matchesSearch && matchesCategory;
   });
 
   const equipmentTypes = [{
@@ -189,18 +147,26 @@ export default function Services() {
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
+  const getMainCategoryColor = (mainCategory: string) => {
+    switch (mainCategory) {
       case 'medical':
-        return 'bg-purple-100 text-purple-800';
-      case 'medication':
-        return 'bg-blue-100 text-blue-800';
-      case 'skin':
-        return 'bg-orange-100 text-orange-800';
-      case 'treatment':
-        return 'bg-cyan-100 text-cyan-800';
+        return 'bg-red-50 text-red-700 border-red-200';
+      case 'medications':
+        return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'skin_type':
+        return 'bg-orange-50 text-orange-700 border-orange-200';
+      case 'pregnancy':
+        return 'bg-pink-50 text-pink-700 border-pink-200';
+      case 'previous_treatments':
+        return 'bg-purple-50 text-purple-700 border-purple-200';
+      case 'skin_infection':
+        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'age':
+        return 'bg-green-50 text-green-700 border-green-200';
+      case 'lifestyle':
+        return 'bg-cyan-50 text-cyan-700 border-cyan-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
@@ -533,7 +499,7 @@ export default function Services() {
           </Card>
         </TabsContent>
 
-        {/* Ny Kontraindikationer Tab */}
+        {/* Kontraindikationer Tab - Updated */}
         <TabsContent value="contraindications" className="space-y-6">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center flex-1">
@@ -541,6 +507,23 @@ export default function Services() {
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input placeholder="Sök kontraindikationer..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
               </div>
+              <Select value={selectedContraCategory} onValueChange={setSelectedContraCategory}>
+                <SelectTrigger className="w-[250px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Välj kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alla kategorier</SelectItem>
+                  {CONTRAINDICATION_CATEGORIES.map(category => (
+                    <SelectItem key={category.id} value={category.id}>
+                      <div className="flex items-center gap-2">
+                        <span>{category.emoji}</span>
+                        <span>{category.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex gap-2">
               <Button>
@@ -550,9 +533,37 @@ export default function Services() {
             </div>
           </div>
 
+          {/* Category Overview Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {CONTRAINDICATION_CATEGORIES.map(category => {
+              const categoryCount = CONTRAINDICATIONS.filter(c => c.mainCategory === category.id).length;
+              return (
+                <Card key={category.id} className={`cursor-pointer transition-colors hover:bg-muted/50 ${selectedContraCategory === category.id ? 'ring-2 ring-primary' : ''}`} 
+                      onClick={() => setSelectedContraCategory(category.id)}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{category.emoji}</span>
+                      <div>
+                        <h3 className="font-medium text-sm">{category.name}</h3>
+                        <p className="text-xs text-muted-foreground">{categoryCount} kontraindikationer</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
           <Card>
             <CardHeader>
-              <CardTitle>Kontraindikationer ({filteredContraindications.length})</CardTitle>
+              <CardTitle>
+                Kontraindikationer ({filteredContraindications.length})
+                {selectedContraCategory !== "all" && (
+                  <span className="ml-2 text-sm font-normal text-muted-foreground">
+                    - {CONTRAINDICATION_CATEGORIES.find(c => c.id === selectedContraCategory)?.name}
+                  </span>
+                )}
+              </CardTitle>
               <CardDescription>
                 Medicinska och andra förhållanden som kan påverka behandlingar
               </CardDescription>
@@ -562,7 +573,7 @@ export default function Services() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Namn</TableHead>
+                      <TableHead>Kontraindikation</TableHead>
                       <TableHead>Beskrivning</TableHead>
                       <TableHead>Allvarlighetsgrad</TableHead>
                       <TableHead>Kategori</TableHead>
@@ -573,24 +584,32 @@ export default function Services() {
                     {filteredContraindications.map(contra => <TableRow key={contra.id} className="cursor-pointer hover:bg-muted/50">
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-orange-500" />
-                            {contra.name}
+                            <span className="text-lg">{contra.emoji}</span>
+                            <div>
+                              <div>{contra.name}</div>
+                              {contra.category !== contra.mainCategory && (
+                                <div className="text-xs text-muted-foreground capitalize">
+                                  {contra.category.replace('_', ' ')}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
+                        <TableCell className="text-muted-foreground max-w-md">
                           {contra.description}
                         </TableCell>
                         <TableCell>
                           <Badge className={getSeverityColor(contra.severity)}>
-                            {contra.severity === 'high' ? 'Hög' : contra.severity === 'medium' ? 'Medel' : 'Låg'}
+                            {contra.severity === 'high' ? 'Hög' : 
+                             contra.severity === 'medium' ? 'Medel' : 'Låg'}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge className={getCategoryColor(contra.category)} variant="outline">
-                            {contra.category === 'medical' ? 'Medicinsk' : 
-                             contra.category === 'medication' ? 'Medicin' :
-                             contra.category === 'skin' ? 'Hud' : 
-                             contra.category === 'treatment' ? 'Behandling' : contra.category}
+                          <Badge className={getMainCategoryColor(contra.mainCategory)} variant="outline">
+                            <span className="mr-1">
+                              {CONTRAINDICATION_CATEGORIES.find(c => c.id === contra.mainCategory)?.emoji}
+                            </span>
+                            {CONTRAINDICATION_CATEGORIES.find(c => c.id === contra.mainCategory)?.name}
                           </Badge>
                         </TableCell>
                         <TableCell>

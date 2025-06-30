@@ -1,4 +1,3 @@
-
 export interface Equipment {
   id: string;
   name: string;
@@ -45,7 +44,7 @@ export interface Service {
   requiredSpecialistLevel: 'basic' | 'intermediate' | 'advanced' | 'expert';
   skinTypes: string[]; // Compatible skin types
   problemAreas: string[]; // What problems this service addresses
-  contraindications: string[]; // When not to use this service
+  contraindications: string[]; // Contraindication IDs from the new system
   beforeCare: string[];
   afterCare: string[];
   expectedResults: string;
