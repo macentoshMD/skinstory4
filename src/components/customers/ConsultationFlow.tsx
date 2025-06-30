@@ -5,6 +5,7 @@ import { ProblemSelection } from './ProblemSelection';
 import { PersonalNumberStep } from './PersonalNumberStep';
 import { CustomerFormStep } from './CustomerFormStep';
 import { DiagnosisMethodStep } from './DiagnosisMethodStep';
+import { ProblemDetailsStep } from './ProblemDetailsStep';
 import { CustomerFormData, DiagnosisData } from '@/types/consultation';
 
 interface ConsultationFlowProps {
@@ -32,7 +33,11 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
   const [diagnosisData, setDiagnosisData] = useState<DiagnosisData>({
     method: '',
     selectedProblems: [],
-    aiPhoto: undefined
+    aiPhoto: undefined,
+    problemSeverity: '',
+    problemSubcategory: '',
+    symptoms: [],
+    skinScore: 0
   });
 
   const handlePersonalNumberSubmit = () => {
@@ -69,8 +74,13 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     }));
   };
 
-  const handleDiagnosisSubmit = () => {
-    console.log('Diagnosis submitted:', diagnosisData);
+  const handleProblemSelectionSubmit = () => {
+    console.log('Problems selected:', diagnosisData.selectedProblems);
+    setStep(5);
+  };
+
+  const handleProblemDetailsSubmit = () => {
+    console.log('Problem details submitted:', diagnosisData);
     console.log('Full consultation data:', { customer: formData, diagnosis: diagnosisData });
     onClose();
   };
@@ -83,13 +93,40 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     setDiagnosisData(prev => ({ ...prev, method }));
   };
 
+  const updateProblemSeverity = (severity: 'light' | 'medium' | 'severe') => {
+    setDiagnosisData(prev => ({ ...prev, problemSeverity: severity }));
+  };
+
+  const updateProblemSubcategory = (subcategory: string) => {
+    setDiagnosisData(prev => ({ ...prev, problemSubcategory: subcategory }));
+  };
+
+  const updateSymptomSeverity = (symptomId: string, severity: number) => {
+    setDiagnosisData(prev => ({
+      ...prev,
+      symptoms: prev.symptoms.some(s => s.symptomId === symptomId)
+        ? prev.symptoms.map(s => s.symptomId === symptomId ? { ...s, severity } : s)
+        : [...prev.symptoms, { symptomId, severity }]
+    }));
+  };
+
+  const updateSkinScore = (score: number) => {
+    setDiagnosisData(prev => ({ ...prev, skinScore: score }));
+  };
+
+  const getDialogTitle = () => {
+    switch (step) {
+      case 4: return 'Välj Hudproblem';
+      case 5: return 'Problem Detaljer';
+      default: return `Starta Konsultation - Steg ${step} av ${step <= 3 ? 3 : 5}`;
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`${step === 4 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
+      <DialogContent className={`${step === 4 || step === 5 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
         <DialogHeader>
-          <DialogTitle>
-            {step === 4 ? 'Välj Hudproblem' : `Starta Konsultation - Steg ${step} av ${step === 4 ? 4 : 3}`}
-          </DialogTitle>
+          <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>
 
         {step === 1 && (
@@ -124,7 +161,21 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
               selectedProblems={diagnosisData.selectedProblems}
               onProblemToggle={handleProblemToggle}
               onBack={() => setStep(3)}
-              onContinue={handleDiagnosisSubmit}
+              onContinue={handleProblemSelectionSubmit}
+            />
+          </div>
+        )}
+
+        {step === 5 && (
+          <div className="p-0">
+            <ProblemDetailsStep
+              diagnosisData={diagnosisData}
+              onBack={() => setStep(4)}
+              onContinue={handleProblemDetailsSubmit}
+              onSeverityChange={updateProblemSeverity}
+              onSubcategoryChange={updateProblemSubcategory}
+              onSymptomSeverityChange={updateSymptomSeverity}
+              onSkinScoreChange={updateSkinScore}
             />
           </div>
         )}
