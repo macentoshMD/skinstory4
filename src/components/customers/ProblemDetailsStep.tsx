@@ -2,9 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
-import { DiagnosisData, PROBLEM_SUBCATEGORIES, PROBLEM_SYMPTOMS, SymptomSeverity } from '@/types/consultation';
+import { DiagnosisData, PROBLEM_SUBCATEGORIES, PROBLEM_SYMPTOMS, SymptomSeverity, calculateSkinScore } from '@/types/consultation';
+import { useEffect } from 'react';
 
 interface ProblemDetailsStepProps {
   diagnosisData: DiagnosisData;
@@ -42,11 +42,18 @@ export function ProblemDetailsStep({
     return symptom?.severity || 0;
   };
 
+  // Automatically calculate skin score when symptoms change
+  useEffect(() => {
+    const calculatedScore = calculateSkinScore(diagnosisData.symptoms);
+    if (calculatedScore !== diagnosisData.skinScore) {
+      onSkinScoreChange(calculatedScore);
+    }
+  }, [diagnosisData.symptoms, diagnosisData.skinScore, onSkinScoreChange]);
+
   const isFormValid = () => {
     return diagnosisData.problemSeverity && 
            diagnosisData.problemSubcategory && 
-           diagnosisData.symptoms.length > 0 &&
-           diagnosisData.skinScore > 0;
+           diagnosisData.symptoms.length > 0;
   };
 
   return (
@@ -116,7 +123,7 @@ export function ProblemDetailsStep({
       {availableSubcategories.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-xl font-semibold">Problemtyp</h3>
-          <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {availableSubcategories.map((subcategory) => (
               <Card 
                 key={subcategory.id}
@@ -175,21 +182,16 @@ export function ProblemDetailsStep({
         </div>
       </div>
 
-      {/* Skin Score */}
+      {/* Automatic Skin Score Display */}
       <div className="space-y-4 max-w-md mx-auto">
-        <h3 className="text-xl font-semibold text-center">Hudpoäng</h3>
-        <div className="space-y-2">
-          <Label htmlFor="skinScore">Poäng (0-100)</Label>
-          <Input
-            id="skinScore"
-            type="number"
-            min="0"
-            max="100"
-            value={diagnosisData.skinScore || ''}
-            onChange={(e) => onSkinScoreChange(parseInt(e.target.value) || 0)}
-            placeholder="Ange hudpoäng"
-            className="text-center text-lg"
-          />
+        <h3 className="text-xl font-semibold text-center">Hudpoäng (Automatiskt beräknad)</h3>
+        <div className="text-center">
+          <div className="text-4xl font-bold text-blue-600 mb-2">
+            {diagnosisData.skinScore}
+          </div>
+          <div className="text-sm text-gray-600">
+            Poäng baserat på symptom och svårighetsgrad
+          </div>
         </div>
       </div>
     </div>

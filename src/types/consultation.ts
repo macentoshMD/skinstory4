@@ -44,9 +44,10 @@ export interface ProblemSymptom {
 export const PROBLEM_SUBCATEGORIES: ProblemSubcategory[] = [
   // Acne subcategories
   { id: 'acne-vulgaris', name: 'Acne Vulgaris (Tonårsacne)', parentProblemId: 'acne' },
-  { id: 'acne-tarda', name: 'Acne Tarda (Vuxenacne)', parentProblemId: 'acne' },
-  { id: 'acne-comedonal', name: 'Komedonakne', parentProblemId: 'acne' },
-  { id: 'acne-cystic', name: 'Cystisk akne', parentProblemId: 'acne' },
+  { id: 'acne-comedogenica', name: 'Acne Comedogenica (Icke-inflammerad akne)', parentProblemId: 'acne' },
+  { id: 'acne-pustulosas', name: 'Acne Pustulosas (Varig akne)', parentProblemId: 'acne' },
+  { id: 'acne-papulosas', name: 'Acne Papulosas (Inflammerad akne)', parentProblemId: 'acne' },
+  { id: 'acne-nodulocystic', name: 'Acne Nodulocystic (Svår akne)', parentProblemId: 'acne' },
   
   // Rosacea subcategories
   { id: 'rosacea-erythematotelangiectatic', name: 'Erythematotelangiectatic', parentProblemId: 'rosacea' },
@@ -62,11 +63,12 @@ export const PROBLEM_SUBCATEGORIES: ProblemSubcategory[] = [
 // Problem symptoms mapping
 export const PROBLEM_SYMPTOMS: ProblemSymptom[] = [
   // Acne symptoms
-  { id: 'blackheads', name: 'Pormaskar (komedoner)', problemIds: ['acne'] },
-  { id: 'whiteheads', name: 'Vita finnar', problemIds: ['acne'] },
-  { id: 'papules', name: 'Papler (inflammerade knölar)', problemIds: ['acne'] },
-  { id: 'pustules', name: 'Pustler (variga finnar)', problemIds: ['acne'] },
-  { id: 'cysts', name: 'Cystor', problemIds: ['acne'] },
+  { id: 'papler', name: 'Papler (Inflammerade knölar)', problemIds: ['acne'] },
+  { id: 'pustler', name: 'Pustler (Variga finnar)', problemIds: ['acne'] },
+  { id: 'komedoner-oppna', name: 'Komedoner öppna (Pormaskar)', problemIds: ['acne'] },
+  { id: 'komedoner-stangda', name: 'Komedoner stängda (Vita finnar)', problemIds: ['acne'] },
+  { id: 'noduler', name: 'Noduler (Stora inflammerade knölar)', problemIds: ['acne'] },
+  { id: 'cystor', name: 'Cystor (Djupa inflammerade knölar)', problemIds: ['acne'] },
   { id: 'scarring', name: 'Ärrbildning', problemIds: ['acne', 'aknearr'] },
   
   // Rosacea symptoms
@@ -82,7 +84,40 @@ export const PROBLEM_SYMPTOMS: ProblemSymptom[] = [
   
   // General symptoms
   { id: 'enlarged-pores', name: 'Förstorade porer', problemIds: ['stora-porer', 'acne'] },
-  { id: 'dry-skin', name: 'Torr hud', problemIds: ['torr-kanslig-hy'] },
-  { id: 'sensitive-skin', name: 'Känslig hud', problemIds: ['torr-kanslig-hy', 'rosacea'] },
   { id: 'oily-skin', name: 'Fet hud', problemIds: ['acne', 'blandhy'] },
 ];
+
+// Skin score calculation function
+export const calculateSkinScore = (symptoms: SymptomSeverity[]): number => {
+  if (symptoms.length === 0) return 0;
+  
+  // Base score calculation
+  const totalSeverity = symptoms.reduce((sum, symptom) => sum + symptom.severity, 0);
+  const averageSeverity = totalSeverity / symptoms.length;
+  
+  // Weight factors for different symptoms
+  const symptomWeights: { [key: string]: number } = {
+    'papler': 1.2,
+    'pustler': 1.3,
+    'komedoner-oppna': 1.0,
+    'komedoner-stangda': 1.0,
+    'noduler': 1.5,
+    'cystor': 1.8,
+    'scarring': 2.0,
+  };
+  
+  // Calculate weighted score
+  let weightedScore = 0;
+  let totalWeight = 0;
+  
+  symptoms.forEach(symptom => {
+    const weight = symptomWeights[symptom.symptomId] || 1.0;
+    weightedScore += symptom.severity * weight;
+    totalWeight += weight;
+  });
+  
+  const finalScore = totalWeight > 0 ? (weightedScore / totalWeight) * 20 : averageSeverity * 20;
+  
+  // Ensure score is between 0-100
+  return Math.min(100, Math.max(0, Math.round(finalScore)));
+};
