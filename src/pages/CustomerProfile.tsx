@@ -59,21 +59,28 @@ const CustomerProfile = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => navigate('/kunder')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Tillbaka
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="flex">
+        {/* Left sidebar with customer info */}
+        <div className="w-80 bg-white border-r border-gray-200 min-h-screen">
+          <div className="p-4 border-b border-gray-200">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate('/kunder')}
+              className="flex items-center gap-2 mb-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </div>
+          <CustomerProfileHeader customer={customer} />
+        </div>
 
-      <CustomerProfileHeader customer={customer} />
-      <CustomerProfileTabs customer={customer} />
+        {/* Right content area */}
+        <div className="flex-1">
+          <CustomerProfileTabs customer={customer} />
+        </div>
+      </div>
     </div>
   );
 };
