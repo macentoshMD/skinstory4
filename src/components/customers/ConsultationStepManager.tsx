@@ -11,6 +11,10 @@ export function useConsultationStepManager() {
     setStep(2);
   };
 
+  const handlePersonalNumberSkip = () => {
+    setStep(2);
+  };
+
   const handleCustomerFormSubmit = (formData: any) => {
     console.log('Customer form submitted:', formData);
     setStep(3);
@@ -62,6 +66,7 @@ export function useConsultationStepManager() {
     step,
     setStep,
     handlePersonalNumberSubmit,
+    handlePersonalNumberSkip,
     handleCustomerFormSubmit,
     handleDiagnosisMethodSelect,
     handleProblemSelectionSubmit,

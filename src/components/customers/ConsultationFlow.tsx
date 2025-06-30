@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProblemSelection } from './ProblemSelection';
 import { PersonalNumberStep } from './PersonalNumberStep';
@@ -43,6 +42,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
     step,
     setStep,
     handlePersonalNumberSubmit,
+    handlePersonalNumberSkip,
     handleCustomerFormSubmit,
     handleDiagnosisMethodSelect,
     handleProblemSelectionSubmit,
@@ -64,6 +64,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
             personalNumber={formData.personalNumber}
             onPersonalNumberChange={(value) => updateFormData('personalNumber', value)}
             onSubmit={() => handlePersonalNumberSubmit(initializeCustomerData)}
+            onSkip={handlePersonalNumberSkip}
           />
         )}
 

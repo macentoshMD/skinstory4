@@ -7,12 +7,14 @@ interface PersonalNumberStepProps {
   personalNumber: string;
   onPersonalNumberChange: (value: string) => void;
   onSubmit: () => void;
+  onSkip: () => void;
 }
 
 export function PersonalNumberStep({ 
   personalNumber, 
   onPersonalNumberChange, 
-  onSubmit 
+  onSubmit,
+  onSkip
 }: PersonalNumberStepProps) {
   return (
     <div className="space-y-4">
@@ -28,9 +30,14 @@ export function PersonalNumberStep({
               onChange={(e) => onPersonalNumberChange(e.target.value)}
             />
           </div>
-          <Button onClick={onSubmit} className="w-full">
-            Hämta information
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={onSubmit} className="flex-1">
+              Hämta information
+            </Button>
+            <Button onClick={onSkip} variant="outline" className="flex-1">
+              Skippa
+            </Button>
+          </div>
         </div>
       </div>
     </div>
