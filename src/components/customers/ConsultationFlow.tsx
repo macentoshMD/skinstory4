@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Camera, User, Bot } from 'lucide-react';
+import { PROBLEM_TYPES } from '@/types/problem-areas';
 
 interface ConsultationFlowProps {
   isOpen: boolean;
@@ -28,6 +29,12 @@ interface CustomerFormData {
   howFoundUs: string;
 }
 
+interface DiagnosisData {
+  method: 'ai' | 'manual' | '';
+  selectedProblems: string[];
+  aiPhoto?: File;
+}
+
 export function ConsultationFlow({ isOpen, onClose, customerName }: ConsultationFlowProps) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<CustomerFormData>({
@@ -44,6 +51,12 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     howFoundUs: ''
   });
 
+  const [diagnosisData, setDiagnosisData] = useState<DiagnosisData>({
+    method: '',
+    selectedProblems: [],
+    aiPhoto: undefined
+  });
+
   const handlePersonalNumberSubmit = () => {
     // Simulera att vi fyller i information baserat på personnummer
     const [firstName, lastName] = customerName.split(' ');
@@ -57,8 +70,14 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     setStep(2);
   };
 
-  const handleFormSubmit = () => {
-    console.log('Konsultation startad med data:', formData);
+  const handleCustomerFormSubmit = () => {
+    console.log('Customer form submitted:', formData);
+    setStep(3);
+  };
+
+  const handleDiagnosisSubmit = () => {
+    console.log('Diagnosis submitted:', diagnosisData);
+    console.log('Full consultation data:', { customer: formData, diagnosis: diagnosisData });
     // Här skulle vi spara datan och gå vidare till nästa steg
     onClose();
   };
@@ -67,11 +86,24 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const updateDiagnosisData = (field: keyof DiagnosisData, value: any) => {
+    setDiagnosisData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const toggleProblem = (problemId: string) => {
+    setDiagnosisData(prev => ({
+      ...prev,
+      selectedProblems: prev.selectedProblems.includes(problemId)
+        ? prev.selectedProblems.filter(id => id !== problemId)
+        : [...prev.selectedProblems, problemId]
+    }));
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Starta Konsultation</DialogTitle>
+          <DialogTitle>Starta Konsultation - Steg {step} av 3</DialogTitle>
         </DialogHeader>
 
         {step === 1 && (
@@ -277,8 +309,153 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
               <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
                 Tillbaka
               </Button>
-              <Button onClick={handleFormSubmit} className="flex-1">
-                Fortsätt konsultation
+              <Button onClick={handleCustomerFormSubmit} className="flex-1">
+                Nästa: Välj problem
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold">Diagnos & Problem</h3>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Välj diagnosmetod</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup
+                  value={diagnosisData.method}
+                  onValueChange={(value) => updateDiagnosisData('method', value)}
+                  className="space-y-4"
+                >
+                  <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                    <RadioGroupItem value="ai" id="ai-diagnosis" />
+                    <div className="flex items-center space-x-3 flex-1">
+                      <Bot className="h-8 w-8 text-blue-600" />
+                      <div>
+                        <Label htmlFor="ai-diagnosis" className="text-base font-medium cursor-pointer">
+                          AI Diagnos
+                        </Label>
+                        <p className="text-sm text-gray-600">Ta foto för automatisk hudanalys</p>
+                        <p className="text-xs text-orange-600 font-medium">Coming soon</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                    <RadioGroupItem value="manual" id="manual-diagnosis" />
+                    <div className="flex items-center space-x-3 flex-1">
+                      <User className="h-8 w-8 text-green-600" />
+                      <div>
+                        <Label htmlFor="manual-diagnosis" className="text-base font-medium cursor-pointer">
+                          Manuell diagnos
+                        </Label>
+                        <p className="text-sm text-gray-600">Välj problem manuellt från listan</p>
+                      </div>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </CardContent>
+            </Card>
+
+            {diagnosisData.method === 'ai' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-orange-600">AI Diagnos - Coming Soon</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">AI-baserad hudanalys kommer snart!</p>
+                    <p className="text-sm text-gray-500">
+                      Funktionen för att ta foto och få automatisk diagnos är under utveckling.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {diagnosisData.method === 'manual' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">Välj hudproblem</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {PROBLEM_TYPES.map((problem) => (
+                      <div 
+                        key={problem.id} 
+                        className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                          diagnosisData.selectedProblems.includes(problem.id)
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => toggleProblem(problem.id)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm">{problem.name}</h4>
+                            <p className="text-xs text-gray-600 mt-1">{problem.description}</p>
+                            <div className="flex gap-2 mt-2">
+                              <span className={`px-2 py-1 rounded text-xs ${
+                                problem.severity === 'mild' ? 'bg-green-100 text-green-800' :
+                                problem.severity === 'moderate' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                {problem.severity}
+                              </span>
+                              <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">
+                                {problem.category}
+                              </span>
+                            </div>
+                          </div>
+                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                            diagnosisData.selectedProblems.includes(problem.id)
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-gray-300'
+                          }`}>
+                            {diagnosisData.selectedProblems.includes(problem.id) && (
+                              <div className="w-2 h-2 bg-white rounded-sm"></div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {diagnosisData.selectedProblems.length > 0 && (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                      <p className="text-sm font-medium text-blue-800">
+                        Valda problem ({diagnosisData.selectedProblems.length}):
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {diagnosisData.selectedProblems.map(problemId => {
+                          const problem = PROBLEM_TYPES.find(p => p.id === problemId);
+                          return (
+                            <span key={problemId} className="px-2 py-1 bg-blue-200 text-blue-800 rounded text-xs">
+                              {problem?.name}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex gap-4 pt-4">
+              <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
+                Tillbaka
+              </Button>
+              <Button 
+                onClick={handleDiagnosisSubmit} 
+                className="flex-1"
+                disabled={!diagnosisData.method || (diagnosisData.method === 'manual' && diagnosisData.selectedProblems.length === 0)}
+              >
+                Slutför konsultation
               </Button>
             </div>
           </div>
