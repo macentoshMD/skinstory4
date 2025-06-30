@@ -225,13 +225,38 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
   
   // Legs zones
   {
+    id: 'whole-legs',
+    name: 'Hela ben',
+    areaId: 'legs'
+  },
+  {
+    id: 'half-legs',
+    name: 'Halva ben',
+    areaId: 'legs'
+  },
+  {
     id: 'thighs',
     name: 'Lår',
     areaId: 'legs'
   },
   {
+    id: 'front-thighs',
+    name: 'Framsida lår',
+    areaId: 'legs'
+  },
+  {
+    id: 'back-thighs',
+    name: 'Baksida lår',
+    areaId: 'legs'
+  },
+  {
     id: 'calves',
     name: 'Vader',
+    areaId: 'legs'
+  },
+  {
+    id: 'shins',
+    name: 'Smalben',
     areaId: 'legs'
   },
   {
