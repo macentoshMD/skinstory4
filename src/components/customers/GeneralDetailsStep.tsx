@@ -1,4 +1,5 @@
 
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -38,7 +39,7 @@ export function GeneralDetailsStep({
            generalDetails.skinSensitivity;
     
     if (generalDetails.treatProblemBefore === 'yes') {
-      return baseValidation && generalDetails.treatmentDetails.trim();
+      return baseValidation && generalDetails.treatmentDetails.trim().length > 0;
     }
     
     return baseValidation;
@@ -210,3 +211,4 @@ export function GeneralDetailsStep({
     </div>
   );
 }
+
