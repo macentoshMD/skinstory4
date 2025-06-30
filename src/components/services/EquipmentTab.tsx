@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_BRANDS } from "@/types/services";
+import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_BRANDS } from "@/types/equipment";
 import { EQUIPMENT_HANDPIECES } from "@/types/equipment-handpieces";
 import { Plus, Search, Filter, Settings, Edit, Wrench, Trash2, Eye, ChevronDown, ChevronRight, Minus } from "lucide-react";
 
