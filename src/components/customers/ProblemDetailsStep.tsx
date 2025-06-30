@@ -10,7 +10,6 @@ interface ProblemDetailsStepProps {
   diagnosisData: DiagnosisData;
   onBack: () => void;
   onContinue: () => void;
-  onSeverityChange: (severity: 'light' | 'medium' | 'severe') => void;
   onSubcategoryChange: (subcategory: string) => void;
   onSymptomSeverityChange: (symptomId: string, severity: number) => void;
   onSkinScoreChange: (score: number) => void;
@@ -20,7 +19,6 @@ export function ProblemDetailsStep({
   diagnosisData,
   onBack,
   onContinue,
-  onSeverityChange,
   onSubcategoryChange,
   onSymptomSeverityChange,
   onSkinScoreChange
@@ -51,8 +49,7 @@ export function ProblemDetailsStep({
   }, [diagnosisData.symptoms, diagnosisData.skinScore, onSkinScoreChange]);
 
   const isFormValid = () => {
-    return diagnosisData.problemSeverity && 
-           diagnosisData.problemSubcategory && 
+    return diagnosisData.problemSubcategory && 
            diagnosisData.symptoms.length > 0;
   };
 
@@ -76,7 +73,7 @@ export function ProblemDetailsStep({
           disabled={!isFormValid()}
           className="bg-blue-500 hover:bg-blue-600"
         >
-          Slutför
+          Nästa
         </Button>
       </div>
 
@@ -84,39 +81,6 @@ export function ProblemDetailsStep({
       <div className="text-center">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Problem Detaljer</h2>
         <p className="text-gray-600">Ge mer detaljerad information om det valda problemet</p>
-      </div>
-
-      {/* Problem Severity */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Svårighetsgrad</h3>
-        <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
-          {[
-            { id: 'light', name: 'Lätt', color: 'bg-green-100 border-green-300' },
-            { id: 'medium', name: 'Medel', color: 'bg-yellow-100 border-yellow-300' },
-            { id: 'severe', name: 'Svår', color: 'bg-red-100 border-red-300' }
-          ].map((severity) => (
-            <Card 
-              key={severity.id}
-              className={`cursor-pointer transition-all hover:shadow-lg ${
-                diagnosisData.problemSeverity === severity.id 
-                  ? `ring-2 ring-blue-500 ${severity.color}` 
-                  : `hover:bg-gray-50 ${severity.color}`
-              }`}
-              onClick={() => onSeverityChange(severity.id as 'light' | 'medium' | 'severe')}
-            >
-              <CardContent className="p-6 text-center">
-                <h4 className="font-semibold text-lg">{severity.name}</h4>
-                {diagnosisData.problemSeverity === severity.id && (
-                  <div className="mt-2">
-                    <div className="w-5 h-5 bg-blue-500 rounded-full mx-auto flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
 
       {/* Problem Subcategory */}
@@ -182,12 +146,12 @@ export function ProblemDetailsStep({
         </div>
       </div>
 
-      {/* Automatic Skin Score Display */}
+      {/* Automatic Skin Score Display as Percentage */}
       <div className="space-y-4 max-w-md mx-auto">
         <h3 className="text-xl font-semibold text-center">Hudpoäng (Automatiskt beräknad)</h3>
         <div className="text-center">
           <div className="text-4xl font-bold text-blue-600 mb-2">
-            {diagnosisData.skinScore}
+            {diagnosisData.skinScore}%
           </div>
           <div className="text-sm text-gray-600">
             Poäng baserat på symptom och svårighetsgrad

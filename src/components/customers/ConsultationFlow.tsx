@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProblemSelection } from './ProblemSelection';
@@ -82,6 +81,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
   const handleProblemDetailsSubmit = () => {
     console.log('Problem details submitted:', diagnosisData);
     console.log('Full consultation data:', { customer: formData, diagnosis: diagnosisData });
+    // TODO: Add step 6 - General Customer Information
     onClose();
   };
 
@@ -91,10 +91,6 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
 
   const updateDiagnosisMethod = (method: 'ai' | 'manual') => {
     setDiagnosisData(prev => ({ ...prev, method }));
-  };
-
-  const updateProblemSeverity = (severity: 'light' | 'medium' | 'severe') => {
-    setDiagnosisData(prev => ({ ...prev, problemSeverity: severity }));
   };
 
   const updateProblemSubcategory = (subcategory: string) => {
@@ -172,7 +168,6 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
               diagnosisData={diagnosisData}
               onBack={() => setStep(4)}
               onContinue={handleProblemDetailsSubmit}
-              onSeverityChange={updateProblemSeverity}
               onSubcategoryChange={updateProblemSubcategory}
               onSymptomSeverityChange={updateSymptomSeverity}
               onSkinScoreChange={updateSkinScore}
