@@ -24,6 +24,7 @@ export function CustomerDetailsDialog({ customer }: CustomerDetailsDialogProps) 
   const navigate = useNavigate();
 
   const handleViewProfile = () => {
+    console.log('Navigating to customer profile:', customer.id, customer.name);
     navigate(`/kunder/${customer.id}`);
   };
 
