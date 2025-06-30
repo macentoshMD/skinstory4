@@ -170,6 +170,12 @@ export const TREATMENT_AREAS: TreatmentArea[] = [
     description: 'Hela ansiktsområdet'
   },
   {
+    id: 'whole-face',
+    name: 'Hela ansikte',
+    regionId: 'head',
+    description: 'Komplett ansiktsbehandling'
+  },
+  {
     id: 'neck',
     name: 'Hals',
     regionId: 'head',
@@ -200,6 +206,30 @@ export const TREATMENT_AREAS: TreatmentArea[] = [
     name: 'Händer',
     regionId: 'upper-body',
     description: 'Händer och fingrar'
+  },
+  {
+    id: 'back',
+    name: 'Rygg',
+    regionId: 'upper-body',
+    description: 'Ryggens olika områden'
+  },
+  {
+    id: 'whole-back',
+    name: 'Hela ryggen',
+    regionId: 'upper-body',
+    description: 'Komplett ryggbehandling'
+  },
+  {
+    id: 'lower-back',
+    name: 'Svank',
+    regionId: 'upper-body',
+    description: 'Nedre ryggen'
+  },
+  {
+    id: 'upper-back',
+    name: 'Övre rygg',
+    regionId: 'upper-body',
+    description: 'Övre delen av ryggen'
   },
   
   // Lower body region
