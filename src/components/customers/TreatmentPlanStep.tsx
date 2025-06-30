@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { Home, Building2, Star, Clock, DollarSign, Sparkles } from 'lucide-react';
+import { Home, Building2, Star, Clock, DollarSign, Sparkles, Trash2 } from 'lucide-react';
 import { ConsultationHeader } from './ConsultationHeader';
 import { StepWrapper } from './StepWrapper';
 import { TreatmentPlan, ProductRecommendation, TreatmentRecommendation } from '@/types/consultation';
@@ -217,6 +216,26 @@ export function TreatmentPlanStep({
     }
   };
 
+  const clearAllRecommendations = () => {
+    const clearedPlan: TreatmentPlan = {
+      homecare: {
+        morning: [],
+        evening: [],
+        weekly: []
+      },
+      cliniccare: {
+        treatments: [],
+        schedule: '',
+        followUp: ''
+      },
+      notes: treatmentPlan.notes, // Keep the notes
+      totalHomecarePrice: 0,
+      totalClinicPrice: 0
+    };
+
+    onTreatmentPlanChange(clearedPlan);
+  };
+
   return (
     <div className="space-y-6">
       <ConsultationHeader
@@ -232,8 +251,8 @@ export function TreatmentPlanStep({
         title="Behandlingsplan & Rekommendationer"
         subtitle="Personliga rekommendationer för hemmavård och klinikvård"
       >
-        {/* AI Recommendation Button */}
-        <div className="mb-6">
+        {/* AI Recommendation and Clear Buttons */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-3">
           <Button
             onClick={generateRecommendations}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
@@ -241,9 +260,17 @@ export function TreatmentPlanStep({
             <Sparkles className="h-4 w-4 mr-2" />
             Generera AI-rekommendationer
           </Button>
-          <p className="text-sm text-gray-600 mt-2">
+          <Button
+            onClick={clearAllRecommendations}
+            variant="outline"
+            className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Rensa alla rekommendationer
+          </Button>
+          <div className="text-sm text-gray-600 mt-2 sm:mt-0 sm:ml-4 sm:self-center">
             Skapa automatiska rekommendationer baserat på diagnos och hudanalys
-          </p>
+          </div>
         </div>
 
         {/* Tab Navigation */}
