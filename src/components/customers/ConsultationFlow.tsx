@@ -157,9 +157,12 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
           <div className="p-0">
             <FinalConfirmationStep
               customerName={customerName}
-              selectedProblems={diagnosisData.selectedProblems}
+              customerData={formData}
+              diagnosisData={diagnosisData}
               selectedAreas={selectedAreas}
+              selectedZones={selectedZones}
               riskLevel={contraindicationsData.riskLevel}
+              selectedContraindications={contraindicationsData.selectedContraindications}
               onBack={() => setStep(8)}
               onFinish={() => handleFinalSubmit(saveConsultation, onClose)}
             />
