@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
+import CustomerProfile from "./pages/CustomerProfile";
 import Companies from "./pages/Companies";
 import Services from "./pages/Services";
 import ActivityLog from "./pages/ActivityLog";
@@ -29,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/kunder" element={<Customers />} />
+            <Route path="/kunder/:customerId" element={<CustomerProfile />} />
             <Route path="/foretag" element={<Companies />} />
             <Route path="/tjanster" element={<Services />} />
             <Route path="/problem-omraden" element={<ProblemsAndAreas />} />
