@@ -1,4 +1,3 @@
-
 export interface Customer {
   id: number;
   name: string;
@@ -16,6 +15,8 @@ export interface Customer {
   userAssigned: string;
   avatar?: string;
   initials: string;
+  birthday?: string;
+  gender?: 'Male' | 'Female' | 'Other';
 }
 
 export interface CustomerFilters {

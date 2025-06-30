@@ -11,6 +11,15 @@ const specialists = [
   'Anna K', 'Lisa M', 'Erik S', 'Maria L', 'Sofia P', 'Jonas E'
 ];
 
+const generateBirthday = () => {
+  const start = new Date('1970-01-01');
+  const end = new Date('2005-12-31');
+  const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return randomDate.toISOString().split('T')[0];
+};
+
+const genders: ('Male' | 'Female' | 'Other')[] = ['Male', 'Female', 'Other'];
+
 export const generateCustomersFromActivities = (activities: ExtendedActivityLog[]): Customer[] => {
   const customerMap = new Map<string, Customer>();
   
@@ -113,7 +122,9 @@ export const generateCustomersFromActivities = (activities: ExtendedActivityLog[
         problems: problems.slice(0, 3), // Limit to 3 main problems
         tags: tags.slice(0, 4), // Limit to 4 tags
         userAssigned,
-        initials
+        initials,
+        birthday: generateBirthday(),
+        gender: genders[Math.floor(Math.random() * genders.length)]
       });
     }
   });

@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateExtendedMockActivities } from '@/utils/mockActivityGenerator';
 import { generateCustomersFromActivities } from '@/utils/customerDataGenerator';
+import { CustomerProfileHeader } from '@/components/customers/CustomerProfileHeader';
 import { CustomerProfileTabs } from '@/components/customers/CustomerProfileTabs';
 import { DateRange } from '@/types/insights';
 
@@ -69,12 +70,9 @@ const CustomerProfile = () => {
           <ArrowLeft className="h-4 w-4" />
           Tillbaka
         </Button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{customer.name}</h1>
-          <p className="text-gray-600">{customer.email} • {customer.phone}</p>
-        </div>
       </div>
 
+      <CustomerProfileHeader customer={customer} />
       <CustomerProfileTabs customer={customer} />
     </div>
   );
