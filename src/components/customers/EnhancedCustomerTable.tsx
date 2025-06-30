@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,12 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, ArrowUpDown, Download, Upload, Eye, Edit } from "lucide-react";
 import { Customer, CustomerFilters, CustomerSort } from "@/types/customer";
 import { CustomerDetailsDialog } from "./CustomerDetailsDialog";
+import { useNavigate } from "react-router-dom";
 
 interface EnhancedCustomerTableProps {
   customers: Customer[];
 }
 
 export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps) {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<CustomerFilters>({
     search: "",
     status: "alla",
@@ -84,6 +85,11 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
 
   const handleSelectCustomer = (customer: Customer) => {
     setSelectedCustomer(customer);
+  };
+
+  const handleRowClick = (customer: Customer) => {
+    console.log('Navigating to customer profile:', customer.id, customer.name);
+    navigate(`/kunder/${customer.id}`);
   };
 
   const getStatusColor = (status: string) => {
@@ -252,7 +258,11 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
           </TableHeader>
           <TableBody>
             {filteredAndSortedCustomers.map(customer => (
-              <TableRow key={customer.id} className="hover:bg-gray-50">
+              <TableRow 
+                key={customer.id} 
+                className="hover:bg-gray-50 cursor-pointer"
+                onClick={() => handleRowClick(customer)}
+              >
                 <TableCell>
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-blue-400 to-purple-500 text-white">
@@ -310,7 +320,7 @@ export function EnhancedCustomerTable({ customers }: EnhancedCustomerTableProps)
                 </TableCell>
                 <TableCell className="text-sm text-gray-600">{customer.userAssigned}</TableCell>
                 <TableCell className="font-medium">{customer.value}</TableCell>
-                <TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-1">
                     <CustomerDetailsDialog
                       customer={customer}
