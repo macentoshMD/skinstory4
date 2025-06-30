@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -25,6 +24,10 @@ export function ProblemDetailsStep({
 }: ProblemDetailsStepProps) {
   const selectedProblem = diagnosisData.selectedProblems[0]; // Assuming single problem selection for now
   
+  console.log('ProblemDetailsStep - Selected problem:', selectedProblem);
+  console.log('ProblemDetailsStep - Current symptoms:', diagnosisData.symptoms);
+  console.log('ProblemDetailsStep - Selected subcategory:', diagnosisData.problemSubcategory);
+  
   // Get subcategories for the selected problem
   const availableSubcategories = PROBLEM_SUBCATEGORIES.filter(
     sub => sub.parentProblemId === selectedProblem
@@ -34,6 +37,25 @@ export function ProblemDetailsStep({
   const availableSymptoms = PROBLEM_SYMPTOMS.filter(
     symptom => symptom.problemIds.includes(selectedProblem)
   );
+
+  console.log('Available subcategories:', availableSubcategories);
+  console.log('Available symptoms:', availableSymptoms);
+
+  // Clean up invalid symptoms when component loads or selected problem changes
+  useEffect(() => {
+    const validSymptomIds = availableSymptoms.map(s => s.id);
+    const invalidSymptoms = diagnosisData.symptoms.filter(s => !validSymptomIds.includes(s.symptomId));
+    
+    if (invalidSymptoms.length > 0) {
+      console.log('Found invalid symptoms, cleaning up:', invalidSymptoms);
+      // Remove invalid symptoms by only keeping valid ones
+      const validSymptoms = diagnosisData.symptoms.filter(s => validSymptomIds.includes(s.symptomId));
+      // Reset symptoms to only valid ones
+      validSymptoms.forEach(symptom => {
+        onSymptomSeverityChange(symptom.symptomId, symptom.severity);
+      });
+    }
+  }, [selectedProblem, availableSymptoms, diagnosisData.symptoms, onSymptomSeverityChange]);
 
   const getSymptomSeverity = (symptomId: string): number => {
     const symptom = diagnosisData.symptoms.find(s => s.symptomId === symptomId);
@@ -49,8 +71,18 @@ export function ProblemDetailsStep({
   }, [diagnosisData.symptoms, diagnosisData.skinScore, onSkinScoreChange]);
 
   const isFormValid = () => {
-    return diagnosisData.problemSubcategory && 
-           diagnosisData.symptoms.length > 0;
+    const hasSubcategory = diagnosisData.problemSubcategory !== '';
+    const hasValidSymptoms = diagnosisData.symptoms.length > 0 && 
+                           diagnosisData.symptoms.every(s => s.severity > 0);
+    
+    console.log('Form validation:', {
+      hasSubcategory,
+      hasValidSymptoms,
+      symptomsCount: diagnosisData.symptoms.length,
+      symptoms: diagnosisData.symptoms
+    });
+    
+    return hasSubcategory && hasValidSymptoms;
   };
 
   return (
@@ -64,7 +96,7 @@ export function ProblemDetailsStep({
         
         <div className="flex-1 mx-8">
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '90%' }}></div>
+            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '80%' }}></div>
           </div>
         </div>
         
