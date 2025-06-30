@@ -1,4 +1,3 @@
-
 export interface BaseService {
   id: string;
   name: string;
@@ -155,10 +154,10 @@ export const BODY_REGIONS: BodyRegion[] = [
     icon: '🦵'
   },
   {
-    id: 'torso',
-    name: 'Bål',
-    description: 'Rygg och mage',
-    icon: '🫁'
+    id: 'intim',
+    name: 'Intim',
+    description: 'Intimområden',
+    icon: '🔒'
   }
 ];
 
@@ -216,25 +215,19 @@ export const TREATMENT_AREAS: TreatmentArea[] = [
     regionId: 'lower-body',
     description: 'Fötter och tår'
   },
+  
+  // Intim region
   {
     id: 'bikini',
     name: 'Bikiniområde',
-    regionId: 'lower-body',
+    regionId: 'intim',
     description: 'Intimområdet'
   },
-  
-  // Torso region
   {
-    id: 'back',
-    name: 'Rygg',
-    regionId: 'torso',
-    description: 'Hela ryggen'
-  },
-  {
-    id: 'stomach',
-    name: 'Mage',
-    regionId: 'torso',
-    description: 'Magområdet'
+    id: 'brazilian',
+    name: 'Brazilian',
+    regionId: 'intim',
+    description: 'Fullständig intimbehandling'
   }
 ];
 
@@ -243,8 +236,7 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
   {
     id: 'forehead',
     name: 'Panna',
-    areaId: 'face',
-    isPopular: true
+    areaId: 'face'
   },
   {
     id: 'eyes',
@@ -255,8 +247,7 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
   {
     id: 'cheeks',
     name: 'Kinder',
-    areaId: 'face',
-    isPopular: true
+    areaId: 'face'
   },
   {
     id: 'nose',
@@ -272,8 +263,7 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
   {
     id: 'chin',
     name: 'Haka',
-    areaId: 'face',
-    isPopular: true
+    areaId: 'face'
   },
   {
     id: 'jawline',
@@ -297,8 +287,7 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
   {
     id: 'decolletage',
     name: 'Dekolletage',
-    areaId: 'chest',
-    isPopular: true
+    areaId: 'chest'
   },
   {
     id: 'chest-full',
@@ -310,8 +299,7 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
   {
     id: 'upper-arms',
     name: 'Överarmar',
-    areaId: 'arms',
-    isPopular: true
+    areaId: 'arms'
   },
   {
     id: 'lower-arms',
@@ -321,16 +309,14 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
   {
     id: 'armpits',
     name: 'Armhålor',
-    areaId: 'arms',
-    isPopular: true
+    areaId: 'arms'
   },
   
   // Legs zones
   {
     id: 'thighs',
     name: 'Lår',
-    areaId: 'legs',
-    isPopular: true
+    areaId: 'legs'
   },
   {
     id: 'calves',
@@ -343,28 +329,27 @@ export const TREATMENT_ZONES: TreatmentZone[] = [
     areaId: 'legs'
   },
   
-  // Back zones
-  {
-    id: 'upper-back',
-    name: 'Övre rygg',
-    areaId: 'back'
-  },
-  {
-    id: 'lower-back',
-    name: 'Nedre rygg',
-    areaId: 'back'
-  },
-  
   // Bikini zones
   {
     id: 'bikini-line',
     name: 'Bikinilinjen',
-    areaId: 'bikini',
-    isPopular: true
+    areaId: 'bikini'
   },
   {
-    id: 'brazilian',
-    name: 'Brazilian',
+    id: 'bikini-full',
+    name: 'Hela bikiniområdet',
     areaId: 'bikini'
+  },
+  
+  // Brazilian zones
+  {
+    id: 'brazilian-full',
+    name: 'Fullständig Brazilian',
+    areaId: 'brazilian'
+  },
+  {
+    id: 'brazilian-partial',
+    name: 'Partiell Brazilian',
+    areaId: 'brazilian'
   }
 ];

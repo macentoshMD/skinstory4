@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { BODY_REGIONS, TREATMENT_AREAS, TREATMENT_ZONES } from "@/types/base-services";
-import { Plus, Search, Filter, Edit, Trash2, ChevronDown, ChevronRight, MapPin, Star } from "lucide-react";
+import { Plus, Search, Filter, Edit, Trash2, ChevronDown, ChevronRight, MapPin, Star, Target } from "lucide-react";
 
 interface AreasTabProps {
   searchTerm: string;
@@ -49,8 +48,8 @@ export function AreasTab({ searchTerm, setSearchTerm }: AreasTabProps) {
         return 'bg-green-100 text-green-800';
       case 'lower-body':
         return 'bg-purple-100 text-purple-800';
-      case 'torso':
-        return 'bg-orange-100 text-orange-800';
+      case 'intim':
+        return 'bg-pink-100 text-pink-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -147,13 +146,11 @@ export function AreasTab({ searchTerm, setSearchTerm }: AreasTabProps) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-orange-100 rounded-lg">
-                <Star className="h-5 w-5 text-orange-600" />
+                <Target className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">
-                  {TREATMENT_ZONES.filter(z => z.isPopular).length}
-                </p>
-                <p className="text-sm text-muted-foreground">Populära zoner</p>
+                <p className="text-2xl font-bold">{BODY_REGIONS.length}</p>
+                <p className="text-sm text-muted-foreground">Regioner totalt</p>
               </div>
             </div>
           </CardContent>
@@ -237,12 +234,6 @@ export function AreasTab({ searchTerm, setSearchTerm }: AreasTabProps) {
                                   <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 bg-muted rounded-full" />
                                     <span>{zone.name}</span>
-                                    {zone.isPopular && (
-                                      <Badge variant="secondary" className="text-xs">
-                                        <Star className="h-3 w-3 mr-1" />
-                                        Populär
-                                      </Badge>
-                                    )}
                                     {zone.description && (
                                       <span className="text-sm text-muted-foreground">
                                         - {zone.description}
