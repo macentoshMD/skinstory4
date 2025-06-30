@@ -1,22 +1,36 @@
 
-import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Customer } from '@/types/customer';
+import { ConsultationFlow } from './ConsultationFlow';
 
 interface SkinStoryTabProps {
   customer: Customer;
 }
 
 export function SkinStoryTab({ customer }: SkinStoryTabProps) {
+  const [isConsultationOpen, setIsConsultationOpen] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Skin Story</h2>
-        <Button size="sm" className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Lägg till
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            size="sm" 
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+            onClick={() => setIsConsultationOpen(true)}
+          >
+            <Play className="h-4 w-4" />
+            Starta konsultation
+          </Button>
+          <Button size="sm" variant="outline" className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Lägg till
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -50,6 +64,12 @@ export function SkinStoryTab({ customer }: SkinStoryTabProps) {
           </CardContent>
         </Card>
       </div>
+
+      <ConsultationFlow 
+        isOpen={isConsultationOpen} 
+        onClose={() => setIsConsultationOpen(false)}
+        customerName={customer.name}
+      />
     </div>
   );
 }
