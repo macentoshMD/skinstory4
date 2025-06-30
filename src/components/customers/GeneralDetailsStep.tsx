@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -34,8 +33,7 @@ export function GeneralDetailsStep({
            generalDetails.skinStatusAtMoment &&
            generalDetails.treatProblemBefore &&
            generalDetails.skinTexture &&
-           generalDetails.skinSensitivity &&
-           generalDetails.occupation.trim();
+           generalDetails.skinSensitivity;
     
     // If "Ja" is selected for treatProblemBefore, also require treatmentDetails
     if (generalDetails.treatProblemBefore === 'yes') {
@@ -218,18 +216,6 @@ export function GeneralDetailsStep({
                 { value: 'medium', label: 'Medel' },
                 { value: 'high', label: 'Hög' }
               ]}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Occupation */}
-        <Card className="p-4">
-          <CardContent className="p-0 space-y-3">
-            <Label className="text-base font-medium">Yrke</Label>
-            <Input
-              placeholder="Ange yrke"
-              value={generalDetails.occupation}
-              onChange={(e) => onGeneralDetailsChange('occupation', e.target.value)}
             />
           </CardContent>
         </Card>

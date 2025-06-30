@@ -1,5 +1,3 @@
-
-
 export interface CustomerFormData {
   personalNumber: string;
   firstName: string;
@@ -27,7 +25,6 @@ export interface GeneralDetailsData {
   treatmentDetails: string;
   skinTexture: 'dry' | 'oily' | 'combination' | '';
   skinSensitivity: 'low' | 'medium' | 'high' | '';
-  occupation: string;
 }
 
 export interface DiagnosisData {

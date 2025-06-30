@@ -1,5 +1,3 @@
-
-
 import { useState } from 'react';
 import { CustomerFormData, DiagnosisData } from '@/types/consultation';
 import { useToast } from '@/hooks/use-toast';
@@ -44,8 +42,7 @@ export function useConsultationData(customerName: string, customerId?: string) {
       treatProblemBefore: '',
       treatmentDetails: '',
       skinTexture: '',
-      skinSensitivity: '',
-      occupation: ''
+      skinSensitivity: ''
     }
   });
 
