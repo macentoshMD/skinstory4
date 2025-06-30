@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProblemSelection } from './ProblemSelection';
 import { PersonalNumberStep } from './PersonalNumberStep';
@@ -6,6 +7,7 @@ import { DiagnosisMethodStep } from './DiagnosisMethodStep';
 import { ProblemDetailsStep } from './ProblemDetailsStep';
 import { AreaSelectionStep } from './AreaSelectionStep';
 import { GeneralDetailsStep } from './GeneralDetailsStep';
+import { ContraIndicationsStep } from './ContraIndicationsStep';
 import { useConsultationData } from '@/hooks/useConsultationData';
 import { useConsultationStepManager } from './ConsultationStepManager';
 
@@ -23,6 +25,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
   const {
     formData,
     diagnosisData,
+    contraindicationsData,
     selectedAreas,
     selectedZones,
     setSelectedAreas,
@@ -34,6 +37,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
     updateSkinScore,
     updateGeneralDetails,
     handleProblemToggle,
+    updateContraindicationToggle,
     initializeCustomerData,
     saveConsultation
   } = consultationData;
@@ -44,6 +48,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
     handlePersonalNumberSubmit,
     handlePersonalNumberSkip,
     handleCustomerFormSubmit,
+    handleContraindicationsSubmit,
     handleDiagnosisMethodSelect,
     handleProblemSelectionSubmit,
     handleProblemDetailsSubmit,
@@ -54,7 +59,7 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`${step >= 4 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
+      <DialogContent className={`${step >= 5 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>
@@ -78,30 +83,41 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
         )}
 
         {step === 3 && (
+          <div className="p-0">
+            <ContraIndicationsStep
+              selectedContraindications={contraindicationsData.selectedContraindications}
+              onContraindicationToggle={updateContraindicationToggle}
+              onBack={() => setStep(2)}
+              onContinue={handleContraindicationsSubmit}
+            />
+          </div>
+        )}
+
+        {step === 4 && (
           <DiagnosisMethodStep
             selectedMethod={diagnosisData.method}
             onMethodChange={updateDiagnosisMethod}
-            onBack={() => setStep(2)}
+            onBack={() => setStep(3)}
             onContinue={() => handleDiagnosisMethodSelect(diagnosisData.method)}
           />
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <div className="p-0">
             <ProblemSelection
               selectedProblems={diagnosisData.selectedProblems}
               onProblemToggle={handleProblemToggle}
-              onBack={() => setStep(3)}
+              onBack={() => setStep(4)}
               onContinue={() => handleProblemSelectionSubmit(diagnosisData.selectedProblems)}
             />
           </div>
         )}
 
-        {step === 5 && (
+        {step === 6 && (
           <div className="p-0">
             <ProblemDetailsStep
               diagnosisData={diagnosisData}
-              onBack={() => setStep(4)}
+              onBack={() => setStep(5)}
               onContinue={() => handleProblemDetailsSubmit(diagnosisData)}
               onSubcategoryChange={updateProblemSubcategory}
               onSymptomSeverityChange={updateSymptomSeverity}
@@ -110,24 +126,24 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
           </div>
         )}
 
-        {step === 6 && (
+        {step === 7 && (
           <div className="p-0">
             <AreaSelectionStep
               selectedAreas={selectedAreas}
               selectedZones={selectedZones}
               onAreasChange={setSelectedAreas}
               onZonesChange={setSelectedZones}
-              onBack={() => setStep(5)}
+              onBack={() => setStep(6)}
               onContinue={() => handleAreaSelectionSubmit(selectedAreas, selectedZones)}
             />
           </div>
         )}
 
-        {step === 7 && (
+        {step === 8 && (
           <div className="p-0">
             <GeneralDetailsStep
               generalDetails={diagnosisData.generalDetails}
-              onBack={() => setStep(6)}
+              onBack={() => setStep(7)}
               onContinue={() => handleGeneralDetailsSubmit(saveConsultation, onClose)}
               onGeneralDetailsChange={updateGeneralDetails}
             />

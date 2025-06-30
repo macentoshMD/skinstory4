@@ -2,6 +2,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ConsultationHeader } from './ConsultationHeader';
+import { StepWrapper } from './StepWrapper';
 
 interface PersonalNumberStepProps {
   personalNumber: string;
@@ -17,10 +19,21 @@ export function PersonalNumberStep({
   onSkip
 }: PersonalNumberStepProps) {
   return (
-    <div className="space-y-4">
-      <div className="text-center py-6">
-        <h3 className="text-lg font-semibold mb-4">Ange personnummer för att hämta kundinformation</h3>
-        <div className="space-y-4">
+    <div className="space-y-6">
+      <ConsultationHeader
+        onContinue={onSubmit}
+        canGoBack={false}
+        canContinue={true}
+        currentStep={1}
+        totalSteps={8}
+        continueText="Hämta information"
+      />
+
+      <StepWrapper 
+        title="Personnummer" 
+        subtitle="Ange personnummer för att hämta kundinformation"
+      >
+        <div className="max-w-md mx-auto space-y-4">
           <div>
             <Label htmlFor="personalNumber">Personnummer</Label>
             <Input
@@ -28,18 +41,18 @@ export function PersonalNumberStep({
               placeholder="YYYYMMDD-XXXX"
               value={personalNumber}
               onChange={(e) => onPersonalNumberChange(e.target.value)}
+              className="mt-2"
             />
           </div>
-          <div className="flex gap-3">
-            <Button onClick={onSubmit} className="flex-1">
-              Hämta information
-            </Button>
-            <Button onClick={onSkip} variant="outline" className="flex-1">
-              Skippa
-            </Button>
-          </div>
+          <Button 
+            onClick={onSkip} 
+            variant="outline" 
+            className="w-full"
+          >
+            Skippa och fortsätt manuellt
+          </Button>
         </div>
-      </div>
+      </StepWrapper>
     </div>
   );
 }

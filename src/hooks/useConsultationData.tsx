@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { CustomerFormData, DiagnosisData } from '@/types/consultation';
+import { CustomerFormData, DiagnosisData, ContraIndicationsData } from '@/types/consultation';
 import { useToast } from '@/hooks/use-toast';
+import { CONTRAINDICATIONS } from '@/data/contraindications';
 
 interface ConsultationData {
   customer: CustomerFormData;
   diagnosis: DiagnosisData;
+  contraindications: ContraIndicationsData;
   selectedAreas: string[];
   selectedZones: string[];
   completedAt: Date;
@@ -44,6 +46,12 @@ export function useConsultationData(customerName: string, customerId?: string) {
       skinTexture: '',
       skinSensitivity: ''
     }
+  });
+
+  const [contraindicationsData, setContraindicationsData] = useState<ContraIndicationsData>({
+    selectedContraindications: [],
+    riskLevel: 'none',
+    notes: ''
   });
 
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
@@ -90,6 +98,30 @@ export function useConsultationData(customerName: string, customerId?: string) {
     }));
   };
 
+  const updateContraindicationToggle = (contraindicationId: string) => {
+    setContraindicationsData(prev => {
+      const newSelected = prev.selectedContraindications.includes(contraindicationId)
+        ? prev.selectedContraindications.filter(id => id !== contraindicationId)
+        : [...prev.selectedContraindications, contraindicationId];
+      
+      // Calculate risk level
+      const selectedItems = CONTRAINDICATIONS.filter(item => 
+        newSelected.includes(item.id)
+      );
+      
+      let riskLevel: 'none' | 'low' | 'medium' | 'high' = 'none';
+      if (selectedItems.some(item => item.severity === 'high')) riskLevel = 'high';
+      else if (selectedItems.some(item => item.severity === 'medium')) riskLevel = 'medium';
+      else if (selectedItems.length > 0) riskLevel = 'low';
+      
+      return {
+        ...prev,
+        selectedContraindications: newSelected,
+        riskLevel
+      };
+    });
+  };
+
   const initializeCustomerData = () => {
     const [firstName, lastName] = customerName.split(' ');
     setFormData(prev => ({
@@ -105,6 +137,7 @@ export function useConsultationData(customerName: string, customerId?: string) {
     const consultationData: ConsultationData = {
       customer: formData,
       diagnosis: diagnosisData,
+      contraindications: contraindicationsData,
       selectedAreas,
       selectedZones,
       completedAt: new Date()
@@ -131,6 +164,7 @@ export function useConsultationData(customerName: string, customerId?: string) {
   return {
     formData,
     diagnosisData,
+    contraindicationsData,
     selectedAreas,
     selectedZones,
     setSelectedAreas,
@@ -142,6 +176,7 @@ export function useConsultationData(customerName: string, customerId?: string) {
     updateSkinScore,
     updateGeneralDetails,
     handleProblemToggle,
+    updateContraindicationToggle,
     initializeCustomerData,
     saveConsultation
   };

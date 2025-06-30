@@ -4,7 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft } from 'lucide-react';
+import { ConsultationHeader } from './ConsultationHeader';
+import { StepWrapper } from './StepWrapper';
 import { GeneralDetailsData } from '@/types/consultation';
 
 interface GeneralDetailsStepProps {
@@ -35,7 +36,6 @@ export function GeneralDetailsStep({
            generalDetails.skinTexture &&
            generalDetails.skinSensitivity;
     
-    // If "Ja" is selected for treatProblemBefore, also require treatmentDetails
     if (generalDetails.treatProblemBefore === 'yes') {
       return baseValidation && generalDetails.treatmentDetails.trim();
     }
@@ -76,150 +76,136 @@ export function GeneralDetailsStep({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
-          <ArrowLeft className="h-4 w-4" />
-          Tillbaka
-        </Button>
-        
-        <div className="flex-1 mx-8">
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '100%' }}></div>
-          </div>
+      <ConsultationHeader
+        onBack={onBack}
+        onContinue={onContinue}
+        canContinue={isFormValid()}
+        currentStep={8}
+        totalSteps={8}
+        continueText="Slutför"
+      />
+
+      <StepWrapper 
+        title="Generell Information"
+        subtitle="Fyll i allmän information om kundens hud och livsstil"
+      >
+        <div className="space-y-6">
+          {/* When problem starts */}
+          <Card className="p-4">
+            <CardContent className="p-0 space-y-4">
+              <Label className="text-base font-medium">När började problemet?</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm text-gray-600">År</Label>
+                  <Select 
+                    value={generalDetails.whenProblemStartsYear} 
+                    onValueChange={(value) => onGeneralDetailsChange('whenProblemStartsYear', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Välj år" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map(year => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-sm text-gray-600">Månad</Label>
+                  <Select 
+                    value={generalDetails.whenProblemStartsMonth} 
+                    onValueChange={(value) => onGeneralDetailsChange('whenProblemStartsMonth', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Välj månad" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {months.map(month => (
+                        <SelectItem key={month} value={month}>{month}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Skin status at the moment */}
+          <Card className="p-4">
+            <CardContent className="p-0">
+              <RadioGroup
+                title="Hudstatus för tillfället"
+                field="skinStatusAtMoment"
+                options={[
+                  { value: 'worse', label: 'Sämre' },
+                  { value: 'same', label: 'Samma' },
+                  { value: 'better', label: 'Bättre' }
+                ]}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Treat problem before */}
+          <Card className="p-4">
+            <CardContent className="p-0 space-y-4">
+              <RadioGroup
+                title="Behandlat problemet tidigare"
+                field="treatProblemBefore"
+                options={[
+                  { value: 'yes', label: 'Ja' },
+                  { value: 'no', label: 'Nej' }
+                ]}
+              />
+              
+              {/* Conditional text input when "Ja" is selected */}
+              {generalDetails.treatProblemBefore === 'yes' && (
+                <div className="space-y-2 mt-4">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Beskriv hur problemet behandlats tidigare
+                  </Label>
+                  <Textarea
+                    placeholder="Beskriv vilka behandlingar, produkter eller metoder som använts tidigare..."
+                    value={generalDetails.treatmentDetails}
+                    onChange={(e) => onGeneralDetailsChange('treatmentDetails', e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Skin texture */}
+          <Card className="p-4">
+            <CardContent className="p-0">
+              <RadioGroup
+                title="Hudtextur"
+                field="skinTexture"
+                options={[
+                  { value: 'dry', label: 'Torr' },
+                  { value: 'oily', label: 'Fet' },
+                  { value: 'combination', label: 'Blandhud' }
+                ]}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Skin sensitivity */}
+          <Card className="p-4">
+            <CardContent className="p-0">
+              <RadioGroup
+                title="Hudkänslighet"
+                field="skinSensitivity"
+                options={[
+                  { value: 'low', label: 'Låg' },
+                  { value: 'medium', label: 'Medel' },
+                  { value: 'high', label: 'Hög' }
+                ]}
+              />
+            </CardContent>
+          </Card>
         </div>
-        
-        <Button 
-          onClick={onContinue} 
-          disabled={!isFormValid()}
-          className="bg-blue-500 hover:bg-blue-600"
-        >
-          Slutför
-        </Button>
-      </div>
-
-      {/* Title */}
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Generell Information</h2>
-        <p className="text-gray-600">Fyll i allmän information om kundens hud och livsstil</p>
-      </div>
-
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* When problem starts */}
-        <Card className="p-4">
-          <CardContent className="p-0 space-y-4">
-            <Label className="text-base font-medium">När började problemet?</Label>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm text-gray-600">År</Label>
-                <Select 
-                  value={generalDetails.whenProblemStartsYear} 
-                  onValueChange={(value) => onGeneralDetailsChange('whenProblemStartsYear', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Välj år" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map(year => (
-                      <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-sm text-gray-600">Månad</Label>
-                <Select 
-                  value={generalDetails.whenProblemStartsMonth} 
-                  onValueChange={(value) => onGeneralDetailsChange('whenProblemStartsMonth', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Välj månad" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map(month => (
-                      <SelectItem key={month} value={month}>{month}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Skin status at the moment */}
-        <Card className="p-4">
-          <CardContent className="p-0">
-            <RadioGroup
-              title="Hudstatus för tillfället"
-              field="skinStatusAtMoment"
-              options={[
-                { value: 'worse', label: 'Sämre' },
-                { value: 'same', label: 'Samma' },
-                { value: 'better', label: 'Bättre' }
-              ]}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Treat problem before */}
-        <Card className="p-4">
-          <CardContent className="p-0 space-y-4">
-            <RadioGroup
-              title="Behandlat problemet tidigare"
-              field="treatProblemBefore"
-              options={[
-                { value: 'yes', label: 'Ja' },
-                { value: 'no', label: 'Nej' }
-              ]}
-            />
-            
-            {/* Conditional text input when "Ja" is selected */}
-            {generalDetails.treatProblemBefore === 'yes' && (
-              <div className="space-y-2 mt-4">
-                <Label className="text-sm font-medium text-gray-700">
-                  Beskriv hur problemet behandlats tidigare
-                </Label>
-                <Textarea
-                  placeholder="Beskriv vilka behandlingar, produkter eller metoder som använts tidigare..."
-                  value={generalDetails.treatmentDetails}
-                  onChange={(e) => onGeneralDetailsChange('treatmentDetails', e.target.value)}
-                  className="min-h-[100px]"
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Skin texture */}
-        <Card className="p-4">
-          <CardContent className="p-0">
-            <RadioGroup
-              title="Hudtextur"
-              field="skinTexture"
-              options={[
-                { value: 'dry', label: 'Torr' },
-                { value: 'oily', label: 'Fet' },
-                { value: 'combination', label: 'Blandhud' }
-              ]}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Skin sensitivity */}
-        <Card className="p-4">
-          <CardContent className="p-0">
-            <RadioGroup
-              title="Hudkänslighet"
-              field="skinSensitivity"
-              options={[
-                { value: 'low', label: 'Låg' },
-                { value: 'medium', label: 'Medel' },
-                { value: 'high', label: 'Hög' }
-              ]}
-            />
-          </CardContent>
-        </Card>
-      </div>
+      </StepWrapper>
     </div>
   );
 }

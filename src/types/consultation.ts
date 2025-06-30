@@ -38,6 +38,12 @@ export interface DiagnosisData {
   generalDetails: GeneralDetailsData;
 }
 
+export interface ContraIndicationsData {
+  selectedContraindications: string[];
+  riskLevel: 'none' | 'low' | 'medium' | 'high';
+  notes: string;
+}
+
 export interface ProblemSubcategory {
   id: string;
   name: string;
