@@ -8,6 +8,7 @@ import { ProblemDetailsStep } from './ProblemDetailsStep';
 import { AreaSelectionStep } from './AreaSelectionStep';
 import { GeneralDetailsStep } from './GeneralDetailsStep';
 import { ContraIndicationsStep } from './ContraIndicationsStep';
+import { FinalConfirmationStep } from './FinalConfirmationStep';
 import { useConsultationData } from '@/hooks/useConsultationData';
 import { useConsultationStepManager } from './ConsultationStepManager';
 
@@ -48,18 +49,19 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
     handlePersonalNumberSubmit,
     handlePersonalNumberSkip,
     handleCustomerFormSubmit,
-    handleContraindicationsSubmit,
     handleDiagnosisMethodSelect,
     handleProblemSelectionSubmit,
     handleProblemDetailsSubmit,
     handleAreaSelectionSubmit,
     handleGeneralDetailsSubmit,
+    handleContraindicationsSubmit,
+    handleFinalSubmit,
     getDialogTitle
   } = stepManager;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`${step >= 5 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
+      <DialogContent className={`${step >= 4 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>
@@ -83,41 +85,30 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
         )}
 
         {step === 3 && (
-          <div className="p-0">
-            <ContraIndicationsStep
-              selectedContraindications={contraindicationsData.selectedContraindications}
-              onContraindicationToggle={updateContraindicationToggle}
-              onBack={() => setStep(2)}
-              onContinue={handleContraindicationsSubmit}
-            />
-          </div>
-        )}
-
-        {step === 4 && (
           <DiagnosisMethodStep
             selectedMethod={diagnosisData.method}
             onMethodChange={updateDiagnosisMethod}
-            onBack={() => setStep(3)}
+            onBack={() => setStep(2)}
             onContinue={() => handleDiagnosisMethodSelect(diagnosisData.method)}
           />
         )}
 
-        {step === 5 && (
+        {step === 4 && (
           <div className="p-0">
             <ProblemSelection
               selectedProblems={diagnosisData.selectedProblems}
               onProblemToggle={handleProblemToggle}
-              onBack={() => setStep(4)}
+              onBack={() => setStep(3)}
               onContinue={() => handleProblemSelectionSubmit(diagnosisData.selectedProblems)}
             />
           </div>
         )}
 
-        {step === 6 && (
+        {step === 5 && (
           <div className="p-0">
             <ProblemDetailsStep
               diagnosisData={diagnosisData}
-              onBack={() => setStep(5)}
+              onBack={() => setStep(4)}
               onContinue={() => handleProblemDetailsSubmit(diagnosisData)}
               onSubcategoryChange={updateProblemSubcategory}
               onSymptomSeverityChange={updateSymptomSeverity}
@@ -126,26 +117,51 @@ export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: 
           </div>
         )}
 
-        {step === 7 && (
+        {step === 6 && (
           <div className="p-0">
             <AreaSelectionStep
               selectedAreas={selectedAreas}
               selectedZones={selectedZones}
               onAreasChange={setSelectedAreas}
               onZonesChange={setSelectedZones}
-              onBack={() => setStep(6)}
+              onBack={() => setStep(5)}
               onContinue={() => handleAreaSelectionSubmit(selectedAreas, selectedZones)}
+            />
+          </div>
+        )}
+
+        {step === 7 && (
+          <div className="p-0">
+            <GeneralDetailsStep
+              generalDetails={diagnosisData.generalDetails}
+              onBack={() => setStep(6)}
+              onContinue={handleGeneralDetailsSubmit}
+              onGeneralDetailsChange={updateGeneralDetails}
             />
           </div>
         )}
 
         {step === 8 && (
           <div className="p-0">
-            <GeneralDetailsStep
-              generalDetails={diagnosisData.generalDetails}
+            <ContraIndicationsStep
+              selectedContraindications={contraindicationsData.selectedContraindications}
+              selectedProblems={diagnosisData.selectedProblems}
+              onContraindicationToggle={updateContraindicationToggle}
               onBack={() => setStep(7)}
-              onContinue={() => handleGeneralDetailsSubmit(saveConsultation, onClose)}
-              onGeneralDetailsChange={updateGeneralDetails}
+              onContinue={handleContraindicationsSubmit}
+            />
+          </div>
+        )}
+
+        {step === 9 && (
+          <div className="p-0">
+            <FinalConfirmationStep
+              customerName={customerName}
+              selectedProblems={diagnosisData.selectedProblems}
+              selectedAreas={selectedAreas}
+              riskLevel={contraindicationsData.riskLevel}
+              onBack={() => setStep(8)}
+              onFinish={() => handleFinalSubmit(saveConsultation, onClose)}
             />
           </div>
         )}

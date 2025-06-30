@@ -6,10 +6,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, Info } from 'lucide-react';
 import { ConsultationHeader } from './ConsultationHeader';
 import { StepWrapper } from './StepWrapper';
-import { CONTRAINDICATIONS, CONTRAINDICATION_CATEGORIES } from '@/data/contraindications';
+import { CONTRAINDICATION_CATEGORIES } from '@/data/contraindications';
+import { getRelevantContraindications, getContraindicationContext, categorizeContraindications } from '@/utils/contraindicationFiltering';
 
 interface ContraIndicationsStepProps {
   selectedContraindications: string[];
+  selectedProblems: string[];
   onContraindicationToggle: (contraindicationId: string) => void;
   onBack: () => void;
   onContinue: () => void;
@@ -17,10 +19,15 @@ interface ContraIndicationsStepProps {
 
 export function ContraIndicationsStep({
   selectedContraindications,
+  selectedProblems,
   onContraindicationToggle,
   onBack,
   onContinue
 }: ContraIndicationsStepProps) {
+  const relevantContraindications = getRelevantContraindications(selectedProblems);
+  const contextMessage = getContraindicationContext(selectedProblems);
+  const categorizedContraindications = categorizeContraindications(relevantContraindications);
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
@@ -31,7 +38,7 @@ export function ContraIndicationsStep({
   };
 
   const getRiskLevel = () => {
-    const selectedItems = CONTRAINDICATIONS.filter(item => 
+    const selectedItems = relevantContraindications.filter(item => 
       selectedContraindications.includes(item.id)
     );
     
@@ -43,21 +50,80 @@ export function ContraIndicationsStep({
 
   const riskLevel = getRiskLevel();
 
+  const renderContraindicationSection = (title: string, items: any[], severity: string) => {
+    if (items.length === 0) return null;
+
+    const getSectionColor = () => {
+      switch (severity) {
+        case 'high': return 'border-red-200 bg-red-50';
+        case 'medium': return 'border-yellow-200 bg-yellow-50';
+        case 'low': return 'border-blue-200 bg-blue-50';
+        default: return 'border-gray-200 bg-gray-50';
+      }
+    };
+
+    return (
+      <Card className={`border ${getSectionColor()}`}>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            {severity === 'high' && <AlertTriangle className="h-5 w-5 text-red-600" />}
+            {severity === 'medium' && <Info className="h-5 w-5 text-yellow-600" />}
+            {severity === 'low' && <Info className="h-5 w-5 text-blue-600" />}
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {items.map(item => (
+            <div key={item.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-100 hover:bg-white/50">
+              <Checkbox
+                id={item.id}
+                checked={selectedContraindications.includes(item.id)}
+                onCheckedChange={() => onContraindicationToggle(item.id)}
+                className="mt-1"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <label htmlFor={item.id} className="font-medium text-sm cursor-pointer">
+                    <span className="mr-2">{item.emoji}</span>
+                    {item.name}
+                  </label>
+                  <Badge variant="outline" className={getSeverityColor(item.severity)}>
+                    {item.severity === 'high' ? 'Kritisk' : 
+                     item.severity === 'medium' ? 'Viktigt' : 'Observera'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-600">{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <ConsultationHeader
         onBack={onBack}
         onContinue={onContinue}
         canContinue={true}
-        currentStep={3}
-        totalSteps={8}
+        currentStep={8}
+        totalSteps={9}
         continueText="Fortsätt"
       />
 
       <StepWrapper 
         title="Kontraindikationer"
-        subtitle="Medicinska tillstånd och faktorer som kan påverka behandlingen"
+        subtitle="Medicinska faktorer som kan påverka behandlingen"
       >
+        {/* Context Information */}
+        <Alert className="mb-6 border-blue-200 bg-blue-50">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800">
+            {contextMessage}
+          </AlertDescription>
+        </Alert>
+
         {/* Risk Assessment */}
         {riskLevel !== 'none' && (
           <Alert className={`mb-6 ${
@@ -75,64 +141,40 @@ export function ContraIndicationsStep({
               riskLevel === 'medium' ? 'text-yellow-800' :
               'text-blue-800'
             }>
-              {riskLevel === 'high' && 'Högrisk kontraindikationer identifierade. Konsultera med läkare innan behandling.'}
-              {riskLevel === 'medium' && 'Mediumrisk faktorer identifierade. Extra försiktighet krävs.'}
-              {riskLevel === 'low' && 'Lågrisk faktorer identifierade. Informera kunden om eventuella risker.'}
+              {riskLevel === 'high' && 'Högrisk faktorer identifierade. Konsultera med läkare innan behandling.'}
+              {riskLevel === 'medium' && 'Viktiga faktorer identifierade. Extra försiktighet krävs vid behandling.'}
+              {riskLevel === 'low' && 'Faktorer att ta hänsyn till identifierade. Informera kunden om eventuella risker.'}
             </AlertDescription>
           </Alert>
         )}
 
-        {/* Categories */}
+        {/* Categorized Contraindications */}
         <div className="space-y-6">
-          {CONTRAINDICATION_CATEGORIES.map(category => {
-            const categoryItems = CONTRAINDICATIONS.filter(item => 
-              item.mainCategory === category.id
-            );
-
-            return (
-              <Card key={category.id} className="border border-gray-200">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2">
-                    <span className="text-2xl">{category.emoji}</span>
-                    <span>{category.name}</span>
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">{category.description}</p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {categoryItems.map(item => (
-                    <div key={item.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50">
-                      <Checkbox
-                        id={item.id}
-                        checked={selectedContraindications.includes(item.id)}
-                        onCheckedChange={() => onContraindicationToggle(item.id)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <label htmlFor={item.id} className="font-medium text-sm cursor-pointer">
-                            {item.name}
-                          </label>
-                          <Badge variant="outline" className={getSeverityColor(item.severity)}>
-                            {item.severity === 'high' ? 'Hög risk' : 
-                             item.severity === 'medium' ? 'Medel risk' : 'Låg risk'}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-gray-600">{item.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            );
-          })}
+          {renderContraindicationSection(
+            "Kritiska faktorer", 
+            categorizedContraindications.critical, 
+            'high'
+          )}
+          
+          {renderContraindicationSection(
+            "Viktiga faktorer", 
+            categorizedContraindications.important, 
+            'medium'
+          )}
+          
+          {renderContraindicationSection(
+            "Faktorer att observera", 
+            categorizedContraindications.awareness, 
+            'low'
+          )}
         </div>
 
-        {/* Information */}
+        {/* Summary Information */}
         <Alert className="mt-6">
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Dessa frågor hjälper oss att bedöma säkerheten för behandlingen. 
-            Var ärlig med dina svar för att säkerställa bästa möjliga resultat.
+            Endast relevanta kontraindikationer för dina valda hudproblem visas här. 
+            Var ärlig med dina svar för att säkerställa säker behandling.
           </AlertDescription>
         </Alert>
       </StepWrapper>

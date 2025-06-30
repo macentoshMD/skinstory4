@@ -17,17 +17,12 @@ export function useConsultationStepManager() {
 
   const handleCustomerFormSubmit = (formData: any) => {
     console.log('Customer form submitted:', formData);
-    setStep(3); // Go to contraindications
-  };
-
-  const handleContraindicationsSubmit = () => {
-    console.log('Contraindications submitted');
-    setStep(4); // Go to diagnosis method
+    setStep(3); // Go to diagnosis method
   };
 
   const handleDiagnosisMethodSelect = (diagnosisMethod: string) => {
     if (diagnosisMethod === 'manual') {
-      setStep(5); // Go to problem selection
+      setStep(4); // Go to problem selection
     } else if (diagnosisMethod === 'ai') {
       toast({
         title: "AI-diagnos",
@@ -39,20 +34,30 @@ export function useConsultationStepManager() {
 
   const handleProblemSelectionSubmit = (selectedProblems: string[]) => {
     console.log('Problems selected:', selectedProblems);
-    setStep(6); // Go to problem details
+    setStep(5); // Go to problem details
   };
 
   const handleProblemDetailsSubmit = (diagnosisData: any) => {
     console.log('Problem details submitted:', diagnosisData);
-    setStep(7); // Go to area selection
+    setStep(6); // Go to area selection
   };
 
   const handleAreaSelectionSubmit = (selectedAreas: string[], selectedZones: string[]) => {
     console.log('Areas selected:', { selectedAreas, selectedZones });
-    setStep(8); // Go to general details
+    setStep(7); // Go to general details
   };
 
-  const handleGeneralDetailsSubmit = (saveConsultation: () => void, onClose: () => void) => {
+  const handleGeneralDetailsSubmit = () => {
+    console.log('General details submitted');
+    setStep(8); // Go to contraindications
+  };
+
+  const handleContraindicationsSubmit = () => {
+    console.log('Contraindications submitted');
+    setStep(9); // Go to final step
+  };
+
+  const handleFinalSubmit = (saveConsultation: () => void, onClose: () => void) => {
     saveConsultation();
     onClose();
   };
@@ -61,12 +66,13 @@ export function useConsultationStepManager() {
     switch (step) {
       case 1: return 'Starta Konsultation - Personnummer';
       case 2: return 'Starta Konsultation - Kundformulär';
-      case 3: return 'Kontraindikationer';
-      case 4: return 'Diagnosmetod';
-      case 5: return 'Välj Hudproblem';
-      case 6: return 'Problem Detaljer';
-      case 7: return 'Välj Behandlingsområden';
-      case 8: return 'Generell Information';
+      case 3: return 'Diagnosmetod';
+      case 4: return 'Välj Hudproblem';
+      case 5: return 'Problem Detaljer';
+      case 6: return 'Välj Behandlingsområden';
+      case 7: return 'Generell Information';
+      case 8: return 'Kontraindikationer';
+      case 9: return 'Slutför Konsultation';
       default: return 'Konsultation';
     }
   };
@@ -77,12 +83,13 @@ export function useConsultationStepManager() {
     handlePersonalNumberSubmit,
     handlePersonalNumberSkip,
     handleCustomerFormSubmit,
-    handleContraindicationsSubmit,
     handleDiagnosisMethodSelect,
     handleProblemSelectionSubmit,
     handleProblemDetailsSubmit,
     handleAreaSelectionSubmit,
     handleGeneralDetailsSubmit,
+    handleContraindicationsSubmit,
+    handleFinalSubmit,
     getDialogTitle
   };
 }

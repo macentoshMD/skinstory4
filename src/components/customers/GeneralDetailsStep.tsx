@@ -1,6 +1,3 @@
-
-
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -83,9 +80,9 @@ export function GeneralDetailsStep({
         onBack={onBack}
         onContinue={onContinue}
         canContinue={isFormValid()}
-        currentStep={8}
-        totalSteps={8}
-        continueText="Slutför"
+        currentStep={7}
+        totalSteps={9}
+        continueText="Fortsätt"
       />
 
       <StepWrapper 
@@ -212,5 +209,3 @@ export function GeneralDetailsStep({
     </div>
   );
 }
-
-
