@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProblemSelection } from './ProblemSelection';
@@ -5,17 +6,30 @@ import { PersonalNumberStep } from './PersonalNumberStep';
 import { CustomerFormStep } from './CustomerFormStep';
 import { DiagnosisMethodStep } from './DiagnosisMethodStep';
 import { ProblemDetailsStep } from './ProblemDetailsStep';
+import { AreaSelectionStep } from './AreaSelectionStep';
 import { GeneralDetailsStep } from './GeneralDetailsStep';
 import { CustomerFormData, DiagnosisData } from '@/types/consultation';
+import { useToast } from '@/hooks/use-toast';
 
 interface ConsultationFlowProps {
   isOpen: boolean;
   onClose: () => void;
   customerName: string;
+  customerId?: string;
 }
 
-export function ConsultationFlow({ isOpen, onClose, customerName }: ConsultationFlowProps) {
+interface ConsultationData {
+  customer: CustomerFormData;
+  diagnosis: DiagnosisData;
+  selectedAreas: string[];
+  selectedZones: string[];
+  completedAt: Date;
+}
+
+export function ConsultationFlow({ isOpen, onClose, customerName, customerId }: ConsultationFlowProps) {
   const [step, setStep] = useState(1);
+  const { toast } = useToast();
+  
   const [formData, setFormData] = useState<CustomerFormData>({
     personalNumber: '',
     firstName: '',
@@ -52,6 +66,9 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     }
   });
 
+  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [selectedZones, setSelectedZones] = useState<string[]>([]);
+
   const handlePersonalNumberSubmit = () => {
     const [firstName, lastName] = customerName.split(' ');
     setFormData(prev => ({
@@ -73,7 +90,11 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     if (diagnosisData.method === 'manual') {
       setStep(4);
     } else if (diagnosisData.method === 'ai') {
-      // AI diagnosis - stay on current step (coming soon)
+      toast({
+        title: "AI-diagnos",
+        description: "AI-diagnostik kommer snart. Använd manuell metod för tillfället.",
+        variant: "default"
+      });
     }
   };
 
@@ -93,12 +114,41 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
 
   const handleProblemDetailsSubmit = () => {
     console.log('Problem details submitted:', diagnosisData);
-    setStep(6);
+    setStep(6); // Go to area selection
+  };
+
+  const handleAreaSelectionSubmit = () => {
+    console.log('Areas selected:', { selectedAreas, selectedZones });
+    setStep(7); // Go to general details
   };
 
   const handleGeneralDetailsSubmit = () => {
-    console.log('General details submitted:', diagnosisData.generalDetails);
-    console.log('Full consultation data:', { customer: formData, diagnosis: diagnosisData });
+    const consultationData: ConsultationData = {
+      customer: formData,
+      diagnosis: diagnosisData,
+      selectedAreas,
+      selectedZones,
+      completedAt: new Date()
+    };
+    
+    console.log('Complete consultation data:', consultationData);
+    
+    // Simulate saving consultation data
+    if (customerId) {
+      const savedConsultations = JSON.parse(localStorage.getItem('customer-consultations') || '{}');
+      if (!savedConsultations[customerId]) {
+        savedConsultations[customerId] = [];
+      }
+      savedConsultations[customerId].push(consultationData);
+      localStorage.setItem('customer-consultations', JSON.stringify(savedConsultations));
+      
+      toast({
+        title: "Konsultation sparad",
+        description: `Konsultation för ${customerName} har sparats framgångsrikt.`,
+        variant: "default"
+      });
+    }
+    
     onClose();
   };
 
@@ -138,14 +188,15 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     switch (step) {
       case 4: return 'Välj Hudproblem';
       case 5: return 'Problem Detaljer';
-      case 6: return 'Generell Information';
-      default: return `Starta Konsultation - Steg ${step} av ${step <= 3 ? 3 : 6}`;
+      case 6: return 'Välj Behandlingsområden';
+      case 7: return 'Generell Information';
+      default: return `Starta Konsultation - Steg ${step} av ${step <= 3 ? 3 : 7}`;
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`${step === 4 || step === 5 || step === 6 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
+      <DialogContent className={`${step >= 4 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>
@@ -202,9 +253,22 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
 
         {step === 6 && (
           <div className="p-0">
+            <AreaSelectionStep
+              selectedAreas={selectedAreas}
+              selectedZones={selectedZones}
+              onAreasChange={setSelectedAreas}
+              onZonesChange={setSelectedZones}
+              onBack={() => setStep(5)}
+              onContinue={handleAreaSelectionSubmit}
+            />
+          </div>
+        )}
+
+        {step === 7 && (
+          <div className="p-0">
             <GeneralDetailsStep
               generalDetails={diagnosisData.generalDetails}
-              onBack={() => setStep(5)}
+              onBack={() => setStep(6)}
               onContinue={handleGeneralDetailsSubmit}
               onGeneralDetailsChange={updateGeneralDetails}
             />
