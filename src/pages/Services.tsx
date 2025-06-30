@@ -11,7 +11,7 @@ import { SERVICES } from "@/data/services";
 import { EQUIPMENT } from "@/types/services";
 import { BASE_SERVICES } from "@/types/base-services-data";
 import { PROBLEM_AREAS } from "@/types/problem-areas-data";
-import { TREATMENT_AREAS } from "@/types/treatment-areas-data";
+import { TREATMENT_AREAS } from "@/types/treatment-areas-index";
 import { CONTRAINDICATIONS, CONTRAINDICATION_CATEGORIES } from "@/data/contraindications";
 import { Plus, Search, Filter, Download, Upload, Edit, Trash2, Clock, DollarSign, Wrench, Target, Settings, Tag, AlertTriangle } from "lucide-react";
 import { AreasTab } from "@/components/services/AreasTab";
