@@ -5,6 +5,7 @@ import { PersonalNumberStep } from './PersonalNumberStep';
 import { CustomerFormStep } from './CustomerFormStep';
 import { DiagnosisMethodStep } from './DiagnosisMethodStep';
 import { ProblemDetailsStep } from './ProblemDetailsStep';
+import { GeneralDetailsStep } from './GeneralDetailsStep';
 import { CustomerFormData, DiagnosisData } from '@/types/consultation';
 
 interface ConsultationFlowProps {
@@ -36,7 +37,19 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     problemSeverity: '',
     problemSubcategory: '',
     symptoms: [],
-    skinScore: 0
+    skinScore: 0,
+    generalDetails: {
+      whenProblemStartsYear: '',
+      whenProblemStartsMonth: '',
+      skinStatusAtMoment: '',
+      treatProblemBefore: '',
+      skinTexture: '',
+      skinSensitivity: '',
+      birthControlPills: '',
+      makeupRoutine: '',
+      occupation: '',
+      lifestyle: ''
+    }
   });
 
   const handlePersonalNumberSubmit = () => {
@@ -80,8 +93,12 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
 
   const handleProblemDetailsSubmit = () => {
     console.log('Problem details submitted:', diagnosisData);
+    setStep(6);
+  };
+
+  const handleGeneralDetailsSubmit = () => {
+    console.log('General details submitted:', diagnosisData.generalDetails);
     console.log('Full consultation data:', { customer: formData, diagnosis: diagnosisData });
-    // TODO: Add step 6 - General Customer Information
     onClose();
   };
 
@@ -110,17 +127,25 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
     setDiagnosisData(prev => ({ ...prev, skinScore: score }));
   };
 
+  const updateGeneralDetails = (field: keyof typeof diagnosisData.generalDetails, value: string) => {
+    setDiagnosisData(prev => ({
+      ...prev,
+      generalDetails: { ...prev.generalDetails, [field]: value }
+    }));
+  };
+
   const getDialogTitle = () => {
     switch (step) {
       case 4: return 'Välj Hudproblem';
       case 5: return 'Problem Detaljer';
-      default: return `Starta Konsultation - Steg ${step} av ${step <= 3 ? 3 : 5}`;
+      case 6: return 'Generell Information';
+      default: return `Starta Konsultation - Steg ${step} av ${step <= 3 ? 3 : 6}`;
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`${step === 4 || step === 5 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
+      <DialogContent className={`${step === 4 || step === 5 || step === 6 ? 'max-w-5xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto`}>
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>
@@ -171,6 +196,17 @@ export function ConsultationFlow({ isOpen, onClose, customerName }: Consultation
               onSubcategoryChange={updateProblemSubcategory}
               onSymptomSeverityChange={updateSymptomSeverity}
               onSkinScoreChange={updateSkinScore}
+            />
+          </div>
+        )}
+
+        {step === 6 && (
+          <div className="p-0">
+            <GeneralDetailsStep
+              generalDetails={diagnosisData.generalDetails}
+              onBack={() => setStep(5)}
+              onContinue={handleGeneralDetailsSubmit}
+              onGeneralDetailsChange={updateGeneralDetails}
             />
           </div>
         )}

@@ -1,4 +1,3 @@
-
 export interface CustomerFormData {
   personalNumber: string;
   firstName: string;
@@ -18,6 +17,19 @@ export interface SymptomSeverity {
   severity: number; // 1-5 scale
 }
 
+export interface GeneralDetailsData {
+  whenProblemStartsYear: string;
+  whenProblemStartsMonth: string;
+  skinStatusAtMoment: 'worse' | 'same' | 'better' | '';
+  treatProblemBefore: 'yes' | 'no' | '';
+  skinTexture: 'dry' | 'oily' | 'combination' | '';
+  skinSensitivity: 'low' | 'medium' | 'high' | '';
+  birthControlPills: 'yes' | 'no' | '';
+  makeupRoutine: 'rarely' | 'moderate' | 'often' | '';
+  occupation: string;
+  lifestyle: 'calm' | 'balanced' | 'stressful' | '';
+}
+
 export interface DiagnosisData {
   method: 'ai' | 'manual' | '';
   selectedProblems: string[];
@@ -26,6 +38,7 @@ export interface DiagnosisData {
   problemSubcategory: string;
   symptoms: SymptomSeverity[];
   skinScore: number;
+  generalDetails: GeneralDetailsData;
 }
 
 export interface ProblemSubcategory {
