@@ -1,13 +1,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Info } from 'lucide-react';
+import { AlertTriangle, Info, CheckCircle, X } from 'lucide-react';
 import { ConsultationHeader } from './ConsultationHeader';
 import { StepWrapper } from './StepWrapper';
-import { CONTRAINDICATION_CATEGORIES } from '@/data/contraindications';
-import { getRelevantContraindications, getContraindicationContext, categorizeContraindications } from '@/utils/contraindicationFiltering';
+import { getRelevantContraindications, getContraindicationContext } from '@/utils/contraindicationFiltering';
+import { useState } from 'react';
 
 interface ContraIndicationsStepProps {
   selectedContraindications: string[];
@@ -26,16 +26,80 @@ export function ContraIndicationsStep({
 }: ContraIndicationsStepProps) {
   const relevantContraindications = getRelevantContraindications(selectedProblems);
   const contextMessage = getContraindicationContext(selectedProblems);
-  const categorizedContraindications = categorizeContraindications(relevantContraindications);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+  // Group questions by type for better flow
+  const questionGroups = [
+    {
+      title: "Mediciner",
+      icon: "💊",
+      questions: relevantContraindications.filter(c => 
+        c.id.includes('retinoids') || c.id.includes('tetracycline') || 
+        c.id.includes('hydrochlorothiazide') || c.id.includes('photosensitive')
+      )
+    },
+    {
+      title: "Hälsotillstånd",
+      icon: "🏥", 
+      questions: relevantContraindications.filter(c =>
+        c.id.includes('pregnancy') || c.id.includes('breastfeeding') ||
+        c.id.includes('diabetes') || c.id.includes('immunodeficiency') ||
+        c.id.includes('bleeding_disorders')
+      )
+    },
+    {
+      title: "Hudförhållanden",
+      icon: "✨",
+      questions: relevantContraindications.filter(c =>
+        c.id.includes('dermatitis') || c.id.includes('eczema') ||
+        c.id.includes('herpes') || c.id.includes('wounds') ||
+        c.id.includes('infection') || c.id.includes('cancer')
+      )
+    },
+    {
+      title: "Sol & Behandlingar",
+      icon: "☀️",
+      questions: relevantContraindications.filter(c =>
+        c.id.includes('sunburn') || c.id.includes('spray_tan') ||
+        c.id.includes('laser') || c.id.includes('peel') ||
+        c.id.includes('fitzpatrick')
+      )
+    }
+  ].filter(group => group.questions.length > 0);
+
+  const currentGroup = questionGroups[Math.floor(currentQuestionIndex / 3)] || questionGroups[0];
+  const questionIndexInGroup = currentQuestionIndex % 3;
+  const currentQuestion = currentGroup?.questions[questionIndexInGroup];
+
+  const totalQuestions = questionGroups.reduce((sum, group) => sum + group.questions.length, 0);
+  const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+
+  const handleAnswer = (answer: boolean) => {
+    if (currentQuestion) {
+      if (answer) {
+        if (!selectedContraindications.includes(currentQuestion.id)) {
+          onContraindicationToggle(currentQuestion.id);
+        }
+      } else {
+        if (selectedContraindications.includes(currentQuestion.id)) {
+          onContraindicationToggle(currentQuestion.id);
+        }
+      }
+    }
+    
+    if (currentQuestionIndex < totalQuestions - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
     }
   };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+    }
+  };
+
+  const isCurrentAnswered = currentQuestion ? 
+    (selectedContraindications.includes(currentQuestion.id) ? 'yes' : 'no') : null;
 
   const getRiskLevel = () => {
     const selectedItems = relevantContraindications.filter(item => 
@@ -49,73 +113,60 @@ export function ContraIndicationsStep({
   };
 
   const riskLevel = getRiskLevel();
+  const canContinue = currentQuestionIndex >= totalQuestions - 1;
 
-  const renderContraindicationSection = (title: string, items: any[], severity: string) => {
-    if (items.length === 0) return null;
-
-    const getSectionColor = () => {
-      switch (severity) {
-        case 'high': return 'border-red-200 bg-red-50';
-        case 'medium': return 'border-yellow-200 bg-yellow-50';
-        case 'low': return 'border-blue-200 bg-blue-50';
-        default: return 'border-gray-200 bg-gray-50';
-      }
-    };
-
+  if (!currentQuestion) {
     return (
-      <Card className={`border ${getSectionColor()}`}>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            {severity === 'high' && <AlertTriangle className="h-5 w-5 text-red-600" />}
-            {severity === 'medium' && <Info className="h-5 w-5 text-yellow-600" />}
-            {severity === 'low' && <Info className="h-5 w-5 text-blue-600" />}
-            {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {items.map(item => (
-            <div key={item.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-100 hover:bg-white/50">
-              <Checkbox
-                id={item.id}
-                checked={selectedContraindications.includes(item.id)}
-                onCheckedChange={() => onContraindicationToggle(item.id)}
-                className="mt-1"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <label htmlFor={item.id} className="font-medium text-sm cursor-pointer">
-                    <span className="mr-2">{item.emoji}</span>
-                    {item.name}
-                  </label>
-                  <Badge variant="outline" className={getSeverityColor(item.severity)}>
-                    {item.severity === 'high' ? 'Kritisk' : 
-                     item.severity === 'medium' ? 'Viktigt' : 'Observera'}
-                  </Badge>
-                </div>
-                <p className="text-xs text-gray-600">{item.description}</p>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <ConsultationHeader
+          onBack={onBack}
+          onContinue={onContinue}
+          canContinue={true}
+          currentStep={8}
+          totalSteps={9}
+          continueText="Fortsätt"
+        />
+        <StepWrapper title="Inga kontraindikationer" subtitle="Inga relevanta frågor för dina valda behandlingar">
+          <Alert className="border-green-200 bg-green-50">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800">
+              Inga specifika kontraindikationer behöver kontrolleras för dina valda behandlingar.
+            </AlertDescription>
+          </Alert>
+        </StepWrapper>
+      </div>
     );
-  };
+  }
 
   return (
     <div className="space-y-6">
       <ConsultationHeader
         onBack={onBack}
-        onContinue={onContinue}
-        canContinue={true}
+        onContinue={canContinue ? onContinue : undefined}
+        canContinue={canContinue}
         currentStep={8}
         totalSteps={9}
         continueText="Fortsätt"
       />
 
       <StepWrapper 
-        title="Kontraindikationer"
-        subtitle="Medicinska faktorer som kan påverka behandlingen"
+        title="Säkerhetsfrågor"
+        subtitle={`${currentGroup.icon} ${currentGroup.title} - Fråga ${currentQuestionIndex + 1} av ${totalQuestions}`}
       >
+        {/* Progress bar */}
+        <div className="mb-6">
+          <div className="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Framsteg</span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
         {/* Context Information */}
         <Alert className="mb-6 border-blue-200 bg-blue-50">
           <Info className="h-4 w-4 text-blue-600" />
@@ -124,9 +175,84 @@ export function ContraIndicationsStep({
           </AlertDescription>
         </Alert>
 
-        {/* Risk Assessment */}
-        {riskLevel !== 'none' && (
-          <Alert className={`mb-6 ${
+        {/* Current Question */}
+        <Card className="border-2 border-blue-200">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-3">
+              <div className="text-2xl">{currentQuestion.emoji}</div>
+              <div>
+                <CardTitle className="text-xl">{currentQuestion.name}</CardTitle>
+                {currentQuestion.severity === 'high' && (
+                  <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200 mt-1">
+                    Viktigt
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-gray-700 leading-relaxed">
+              {currentQuestion.description}
+            </p>
+
+            {/* Answer Buttons */}
+            <div className="flex gap-4 justify-center">
+              <Button
+                size="lg"
+                variant={isCurrentAnswered === 'yes' ? 'default' : 'outline'}
+                onClick={() => handleAnswer(true)}
+                className={`px-8 py-4 ${
+                  isCurrentAnswered === 'yes' 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'hover:bg-red-50 hover:border-red-300'
+                }`}
+              >
+                <X className="w-5 h-5 mr-2" />
+                Ja
+              </Button>
+              <Button
+                size="lg"
+                variant={isCurrentAnswered === 'no' ? 'default' : 'outline'}
+                onClick={() => handleAnswer(false)}
+                className={`px-8 py-4 ${
+                  isCurrentAnswered === 'no' 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'hover:bg-green-50 hover:border-green-300'
+                }`}
+              >
+                <CheckCircle className="w-5 h-5 mr-2" />
+                Nej
+              </Button>
+            </div>
+
+            {/* Navigation */}
+            <div className="flex justify-between pt-4">
+              <Button
+                variant="ghost"
+                onClick={handlePrevious}
+                disabled={currentQuestionIndex === 0}
+              >
+                Föregående fråga
+              </Button>
+              <span className="text-sm text-gray-500 self-center">
+                {currentQuestionIndex + 1} av {totalQuestions}
+              </span>
+              {currentQuestionIndex < totalQuestions - 1 && (
+                <Button
+                  variant="ghost"
+                  onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
+                  disabled={!isCurrentAnswered}
+                >
+                  Nästa fråga
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Risk Assessment (shown when done) */}
+        {canContinue && riskLevel !== 'none' && (
+          <Alert className={`mt-6 ${
             riskLevel === 'high' ? 'border-red-200 bg-red-50' :
             riskLevel === 'medium' ? 'border-yellow-200 bg-yellow-50' :
             'border-blue-200 bg-blue-50'
@@ -141,42 +267,12 @@ export function ContraIndicationsStep({
               riskLevel === 'medium' ? 'text-yellow-800' :
               'text-blue-800'
             }>
-              {riskLevel === 'high' && 'Högrisk faktorer identifierade. Konsultera med läkare innan behandling.'}
-              {riskLevel === 'medium' && 'Viktiga faktorer identifierade. Extra försiktighet krävs vid behandling.'}
-              {riskLevel === 'low' && 'Faktorer att ta hänsyn till identifierade. Informera kunden om eventuella risker.'}
+              {riskLevel === 'high' && 'Vissa faktorer identifierade. Vi kommer att diskutera detta vidare.'}
+              {riskLevel === 'medium' && 'Några faktorer att ta hänsyn till. Vi anpassar behandlingen därefter.'}
+              {riskLevel === 'low' && 'Inga allvarliga hinder för behandling identifierade.'}
             </AlertDescription>
           </Alert>
         )}
-
-        {/* Categorized Contraindications */}
-        <div className="space-y-6">
-          {renderContraindicationSection(
-            "Kritiska faktorer", 
-            categorizedContraindications.critical, 
-            'high'
-          )}
-          
-          {renderContraindicationSection(
-            "Viktiga faktorer", 
-            categorizedContraindications.important, 
-            'medium'
-          )}
-          
-          {renderContraindicationSection(
-            "Faktorer att observera", 
-            categorizedContraindications.awareness, 
-            'low'
-          )}
-        </div>
-
-        {/* Summary Information */}
-        <Alert className="mt-6">
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            Endast relevanta kontraindikationer för dina valda hudproblem visas här. 
-            Var ärlig med dina svar för att säkerställa säker behandling.
-          </AlertDescription>
-        </Alert>
       </StepWrapper>
     </div>
   );
