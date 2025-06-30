@@ -1,5 +1,6 @@
 
 
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -31,12 +32,12 @@ export function GeneralDetailsStep({
   ];
 
   const isFormValid = () => {
-    const baseValidation = generalDetails.whenProblemStartsYear &&
-           generalDetails.whenProblemStartsMonth &&
-           generalDetails.skinStatusAtMoment &&
-           generalDetails.treatProblemBefore &&
-           generalDetails.skinTexture &&
-           generalDetails.skinSensitivity;
+    const baseValidation = Boolean(generalDetails.whenProblemStartsYear) &&
+           Boolean(generalDetails.whenProblemStartsMonth) &&
+           Boolean(generalDetails.skinStatusAtMoment) &&
+           Boolean(generalDetails.treatProblemBefore) &&
+           Boolean(generalDetails.skinTexture) &&
+           Boolean(generalDetails.skinSensitivity);
     
     if (generalDetails.treatProblemBefore === 'yes') {
       return baseValidation && generalDetails.treatmentDetails.trim().length > 0;
@@ -211,4 +212,5 @@ export function GeneralDetailsStep({
     </div>
   );
 }
+
 
