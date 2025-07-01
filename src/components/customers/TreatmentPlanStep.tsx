@@ -69,185 +69,445 @@ const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [
   }
 ];
 
-// Enhanced product data with new priority system and duration
-const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
-  id: 'dahl-cleanse-gel',
-  name: 'Gentle Cleansing Gel',
-  brand: 'DAHL',
-  type: 'cleanser',
-  problems: ['acne', 'känslig-hud'],
-  usage: 'Morgon och kväll',
-  price: 450,
-  priority: 'need', // Changed from 'essential'
-  description: 'Mild rengöring för känslig aknebenägen hud med salicylsyra',
-  duration: '3-4 månader',
-  costPerMonth: 125,
-  sizes: [
-    { size: '150ml', price: 450, duration: '3-4 månader' },
-    { size: '250ml', price: 650, duration: '5-6 månader' }
-  ],
-  availableOptions: {
-    strength: ['Mild', 'Medium', 'Strong'],
-    additives: ['Salicylsyra', 'Niacinamide']
+// Enhanced product data with new DAHL products
+const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [
+  // New DAHL Balancing Cleanser products
+  {
+    id: 'balancing-cleanser-level-1',
+    name: 'Balancing Cleanser Level 1',
+    brand: 'DAHL',
+    type: 'cleanser',
+    problems: ['acne', 'rosacea', 'blandhy'],
+    usage: 'Kväll',
+    price: 395,
+    priority: 'need',
+    description: 'Mild rengöring för känslig aknebenägen hud - Level 1',
+    duration: '2-3 månader',
+    costPerMonth: 175,
+    sizes: [
+      { size: '120ml', price: 395, duration: '2-3 månader' },
+      { size: '240ml', price: 595, duration: '4-5 månader' }
+    ],
+    availableOptions: {
+      strength: ['Level 1'],
+      peelingkorn: true
+    }
+  },
+  {
+    id: 'balancing-cleanser-level-2',
+    name: 'Balancing Cleanser Level 2',
+    brand: 'DAHL',
+    type: 'cleanser',
+    problems: ['acne', 'rosacea', 'blandhy'],
+    usage: 'Kväll',
+    price: 395,
+    priority: 'need',
+    description: 'Mer intensiv rengöring för aknebenägen hud - Level 2',
+    duration: '2-3 månader',
+    costPerMonth: 175,
+    sizes: [
+      { size: '120ml', price: 395, duration: '2-3 månader' },
+      { size: '240ml', price: 595, duration: '4-5 månader' }
+    ],
+    availableOptions: {
+      strength: ['Level 2'],
+      peelingkorn: true
+    }
+  },
+  // Balancing Day Cream
+  {
+    id: 'balancing-day-cream',
+    name: 'Balancing Day Cream',
+    brand: 'DAHL',
+    type: 'moisturizer',
+    problems: ['acne', 'rosacea', 'blandhy'],
+    usage: 'Morgon, dag, kväll',
+    price: 395,
+    priority: 'need',
+    description: 'Balanserande dagkräm för aknebenägen hud',
+    duration: '3-4 månader',
+    costPerMonth: 145,
+    sizes: [
+      { size: '120ml', price: 395, duration: '3-4 månader' },
+      { size: '240ml', price: 595, duration: '6-7 månader' }
+    ],
+    availableOptions: {}
+  },
+  // Activator products
+  {
+    id: 'activator-level-1',
+    name: 'Activator Level 1',
+    brand: 'DAHL',
+    type: 'serum',
+    problems: ['acne', 'rosacea'],
+    usage: 'Enligt rutin',
+    price: 395,
+    priority: 'need',
+    description: 'Aktiverande serum för aknebehandling - Level 1',
+    duration: '4-6 månader',
+    costPerMonth: 80,
+    sizes: [
+      { size: '60ml', price: 395, duration: '4-6 månader' }
+    ],
+    availableOptions: {
+      strength: ['Level 1']
+    }
+  },
+  {
+    id: 'activator-level-2',
+    name: 'Activator Level 2',
+    brand: 'DAHL',
+    type: 'serum',
+    problems: ['acne', 'rosacea'],
+    usage: 'Enligt rutin',
+    price: 395,
+    priority: 'need',
+    description: 'Aktiverande serum för aknebehandling - Level 2',
+    duration: '4-6 månader',
+    costPerMonth: 80,
+    sizes: [
+      { size: '60ml', price: 395, duration: '4-6 månader' }
+    ],
+    availableOptions: {
+      strength: ['Level 2']
+    }
+  },
+  {
+    id: 'activator-level-3',
+    name: 'Activator Level 3',
+    brand: 'DAHL',
+    type: 'serum',
+    problems: ['acne', 'rosacea'],
+    usage: 'Enligt rutin',
+    price: 395,
+    priority: 'need',
+    description: 'Aktiverande serum för aknebehandling - Level 3',
+    duration: '4-6 månader',
+    costPerMonth: 80,
+    sizes: [
+      { size: '60ml', price: 395, duration: '4-6 månader' }
+    ],
+    availableOptions: {
+      strength: ['Level 3']
+    }
+  },
+  // Balancing Sulfur Mask
+  {
+    id: 'balancing-sulfur-mask',
+    name: 'Balancing Sulfur Mask',
+    brand: 'DAHL',
+    type: 'treatment',
+    problems: ['acne', 'rosacea'],
+    usage: 'Var fjärde dag',
+    price: 380,
+    priority: 'good',
+    description: 'Balanserande svavelmask för aknebenägen hud',
+    duration: '4-6 månader',
+    costPerMonth: 80,
+    sizes: [
+      { size: '60ml', price: 380, duration: '4-6 månader' },
+      { size: '120ml', price: 650, duration: '8-10 månader' }
+    ],
+    availableOptions: {}
+  },
+  // Balancing Night Cream
+  {
+    id: 'balancing-night-cream',
+    name: 'Balancing Night Cream',
+    brand: 'DAHL',
+    type: 'moisturizer',
+    problems: ['acne', 'rosacea'],
+    usage: 'Kväll',
+    price: 495,
+    priority: 'good',
+    description: 'Balanserande nattkräm för aknebenägen hud',
+    duration: '3-4 månader',
+    costPerMonth: 165,
+    sizes: [
+      { size: '60ml', price: 495, duration: '3-4 månader' }
+    ],
+    availableOptions: {}
+  },
+  // ... keep existing code (original products)
+  {
+    id: 'dahl-cleanse-gel',
+    name: 'Gentle Cleansing Gel',
+    brand: 'DAHL',
+    type: 'cleanser',
+    problems: ['acne', 'känslig-hud'],
+    usage: 'Morgon och kväll',
+    price: 450,
+    priority: 'need',
+    description: 'Mild rengöring för känslig aknebenägen hud med salicylsyra',
+    duration: '3-4 månader',
+    costPerMonth: 125,
+    sizes: [
+      { size: '150ml', price: 450, duration: '3-4 månader' },
+      { size: '250ml', price: 650, duration: '5-6 månader' }
+    ],
+    availableOptions: {
+      strength: ['Mild', 'Medium', 'Strong'],
+      additives: ['Salicylsyra', 'Niacinamide']
+    }
+  },
+  {
+    id: 'dahl-acne-serum',
+    name: 'Acne Control Serum',
+    brand: 'DAHL',
+    type: 'serum',
+    problems: ['acne'],
+    usage: 'Kvällsrutinen',
+    price: 780,
+    priority: 'need',
+    description: 'Kraftfullt serum med retinol och niacinamide för aknebenägen hud',
+    duration: '4-5 månader',
+    costPerMonth: 175,
+    sizes: [
+      { size: '30ml', price: 780, duration: '4-5 månader' },
+      { size: '50ml', price: 1200, duration: '6-7 månader' }
+    ],
+    availableOptions: {
+      strength: ['0.25%', '0.5%', '1%'],
+      additives: ['Hyaluronsyra', 'Peptider']
+    }
+  },
+  {
+    id: 'laroche-toleriane-cleanser',
+    name: 'Toleriane Caring Wash',
+    brand: 'La Roche-Posay',
+    type: 'cleanser',
+    problems: ['känslig-hud', 'rosacea'],
+    usage: 'Morgon och kväll',
+    price: 189,
+    priority: 'good',
+    description: 'Extra mild rengöring för mycket känslig hud',
+    duration: '2-3 månader',
+    costPerMonth: 75,
+    sizes: [
+      { size: '200ml', price: 189, duration: '2-3 månader' },
+      { size: '400ml', price: 320, duration: '4-5 månader' }
+    ],
+    availableOptions: {
+      additives: ['Prebiotika', 'Ceramider']
+    }
+  },
+  {
+    id: 'laroche-anthelios-sunscreen',
+    name: 'Anthelios Ultra Fluid',
+    brand: 'La Roche-Posay',
+    type: 'sunscreen',
+    problems: ['acne', 'pigmentflackar', 'känslig-hud'],
+    usage: 'Varje morgon',
+    price: 225,
+    priority: 'need',
+    description: 'Bred spektrum solskydd för aknebenägen hud',
+    duration: '2-3 månader',
+    costPerMonth: 90,
+    sizes: [
+      { size: '50ml', price: 225, duration: '2-3 månader' },
+      { size: '100ml', price: 380, duration: '4-5 månader' }
+    ],
+    availableOptions: {
+      spf: [30, 50, 60],
+      microbeads: true,
+      additives: ['Antioxidanter', 'Niacinamide']
+    }
+  },
+  {
+    id: 'skinceuticals-ce-ferulic',
+    name: 'CE Ferulic',
+    brand: 'SkinCeuticals',
+    type: 'serum',
+    problems: ['anti-age', 'pigmentflackar'],
+    usage: 'Morgonrutinen',
+    price: 1750,
+    priority: 'good',
+    description: 'Antioxidantserum med vitamin C, E och ferulasyra',
+    duration: '6-8 månader',
+    costPerMonth: 250,
+    sizes: [
+      { size: '30ml', price: 1750, duration: '6-8 månader' }
+    ],
+    availableOptions: {
+      strength: ['15%', '20%']
+    }
   }
-}, {
-  id: 'dahl-acne-serum',
-  name: 'Acne Control Serum',
-  brand: 'DAHL',
-  type: 'serum',
-  problems: ['acne'],
-  usage: 'Kvällsrutinen',
-  price: 780,
-  priority: 'need',
-  description: 'Kraftfullt serum med retinol och niacinamide för aknebenägen hud',
-  duration: '4-5 månader',
-  costPerMonth: 175,
-  sizes: [
-    { size: '30ml', price: 780, duration: '4-5 månader' },
-    { size: '50ml', price: 1200, duration: '6-7 månader' }
-  ],
-  availableOptions: {
-    strength: ['0.25%', '0.5%', '1%'],
-    additives: ['Hyaluronsyra', 'Peptider']
-  }
-}, {
-  id: 'laroche-toleriane-cleanser',
-  name: 'Toleriane Caring Wash',
-  brand: 'La Roche-Posay',
-  type: 'cleanser',
-  problems: ['känslig-hud', 'rosacea'],
-  usage: 'Morgon och kväll',
-  price: 189,
-  priority: 'good',
-  description: 'Extra mild rengöring för mycket känslig hud',
-  duration: '2-3 månader',
-  costPerMonth: 75,
-  sizes: [
-    { size: '200ml', price: 189, duration: '2-3 månader' },
-    { size: '400ml', price: 320, duration: '4-5 månader' }
-  ],
-  availableOptions: {
-    additives: ['Prebiotika', 'Ceramider']
-  }
-}, {
-  id: 'laroche-anthelios-sunscreen',
-  name: 'Anthelios Ultra Fluid',
-  brand: 'La Roche-Posay',
-  type: 'sunscreen',
-  problems: ['acne', 'pigmentflackar', 'känslig-hud'],
-  usage: 'Varje morgon',
-  price: 225,
-  priority: 'need',
-  description: 'Bred spektrum solskydd för aknebenägen hud',
-  duration: '2-3 månader',
-  costPerMonth: 90,
-  sizes: [
-    { size: '50ml', price: 225, duration: '2-3 månader' },
-    { size: '100ml', price: 380, duration: '4-5 månader' }
-  ],
-  availableOptions: {
-    spf: [30, 50, 60],
-    microbeads: true,
-    additives: ['Antioxidanter', 'Niacinamide']
-  }
-}, {
-  id: 'skinceuticals-ce-ferulic',
-  name: 'CE Ferulic',
-  brand: 'SkinCeuticals',
-  type: 'serum',
-  problems: ['anti-age', 'pigmentflackar'],
-  usage: 'Morgonrutinen',
-  price: 1750,
-  priority: 'good',
-  description: 'Antioxidantserum med vitamin C, E och ferulasyra',
-  duration: '6-8 månader',
-  costPerMonth: 250,
-  sizes: [
-    { size: '30ml', price: 1750, duration: '6-8 månader' }
-  ],
-  availableOptions: {
-    strength: ['15%', '20%']
-  }
-}];
+];
 
-// Mock product packages
-const MOCK_PRODUCT_PACKAGES: ProductPackage[] = [{
-  id: 'akne-startpaket',
-  name: 'Akne Startpaket',
-  description: 'Grundläggande produkter för aknebehandling',
-  brand: 'DAHL',
-  problems: ['acne'],
-  priority: 'need',
-  duration: '3-4 månader',
-  costPerMonth: 290,
-  totalPrice: 1150,
-  originalPrice: 1280,
-  discountPercent: 10,
-  products: [
-    {
-      productId: 'dahl-cleanse-gel',
-      name: 'Gentle Cleansing Gel',
-      size: '150ml',
-      quantity: 1,
-      duration: '3-4 månader',
-      attributes: { strength: 'Medium' }
-    },
-    {
-      productId: 'dahl-acne-serum',
-      name: 'Acne Control Serum',
-      size: '30ml',
-      quantity: 1,
-      duration: '4-5 månader',
-      attributes: { strength: '0.5%' }
-    },
-    {
-      productId: 'laroche-anthelios-sunscreen',
-      name: 'Anthelios Ultra Fluid',
-      size: '50ml',
-      quantity: 1,
-      duration: '2-3 månader',
-      attributes: { spf: 50 }
-    }
-  ]
-}, {
-  id: 'komplett-akne-kit',
-  name: 'Komplett Aknebehandling',
-  description: 'Fullständig behandling för måttlig till svår akne',
-  brand: 'DAHL',
-  problems: ['acne'],
-  priority: 'good',
-  duration: '4-6 månader',
-  costPerMonth: 425,
-  totalPrice: 2200,
-  originalPrice: 2650,
-  discountPercent: 15,
-  products: [
-    {
-      productId: 'dahl-cleanse-gel',
-      name: 'Gentle Cleansing Gel',
-      size: '250ml',
-      quantity: 1,
-      duration: '5-6 månader',
-      attributes: { strength: 'Strong' }
-    },
-    {
-      productId: 'dahl-acne-serum',
-      name: 'Acne Control Serum',
-      size: '50ml',
-      quantity: 1,
-      duration: '6-7 månader',
-      attributes: { strength: '1%', additives: ['Hyaluronsyra'] }
-    },
-    {
-      productId: 'laroche-anthelios-sunscreen',
-      name: 'Anthelios Ultra Fluid',
-      size: '100ml',
-      quantity: 1,
-      duration: '4-5 månader',
-      attributes: { spf: 60 }
-    }
-  ]
-}];
+// New product packages with Start and Standard options
+const MOCK_PRODUCT_PACKAGES: ProductPackage[] = [
+  // Start Package
+  {
+    id: 'produktpaket-mot-akne-start',
+    name: 'Produktpaket mot Akne - Start',
+    description: 'Komplett hudvårdsrutin specifikt utvecklat för aknebenägen hud - Startpaket',
+    brand: 'DAHL',
+    problems: ['acne'],
+    priority: 'need',
+    duration: '2-3 månader',
+    costPerMonth: 500,
+    totalPrice: 1495,
+    originalPrice: 1765,
+    discountPercent: 15,
+    products: [
+      {
+        productId: 'balancing-cleanser-level-2',
+        name: 'Balancing Cleanser Level 2',
+        size: '120ml',
+        quantity: 1,
+        duration: '2-3 månader',
+        attributes: { strength: 'Level 2', peelingkorn: true }
+      },
+      {
+        productId: 'activator-level-2',
+        name: 'Activator Level 2',
+        size: '60ml',
+        quantity: 1,
+        duration: '4-6 månader',
+        attributes: { strength: 'Level 2' }
+      },
+      {
+        productId: 'balancing-sulfur-mask',
+        name: 'Balancing Sulfur Mask',
+        size: '60ml',
+        quantity: 1,
+        duration: '4-6 månader'
+      },
+      {
+        productId: 'balancing-day-cream',
+        name: 'Balancing Day Cream',
+        size: '120ml',
+        quantity: 1,
+        duration: '3-4 månader'
+      }
+    ]
+  },
+  // Standard Package
+  {
+    id: 'produktpaket-mot-akne-standard',
+    name: 'Produktpaket mot Akne - Standard',
+    description: 'Komplett hudvårdsrutin specifikt utvecklat för aknebenägen hud - Standardpaket',
+    brand: 'DAHL',
+    problems: ['acne'],
+    priority: 'need',
+    duration: '4-6 månader',
+    costPerMonth: 360,
+    totalPrice: 1795,
+    originalPrice: 2315,
+    discountPercent: 22,
+    products: [
+      {
+        productId: 'balancing-cleanser-level-2',
+        name: 'Balancing Cleanser Level 2',
+        size: '240ml',
+        quantity: 1,
+        duration: '4-5 månader',
+        attributes: { strength: 'Level 2', peelingkorn: true }
+      },
+      {
+        productId: 'activator-level-2',
+        name: 'Activator Level 2',
+        size: '60ml',
+        quantity: 1,
+        duration: '4-6 månader',
+        attributes: { strength: 'Level 2' }
+      },
+      {
+        productId: 'balancing-sulfur-mask',
+        name: 'Balancing Sulfur Mask',
+        size: '120ml',
+        quantity: 1,
+        duration: '8-10 månader'
+      },
+      {
+        productId: 'balancing-day-cream',
+        name: 'Balancing Day Cream',
+        size: '240ml',
+        quantity: 1,
+        duration: '6-7 månader'
+      }
+    ]
+  },
+  // ... keep existing code (original packages)
+  {
+    id: 'akne-startpaket',
+    name: 'Akne Startpaket',
+    description: 'Grundläggande produkter för aknebehandling',
+    brand: 'DAHL',
+    problems: ['acne'],
+    priority: 'need',
+    duration: '3-4 månader',
+    costPerMonth: 290,
+    totalPrice: 1150,
+    originalPrice: 1280,
+    discountPercent: 10,
+    products: [
+      {
+        productId: 'dahl-cleanse-gel',
+        name: 'Gentle Cleansing Gel',
+        size: '150ml',
+        quantity: 1,
+        duration: '3-4 månader',
+        attributes: { strength: 'Medium' }
+      },
+      {
+        productId: 'dahl-acne-serum',
+        name: 'Acne Control Serum',
+        size: '30ml',
+        quantity: 1,
+        duration: '4-5 månader',
+        attributes: { strength: '0.5%' }
+      },
+      {
+        productId: 'laroche-anthelios-sunscreen',
+        name: 'Anthelios Ultra Fluid',
+        size: '50ml',
+        quantity: 1,
+        duration: '2-3 månader',
+        attributes: { spf: 50 }
+      }
+    ]
+  },
+  {
+    id: 'komplett-akne-kit',
+    name: 'Komplett Aknebehandling',
+    description: 'Fullständig behandling för måttlig till svår akne',
+    brand: 'DAHL',
+    problems: ['acne'],
+    priority: 'good',
+    duration: '4-6 månader',
+    costPerMonth: 425,
+    totalPrice: 2200,
+    originalPrice: 2650,
+    discountPercent: 15,
+    products: [
+      {
+        productId: 'dahl-cleanse-gel',
+        name: 'Gentle Cleansing Gel',
+        size: '250ml',
+        quantity: 1,
+        duration: '5-6 månader',
+        attributes: { strength: 'Strong' }
+      },
+      {
+        productId: 'dahl-acne-serum',
+        name: 'Acne Control Serum',
+        size: '50ml',
+        quantity: 1,
+        duration: '6-7 månader',
+        attributes: { strength: '1%', additives: ['Hyaluronsyra'] }
+      },
+      {
+        productId: 'laroche-anthelios-sunscreen',
+        name: 'Anthelios Ultra Fluid',
+        size: '100ml',
+        quantity: 1,
+        duration: '4-5 månader',
+        attributes: { spf: 60 }
+      }
+    ]
+  }
+];
 
 export function TreatmentPlanStep({
   treatmentPlan,
