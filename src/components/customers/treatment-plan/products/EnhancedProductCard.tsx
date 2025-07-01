@@ -1,6 +1,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { DetailedProductRecommendation } from '@/types/consultation';
+import { DurationIndicator } from './DurationIndicator';
 
 interface EnhancedProductCardProps {
   product: DetailedProductRecommendation;
@@ -10,18 +11,18 @@ interface EnhancedProductCardProps {
 export function EnhancedProductCard({ product, onSelect }: EnhancedProductCardProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'essential': return 'bg-red-100 text-red-800 border-red-200';
-      case 'recommended': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'optional': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'need': return 'bg-red-100 text-red-800 border-red-200';
+      case 'good': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'nice': return 'bg-gray-100 text-gray-800 border-gray-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getPriorityText = (priority: string) => {
     switch (priority) {
-      case 'essential': return 'Nödvändig';
-      case 'recommended': return 'Rekommenderad';
-      case 'optional': return 'Valfri';
+      case 'need': return 'MÅSTE HA';
+      case 'good': return 'BRA ATT HA';
+      case 'nice': return 'TREVLIGT';
       default: return priority;
     }
   };
@@ -73,6 +74,12 @@ export function EnhancedProductCard({ product, onSelect }: EnhancedProductCardPr
             {product.type}
           </Badge>
         </div>
+
+        {/* Duration */}
+        <DurationIndicator 
+          duration={product.duration} 
+          costPerMonth={product.costPerMonth}
+        />
 
         {/* Pricing */}
         <div className="flex items-center justify-between pt-2 border-t">

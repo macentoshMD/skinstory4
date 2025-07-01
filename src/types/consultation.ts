@@ -1,4 +1,3 @@
-
 export interface CustomerFormData {
   personalNumber: string;
   firstName: string;
@@ -45,8 +44,10 @@ export interface ProductRecommendation {
   type: 'cleanser' | 'serum' | 'moisturizer' | 'sunscreen' | 'treatment';
   usage: string;
   price: number;
-  priority: 'essential' | 'recommended' | 'optional';
+  priority: 'need' | 'good' | 'nice'; // Changed from 'essential' | 'recommended' | 'optional'
   description: string;
+  duration?: string; // How long the product lasts
+  costPerMonth?: number; // Calculated cost per month
 }
 
 export interface TreatmentRecommendation {
@@ -209,9 +210,12 @@ export interface DetailedTreatmentRecommendation extends TreatmentRecommendation
 export interface DetailedProductRecommendation extends ProductRecommendation {
   problems: string[]; // Vilka problem produkten behandlar
   image?: string; // Produktbild URL
+  duration: string; // How long the product lasts
+  costPerMonth: number; // Calculated cost per month
   sizes: {
     size: string;
     price: number;
+    duration?: string; // How long this size lasts
   }[];
   availableOptions: {
     strength?: string[];
@@ -230,10 +234,51 @@ export interface DetailedProductRecommendation extends ProductRecommendation {
   };
 }
 
+export interface ProductInPackage {
+  productId: string;
+  name: string;
+  size: string;
+  quantity: number;
+  duration: string; // How long this product lasts
+  attributes?: {
+    strength?: string;
+    spf?: number;
+    additives?: string[];
+  };
+}
+
+export interface ProductPackage {
+  id: string;
+  name: string;
+  description: string;
+  brand: string;
+  problems: string[];
+  priority: 'need' | 'good' | 'nice';
+  duration: string; // Overall package duration
+  costPerMonth: number;
+  image?: string;
+  products: ProductInPackage[];
+  totalPrice: number;
+  discountPercent?: number;
+  originalPrice?: number;
+  configuration?: {
+    selectedProducts?: {
+      [productId: string]: {
+        selectedSize?: string;
+        selectedStrength?: string;
+        selectedAdditives?: string[];
+      };
+    };
+    finalPrice: number;
+  };
+}
+
 export interface TreatmentPlanV2 {
   selectedTreatments: DetailedTreatmentRecommendation[];
   selectedProducts: DetailedProductRecommendation[];
+  selectedPackages: ProductPackage[];
   notes: string;
   totalTreatmentPrice: number;
   totalProductPrice: number;
+  totalPackagePrice: number;
 }

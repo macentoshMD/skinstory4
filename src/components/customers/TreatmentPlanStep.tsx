@@ -13,7 +13,8 @@ import { EnhancedServiceConfigurationModal } from './treatment-plan/enhanced-con
 import { SkinPlanCard } from './treatment-plan/skin-plan/SkinPlanCard';
 import { ProductSelectionModal } from './treatment-plan/modals/ProductSelectionModal';
 import { ProductConfigurationModal } from './treatment-plan/modals/ProductConfigurationModal';
-import { TreatmentPlan, DetailedTreatmentRecommendation, DetailedProductRecommendation } from '@/types/consultation';
+import { PackageConfigurationModal } from './treatment-plan/modals/PackageConfigurationModal';
+import { TreatmentPlan, DetailedTreatmentRecommendation, DetailedProductRecommendation, ProductPackage } from '@/types/consultation';
 import { TreatmentMethod, SkinPlan, ConfiguredTreatment, FollowUpAppointment } from '@/types/treatment-methods';
 import { Badge } from '@/components/ui/badge';
 
@@ -27,45 +28,48 @@ interface TreatmentPlanStepProps {
   onContinue: () => void;
 }
 
-// Enhanced mock data with configuration options
-const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [{
-  id: 'treatment-1',
-  name: 'HydraFacial MD',
-  sessions: 4,
-  frequency: 'Var 3:e vecka',
-  price: 1200,
-  priority: 'essential',
-  contraindications: [],
-  description: 'Djuprengöring och återfuktning för aknebenägen hud',
-  category: 'Ansiktsbehandling',
-  availableHandpieces: ['Standard tip', 'Sensitive tip', 'Deep cleansing tip'],
-  treatmentAreas: ['Ansikte', 'Hals', 'Dekolletage', 'Rygg']
-}, {
-  id: 'treatment-2',
-  name: 'LED-ljusterapi',
-  sessions: 8,
-  frequency: '2 gånger per vecka',
-  price: 500,
-  priority: 'recommended',
-  contraindications: ['Ljuskänsliga mediciner'],
-  description: 'Antiinflammatorisk behandling som accelererar läkning',
-  category: 'Ljusterapi',
-  availableHandpieces: ['Red light panel', 'Blue light panel', 'Combined panel'],
-  treatmentAreas: ['Ansikte', 'Rygg', 'Bröst']
-}, {
-  id: 'treatment-3',
-  name: 'Kemisk peeling (Salicylsyra)',
-  sessions: 6,
-  frequency: 'Var 2:a vecka',
-  price: 800,
-  priority: 'recommended',
-  contraindications: ['Retinoider', 'Graviditet'],
-  description: 'Exfolierar och rengör porer på djupet',
-  category: 'Kemisk peeling',
-  availableHandpieces: [],
-  treatmentAreas: ['Ansikte', 'Hals', 'Rygg', 'Bröst']
-}];
-// Enhanced product data with problem mapping and images
+// Enhanced mock data with new priority system and duration
+const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [
+  {
+    id: 'treatment-1',
+    name: 'HydraFacial MD',
+    sessions: 4,
+    frequency: 'Var 3:e vecka',
+    price: 1200,
+    priority: 'essential',
+    contraindications: [],
+    description: 'Djuprengöring och återfuktning för aknebenägen hud',
+    category: 'Ansiktsbehandling',
+    availableHandpieces: ['Standard tip', 'Sensitive tip', 'Deep cleansing tip'],
+    treatmentAreas: ['Ansikte', 'Hals', 'Dekolletage', 'Rygg']
+  }, {
+    id: 'treatment-2',
+    name: 'LED-ljusterapi',
+    sessions: 8,
+    frequency: '2 gånger per vecka',
+    price: 500,
+    priority: 'recommended',
+    contraindications: ['Ljuskänsliga mediciner'],
+    description: 'Antiinflammatorisk behandling som accelererar läkning',
+    category: 'Ljusterapi',
+    availableHandpieces: ['Red light panel', 'Blue light panel', 'Combined panel'],
+    treatmentAreas: ['Ansikte', 'Rygg', 'Bröst']
+  }, {
+    id: 'treatment-3',
+    name: 'Kemisk peeling (Salicylsyra)',
+    sessions: 6,
+    frequency: 'Var 2:a vecka',
+    price: 800,
+    priority: 'recommended',
+    contraindications: ['Retinoider', 'Graviditet'],
+    description: 'Exfolierar och rengör porer på djupet',
+    category: 'Kemisk peeling',
+    availableHandpieces: [],
+    treatmentAreas: ['Ansikte', 'Hals', 'Rygg', 'Bröst']
+  }
+];
+
+// Enhanced product data with new priority system and duration
 const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
   id: 'dahl-cleanse-gel',
   name: 'Gentle Cleansing Gel',
@@ -74,11 +78,13 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
   problems: ['acne', 'känslig-hud'],
   usage: 'Morgon och kväll',
   price: 450,
-  priority: 'essential',
+  priority: 'need', // Changed from 'essential'
   description: 'Mild rengöring för känslig aknebenägen hud med salicylsyra',
+  duration: '3-4 månader',
+  costPerMonth: 125,
   sizes: [
-    { size: '150ml', price: 450 },
-    { size: '250ml', price: 650 }
+    { size: '150ml', price: 450, duration: '3-4 månader' },
+    { size: '250ml', price: 650, duration: '5-6 månader' }
   ],
   availableOptions: {
     strength: ['Mild', 'Medium', 'Strong'],
@@ -92,11 +98,13 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
   problems: ['acne'],
   usage: 'Kvällsrutinen',
   price: 780,
-  priority: 'essential',
+  priority: 'need',
   description: 'Kraftfullt serum med retinol och niacinamide för aknebenägen hud',
+  duration: '4-5 månader',
+  costPerMonth: 175,
   sizes: [
-    { size: '30ml', price: 780 },
-    { size: '50ml', price: 1200 }
+    { size: '30ml', price: 780, duration: '4-5 månader' },
+    { size: '50ml', price: 1200, duration: '6-7 månader' }
   ],
   availableOptions: {
     strength: ['0.25%', '0.5%', '1%'],
@@ -110,11 +118,13 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
   problems: ['känslig-hud', 'rosacea'],
   usage: 'Morgon och kväll',
   price: 189,
-  priority: 'recommended',
+  priority: 'good',
   description: 'Extra mild rengöring för mycket känslig hud',
+  duration: '2-3 månader',
+  costPerMonth: 75,
   sizes: [
-    { size: '200ml', price: 189 },
-    { size: '400ml', price: 320 }
+    { size: '200ml', price: 189, duration: '2-3 månader' },
+    { size: '400ml', price: 320, duration: '4-5 månader' }
   ],
   availableOptions: {
     additives: ['Prebiotika', 'Ceramider']
@@ -127,11 +137,13 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
   problems: ['acne', 'pigmentflackar', 'känslig-hud'],
   usage: 'Varje morgon',
   price: 225,
-  priority: 'essential',
+  priority: 'need',
   description: 'Bred spektrum solskydd för aknebenägen hud',
+  duration: '2-3 månader',
+  costPerMonth: 90,
   sizes: [
-    { size: '50ml', price: 225 },
-    { size: '100ml', price: 380 }
+    { size: '50ml', price: 225, duration: '2-3 månader' },
+    { size: '100ml', price: 380, duration: '4-5 månader' }
   ],
   availableOptions: {
     spf: [30, 50, 60],
@@ -146,14 +158,95 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
   problems: ['anti-age', 'pigmentflackar'],
   usage: 'Morgonrutinen',
   price: 1750,
-  priority: 'recommended',
+  priority: 'good',
   description: 'Antioxidantserum med vitamin C, E och ferulasyra',
+  duration: '6-8 månader',
+  costPerMonth: 250,
   sizes: [
-    { size: '30ml', price: 1750 }
+    { size: '30ml', price: 1750, duration: '6-8 månader' }
   ],
   availableOptions: {
     strength: ['15%', '20%']
   }
+}];
+
+// Mock product packages
+const MOCK_PRODUCT_PACKAGES: ProductPackage[] = [{
+  id: 'akne-startpaket',
+  name: 'Akne Startpaket',
+  description: 'Grundläggande produkter för aknebehandling',
+  brand: 'DAHL',
+  problems: ['acne'],
+  priority: 'need',
+  duration: '3-4 månader',
+  costPerMonth: 290,
+  totalPrice: 1150,
+  originalPrice: 1280,
+  discountPercent: 10,
+  products: [
+    {
+      productId: 'dahl-cleanse-gel',
+      name: 'Gentle Cleansing Gel',
+      size: '150ml',
+      quantity: 1,
+      duration: '3-4 månader',
+      attributes: { strength: 'Medium' }
+    },
+    {
+      productId: 'dahl-acne-serum',
+      name: 'Acne Control Serum',
+      size: '30ml',
+      quantity: 1,
+      duration: '4-5 månader',
+      attributes: { strength: '0.5%' }
+    },
+    {
+      productId: 'laroche-anthelios-sunscreen',
+      name: 'Anthelios Ultra Fluid',
+      size: '50ml',
+      quantity: 1,
+      duration: '2-3 månader',
+      attributes: { spf: 50 }
+    }
+  ]
+}, {
+  id: 'komplett-akne-kit',
+  name: 'Komplett Aknebehandling',
+  description: 'Fullständig behandling för måttlig till svår akne',
+  brand: 'DAHL',
+  problems: ['acne'],
+  priority: 'good',
+  duration: '4-6 månader',
+  costPerMonth: 425,
+  totalPrice: 2200,
+  originalPrice: 2650,
+  discountPercent: 15,
+  products: [
+    {
+      productId: 'dahl-cleanse-gel',
+      name: 'Gentle Cleansing Gel',
+      size: '250ml',
+      quantity: 1,
+      duration: '5-6 månader',
+      attributes: { strength: 'Strong' }
+    },
+    {
+      productId: 'dahl-acne-serum',
+      name: 'Acne Control Serum',
+      size: '50ml',
+      quantity: 1,
+      duration: '6-7 månader',
+      attributes: { strength: '1%', additives: ['Hyaluronsyra'] }
+    },
+    {
+      productId: 'laroche-anthelios-sunscreen',
+      name: 'Anthelios Ultra Fluid',
+      size: '100ml',
+      quantity: 1,
+      duration: '4-5 månader',
+      attributes: { spf: 60 }
+    }
+  ]
 }];
 
 export function TreatmentPlanStep({
@@ -167,6 +260,7 @@ export function TreatmentPlanStep({
 }: TreatmentPlanStepProps) {
   const [skinPlans, setSkinPlans] = useState<SkinPlan[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<DetailedProductRecommendation[]>([]);
+  const [selectedPackages, setSelectedPackages] = useState<ProductPackage[]>([]);
   const [notes, setNotes] = useState<string>('');
 
   // Modal states
@@ -178,6 +272,7 @@ export function TreatmentPlanStep({
   } | null>(null);
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [productConfigModal, setProductConfigModal] = useState<DetailedProductRecommendation | null>(null);
+  const [packageConfigModal, setPackageConfigModal] = useState<ProductPackage | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<TreatmentMethod | null>(null);
 
   const generateRecommendations = () => {
@@ -235,10 +330,22 @@ export function TreatmentPlanStep({
     setProductConfigModal(product);
     setProductModalOpen(false);
   };
+
+  const handlePackageSelect = (pkg: ProductPackage) => {
+    setPackageConfigModal(pkg);
+    setProductModalOpen(false);
+  };
+
   const handleProductConfirm = (configuredProduct: DetailedProductRecommendation) => {
     setSelectedProducts(prev => [...prev, configuredProduct]);
     setProductConfigModal(null);
   };
+
+  const handlePackageConfirm = (configuredPackage: ProductPackage) => {
+    setSelectedPackages(prev => [...prev, configuredPackage]);
+    setPackageConfigModal(null);
+  };
+
   const removeSkinPlan = (skinPlanId: string) => {
     setSkinPlans(prev => prev.filter(plan => plan.id !== skinPlanId));
   };
@@ -249,8 +356,13 @@ export function TreatmentPlanStep({
   const removeProduct = (productId: string) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== productId));
   };
+  const removePackage = (packageId: string) => {
+    setSelectedPackages(prev => prev.filter(p => p.id !== packageId));
+  };
+
   const totalTreatmentPrice = skinPlans.reduce((sum, plan) => sum + plan.treatments.reduce((treatmentSum, treatment) => treatmentSum + treatment.pricing.totalPrice, 0), 0);
   const totalProductPrice = selectedProducts.reduce((sum, product) => sum + (product.configuration?.finalPrice || product.price), 0);
+  const totalPackagePrice = selectedPackages.reduce((sum, pkg) => sum + (pkg.configuration?.finalPrice || pkg.totalPrice), 0);
 
   const getBrandColor = (brand: string) => {
     const colors: { [key: string]: string } = {
@@ -260,6 +372,15 @@ export function TreatmentPlanStep({
       'The Ordinary': 'text-orange-600'
     };
     return colors[brand] || 'text-gray-600';
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'need': return 'text-red-600';
+      case 'good': return 'text-orange-600';
+      case 'nice': return 'text-gray-600';
+      default: return 'text-gray-600';
+    }
   };
 
   return <div className="space-y-6">
@@ -290,11 +411,11 @@ export function TreatmentPlanStep({
             </CardContent>
           </Card>
 
-          {/* Products Section */}
+          {/* Products & Packages Section */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Produkter</span>
+                <span>Produkter & Paket</span>
                 <Button onClick={() => setProductModalOpen(true)} size="sm">
                   <Plus className="h-4 w-4 mr-2" />
                   Lägg till
@@ -302,43 +423,111 @@ export function TreatmentPlanStep({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {selectedProducts.length === 0 ? <p className="text-gray-500 text-center py-8">Inga produkter valda</p> : selectedProducts.map(product => <div key={product.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium">{product.name}</h4>
-                          <Badge variant="outline" className={getBrandColor(product.brand)}>
-                            {product.brand}
-                          </Badge>
+              {selectedProducts.length === 0 && selectedPackages.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">Inga produkter eller paket valda</p>
+              ) : (
+                <>
+                  {/* Individual Products */}
+                  {selectedProducts.map(product => (
+                    <div key={product.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-medium">{product.name}</h4>
+                            <Badge variant="outline" className={getBrandColor(product.brand)}>
+                              {product.brand}
+                            </Badge>
+                            <Badge variant="outline" className={getPriorityColor(product.priority)}>
+                              {product.priority === 'need' ? 'MÅSTE HA' : product.priority === 'good' ? 'BRA ATT HA' : 'TREVLIGT'}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">{product.description}</p>
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <span>{product.usage}</span>
+                            <span>•</span>
+                            <span>{product.type}</span>
+                            <span>•</span>
+                            <span>{Math.round(product.costPerMonth)} kr/mån</span>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-600 mb-1">{product.description}</p>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <span>{product.usage}</span>
-                          <span>•</span>
-                          <span>{product.type}</span>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" onClick={() => setProductConfigModal(product)}>
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => removeProduct(product.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setProductConfigModal(product)}>
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => removeProduct(product.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      
+                      {product.configuration && (
+                        <div className="text-sm space-y-1 bg-gray-50 p-3 rounded">
+                          {product.configuration.selectedSize && <p><span className="font-medium">Storlek:</span> {product.configuration.selectedSize}</p>}
+                          {product.configuration.selectedStrength && <p><span className="font-medium">Styrka:</span> {product.configuration.selectedStrength}</p>}
+                          {product.configuration.selectedSPF && <p><span className="font-medium">SPF:</span> {product.configuration.selectedSPF}</p>}
+                          {product.configuration.selectedAdditives && product.configuration.selectedAdditives.length > 0 && (
+                            <p><span className="font-medium">Tillsatser:</span> {product.configuration.selectedAdditives.join(', ')}</p>
+                          )}
+                          {product.configuration.withMicrobeads && <p><span className="font-medium">Med mikrobeads</span></p>}
+                          <p className="font-bold text-blue-600 pt-1">Pris: {product.configuration.finalPrice} kr</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Product Packages */}
+                  {selectedPackages.map(pkg => (
+                    <div key={pkg.id} className="border rounded-lg p-4 bg-blue-50">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-medium">{pkg.name}</h4>
+                            <Badge variant="outline" className={getBrandColor(pkg.brand)}>
+                              {pkg.brand}
+                            </Badge>
+                            <Badge variant="outline" className={getPriorityColor(pkg.priority)}>
+                              {pkg.priority === 'need' ? 'MÅSTE HA' : pkg.priority === 'good' ? 'BRA ATT HA' : 'TREVLIGT'}
+                            </Badge>
+                            <Badge className="bg-blue-500 text-white">PAKET</Badge>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">{pkg.description}</p>
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <span>{pkg.duration}</span>
+                            <span>•</span>
+                            <span>{Math.round(pkg.costPerMonth)} kr/mån</span>
+                            <span>•</span>
+                            <span>{pkg.products.length} produkter</span>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" onClick={() => setPackageConfigModal(pkg)}>
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => removePackage(pkg.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="text-sm space-y-1 bg-white p-3 rounded">
+                        <p className="font-medium mb-2">Paketinnehåll:</p>
+                        {pkg.products.map((product, index) => (
+                          <div key={index} className="flex items-center justify-between">
+                            <span>{product.name} ({product.size})</span>
+                            <span className="text-gray-500">{product.duration}</span>
+                          </div>
+                        ))}
+                        <div className="flex items-center justify-between pt-2 border-t">
+                          <span className="font-bold text-blue-600">Totalt: {pkg.configuration?.finalPrice || pkg.totalPrice} kr</span>
+                          {pkg.discountPercent && (
+                            <span className="text-green-600 text-xs">Spara {pkg.discountPercent}%</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    
-                    {product.configuration && <div className="text-sm space-y-1 bg-gray-50 p-3 rounded">
-                        {product.configuration.selectedSize && <p><span className="font-medium">Storlek:</span> {product.configuration.selectedSize}</p>}
-                        {product.configuration.selectedStrength && <p><span className="font-medium">Styrka:</span> {product.configuration.selectedStrength}</p>}
-                        {product.configuration.selectedSPF && <p><span className="font-medium">SPF:</span> {product.configuration.selectedSPF}</p>}
-                        {product.configuration.selectedAdditives && product.configuration.selectedAdditives.length > 0 && (
-                          <p><span className="font-medium">Tillsatser:</span> {product.configuration.selectedAdditives.join(', ')}</p>
-                        )}
-                        {product.configuration.withMicrobeads && <p><span className="font-medium">Med mikrobeads</span></p>}
-                        <p className="font-bold text-blue-600 pt-1">Pris: {product.configuration.finalPrice} kr</p>
-                      </div>}
-                  </div>)}
+                  ))}
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -360,10 +549,11 @@ export function TreatmentPlanStep({
             <div className="flex justify-between items-center">
               <span>
                 <strong>Sammanfattning:</strong> Behandlingsplaner ({totalTreatmentPrice.toLocaleString('sv-SE')} kr) + 
-                Produkter ({totalProductPrice.toLocaleString('sv-SE')} kr)
+                Produkter ({totalProductPrice.toLocaleString('sv-SE')} kr) + 
+                Paket ({totalPackagePrice.toLocaleString('sv-SE')} kr)
               </span>
               <span className="font-bold">
-                Totalt: {(totalTreatmentPrice + totalProductPrice).toLocaleString('sv-SE')} kr
+                Totalt: {(totalTreatmentPrice + totalProductPrice + totalPackagePrice).toLocaleString('sv-SE')} kr
               </span>
             </div>
           </AlertDescription>
@@ -380,11 +570,15 @@ export function TreatmentPlanStep({
       <ProductSelectionModal 
         isOpen={productModalOpen} 
         onClose={() => setProductModalOpen(false)} 
-        availableProducts={MOCK_DETAILED_PRODUCTS} 
+        availableProducts={MOCK_DETAILED_PRODUCTS}
+        availablePackages={MOCK_PRODUCT_PACKAGES}
         onProductSelect={handleProductSelect}
+        onPackageSelect={handlePackageSelect}
         selectedProblems={selectedProblems}
       />
 
       <ProductConfigurationModal isOpen={!!productConfigModal} onClose={() => setProductConfigModal(null)} product={productConfigModal} onConfirm={handleProductConfirm} />
+
+      <PackageConfigurationModal isOpen={!!packageConfigModal} onClose={() => setPackageConfigModal(null)} package={packageConfigModal} onConfirm={handlePackageConfirm} />
     </div>;
 }

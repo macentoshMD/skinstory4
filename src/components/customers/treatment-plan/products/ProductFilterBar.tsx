@@ -17,6 +17,7 @@ interface ProductFilterBarProps {
   availableBrands: string[];
   availableTypes: string[];
   onClearFilters: () => void;
+  showPackages?: boolean;
 }
 
 const PROBLEM_LABELS: { [key: string]: string } = {
@@ -48,7 +49,8 @@ export function ProductFilterBar({
   availableProblems,
   availableBrands,
   availableTypes,
-  onClearFilters
+  onClearFilters,
+  showPackages = false
 }: ProductFilterBarProps) {
   const hasActiveFilters = selectedProblems.length > 0 || selectedBrands.length > 0 || selectedTypes.length > 0;
 
@@ -100,7 +102,7 @@ export function ProductFilterBar({
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
         <Input
-          placeholder="Sök produkter..."
+          placeholder={showPackages ? "Sök produktpaket..." : "Sök produkter..."}
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10 bg-white"
