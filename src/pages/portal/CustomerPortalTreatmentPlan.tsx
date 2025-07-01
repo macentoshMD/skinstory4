@@ -1,413 +1,301 @@
+import { useState } from 'react';
 import { CustomerPortalLayout } from '@/components/portal/CustomerPortalLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Calendar, 
+  CheckCircle, 
   Clock, 
-  Droplets, 
-  Sun, 
-  Moon, 
-  Package,
-  CheckCircle,
-  AlertCircle,
-  Zap
+  Home,
+  Building2,
+  Star,
+  Shield,
+  UserCheck,
+  Zap,
+  X
 } from 'lucide-react';
 
 const CustomerPortalTreatmentPlan = () => {
+  const [showStartModal, setShowStartModal] = useState(false);
+
   // Mock treatment plan data
   const treatmentPlan = {
+    problemName: 'Akne',
+    duration: '12 veckor',
+    totalSessions: 8,
+    clinicSessions: 6,
+    homeCareDays: 84,
+    
     clinicTreatments: [
       {
-        id: 1,
-        name: 'LED-ljusterapi',
-        nextSession: '2024-07-15',
-        sessionsCompleted: 4,
-        totalSessions: 8,
-        frequency: 'Varannan vecka',
-        duration: '45 minuter',
-        therapist: 'Maria Svensson',
-        status: 'active',
-        problems: ['Akne', 'Inflammation']
+        week: 1,
+        treatment: 'Laser - Problem Skin - 5X',
+        duration: '45 min',
+        price: '9 995 kr'
       },
       {
-        id: 2,
-        name: 'Kemisk peeling',
-        nextSession: '2024-07-22',
-        sessionsCompleted: 2,
-        totalSessions: 6,
-        frequency: 'Var 3:e vecka',
-        duration: '60 minuter',
-        therapist: 'Anna Nilsson',
-        status: 'active',
-        problems: ['Ojämn hudton', 'Pigmentering']
+        week: 3,
+        treatment: 'Balancing Cleanser',
+        duration: '30 min',
+        price: '395 kr'
+      },
+      {
+        week: 5,
+        treatment: 'Activator',
+        duration: '30 min',
+        price: '395 kr'
+      },
+      {
+        week: 7,
+        treatment: 'Balancing Sulfur Mask',
+        duration: '45 min',
+        price: '495 kr'
+      },
+      {
+        week: 9,
+        treatment: 'Balancing Day Cream',
+        duration: '30 min',
+        price: '395 kr'
+      },
+      {
+        week: 11,
+        treatment: 'Pore cleansing',
+        duration: '60 min',
+        price: '999 kr'
       }
     ],
-    homeRoutine: {
-      morning: [
-        {
-          step: 1,
-          product: 'Gentle Cleanser',
-          instruction: 'Rengör ansiktet med ljummet vatten',
-          duration: '2 minuter'
-        },
-        {
-          step: 2,
-          product: 'Vitamin C Serum',
-          instruction: 'Applicera 3-4 droppar på ren hud',
-          duration: '1 minut'
-        },
-        {
-          step: 3,
-          product: 'Moisturizer SPF 50',
-          instruction: 'Fukta och skydda mot UV-strålning',
-          duration: '1 minut'
-        }
-      ],
-      evening: [
-        {
-          step: 1,
-          product: 'Oil Cleanser',
-          instruction: 'Ta bort makeup och smuts',
-          duration: '2 minuter'
-        },
-        {
-          step: 2,
-          product: 'Gentle Cleanser',
-          instruction: 'Djuprengör porerna',
-          duration: '2 minuter'
-        },
-        {
-          step: 3,
-          product: 'Retinol Serum',
-          instruction: 'Applicera varannan kväll på ren hud',
-          duration: '1 minut',
-          frequency: 'Varannan kväll'
-        },
-        {
-          step: 4,
-          product: 'Night Moisturizer',
-          instruction: 'Fukta och reparera huden över natten',
-          duration: '1 minut'
-        }
-      ],
-      weekly: [
-        {
-          name: 'Exfoliering',
-          product: 'BHA Exfoliant',
-          frequency: '2 gånger per vecka',
-          instruction: 'Applicera på kvällen efter rengöring'
-        },
-        {
-          name: 'Fuktmask',
-          product: 'Hydrating Mask',
-          frequency: '1 gång per vecka',
-          instruction: 'Lämna på i 15-20 minuter'
-        }
-      ]
-    },
-    products: [
+
+    homeCarePlan: [
       {
-        id: 1,
-        name: 'Gentle Cleanser',
-        brand: 'SkinCare Pro',
-        category: 'Rengöring',
-        status: 'in-stock',
-        lastOrdered: '2024-06-15',
-        estimatedEmpty: '2024-08-15'
+        product: 'Balancing Cleanser',
+        usage: 'Morgon & kväll',
+        duration: '12 veckor',
+        price: '395 kr'
       },
       {
-        id: 2,
-        name: 'Vitamin C Serum',
-        brand: 'SkinCare Pro',
-        category: 'Serum',
-        status: 'low-stock',
-        lastOrdered: '2024-06-01',
-        estimatedEmpty: '2024-07-20'
+        product: 'Activator',
+        usage: 'Morgon',
+        duration: '12 veckor',
+        price: '395 kr'
       },
       {
-        id: 3,
-        name: 'Retinol Serum',
-        brand: 'Advanced Skin',
-        category: 'Serum',
-        status: 'in-stock',
-        lastOrdered: '2024-06-10',
-        estimatedEmpty: '2024-09-10'
+        product: 'Balancing Sulfur Mask',
+        usage: '2x per vecka',
+        duration: '12 veckor',
+        price: '495 kr'
+      },
+      {
+        product: 'Balancing Day Cream',
+        usage: 'Morgon',
+        duration: '12 veckor',
+        price: '395 kr'
+      },
+      {
+        product: 'Balancing Sun Cream',
+        usage: 'Vid behov',
+        duration: '12 veckor',
+        price: '295 kr'
       }
-    ]
-  };
+    ],
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'completed':
-        return 'bg-blue-100 text-blue-800';
-      case 'paused':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+    pricing: {
+      commitTotal: '12 969 kr',
+      payAsYouGoTotal: '18 745 kr',
+      savings: '5 776 kr'
     }
   };
 
-  const getProductStatusColor = (status: string) => {
-    switch (status) {
-      case 'in-stock':
-        return 'bg-green-100 text-green-800';
-      case 'low-stock':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'out-of-stock':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const commitBenefits = [
+    { icon: Home, text: 'Personal Home Care plan', included: true },
+    { icon: Building2, text: 'Personal Clinic Care plan', included: true },
+    { icon: Shield, text: 'Results guarantee', included: true },
+    { icon: UserCheck, text: 'Personal therapist', included: true },
+    { icon: Star, text: 'Priority booking', included: true }
+  ];
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('sv-SE', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
+  const payAsYouGoBenefits = [
+    { icon: Home, text: 'Personal Home Care plan', included: true },
+    { icon: Building2, text: 'Personal Clinic Care plan', included: true },
+    { icon: Shield, text: 'Results guarantee', included: false },
+    { icon: UserCheck, text: 'Personal therapist', included: false },
+    { icon: Star, text: 'Priority booking', included: false }
+  ];
 
   return (
     <CustomerPortalLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Min Behandlingsplan</h1>
-          <p className="text-muted-foreground mt-2">Din personliga väg till friskare hud</p>
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold text-gray-900">Din Behandlingsplan</h1>
+          <p className="text-muted-foreground">
+            Personlig plan för {treatmentPlan.problemName} - {treatmentPlan.duration}
+          </p>
         </div>
 
-        <Tabs defaultValue="clinic" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="clinic" className="flex items-center gap-2">
-              <Zap className="h-4 w-4" />
-              Klinikvård
-            </TabsTrigger>
-            <TabsTrigger value="home" className="flex items-center gap-2">
-              <Sun className="h-4 w-4" />
-              Hemmavård
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Produkter
-            </TabsTrigger>
-          </TabsList>
+        {/* Plan Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardContent className="p-6 text-center">
+              <div className="text-3xl font-bold text-purple-600">{treatmentPlan.totalSessions}</div>
+              <p className="text-muted-foreground">Totala sessioner</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6 text-center">
+              <div className="text-3xl font-bold text-blue-600">{treatmentPlan.clinicSessions}</div>
+              <p className="text-muted-foreground">Klinikbehandlingar</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6 text-center">
+              <div className="text-3xl font-bold text-green-600">{treatmentPlan.homeCareDays}</div>
+              <p className="text-muted-foreground">Dagar hemmavård</p>
+            </CardContent>
+          </Card>
+        </div>
 
-          <TabsContent value="clinic" className="space-y-6">
-            <div className="grid gap-6">
-              {treatmentPlan.clinicTreatments.map((treatment) => {
-                const progress = (treatment.sessionsCompleted / treatment.totalSessions) * 100;
-                
-                return (
-                  <Card key={treatment.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <CardTitle className="flex items-center gap-3">
-                            {treatment.name}
-                            <Badge className={getStatusColor(treatment.status)}>
-                              Aktiv
-                            </Badge>
-                          </CardTitle>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Behandlas av {treatment.therapist}
-                          </p>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    
-                    <CardContent className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-center gap-2 text-sm">
-                          <Calendar className="h-4 w-4 text-blue-500" />
-                          <div>
-                            <div className="font-medium">Nästa session</div>
-                            <div className="text-muted-foreground">{formatDate(treatment.nextSession)}</div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-sm">
-                          <Clock className="h-4 w-4 text-green-500" />
-                          <div>
-                            <div className="font-medium">Varaktighet</div>
-                            <div className="text-muted-foreground">{treatment.duration}</div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-sm">
-                          <Droplets className="h-4 w-4 text-purple-500" />
-                          <div>
-                            <div className="font-medium">Frekvens</div>
-                            <div className="text-muted-foreground">{treatment.frequency}</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Genomförda sessioner</span>
-                          <span>{treatment.sessionsCompleted} av {treatment.totalSessions}</span>
-                        </div>
-                        <Progress value={progress} className="h-2" />
-                      </div>
-
-                      <div>
-                        <div className="text-sm font-medium mb-2">Behandlar:</div>
-                        <div className="flex flex-wrap gap-2">
-                          {treatment.problems.map((problem, index) => (
-                            <Badge key={index} variant="outline">
-                              {problem}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-
-                      <Button className="w-full md:w-auto">
-                        Boka nästa session
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="home" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Morning Routine */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Sun className="h-5 w-5 text-yellow-500" />
-                    Morgonrutin
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {treatmentPlan.homeRoutine.morning.map((step) => (
-                    <div key={step.step} className="flex gap-3 p-3 bg-yellow-50 rounded-lg">
-                      <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {step.step}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{step.product}</div>
-                        <div className="text-xs text-muted-foreground">{step.instruction}</div>
-                        <div className="text-xs text-yellow-700 mt-1">{step.duration}</div>
+        {/* Clinic Treatments */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-blue-600" />
+              Klinikbehandlingar
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {treatmentPlan.clinicTreatments.map((treatment, index) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-bold">V{treatment.week}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">{treatment.treatment}</h4>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {treatment.duration}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Evening Routine */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Moon className="h-5 w-5 text-blue-500" />
-                    Kvällsrutin
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {treatmentPlan.homeRoutine.evening.map((step) => (
-                    <div key={step.step} className="flex gap-3 p-3 bg-blue-50 rounded-lg">
-                      <div className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {step.step}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{step.product}</div>
-                        <div className="text-xs text-muted-foreground">{step.instruction}</div>
-                        <div className="text-xs text-blue-700 mt-1">
-                          {step.frequency || step.duration}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Weekly Treatments */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Veckobehandlingar</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {treatmentPlan.homeRoutine.weekly.map((treatment, index) => (
-                    <div key={index} className="p-4 border rounded-lg">
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-medium">{treatment.name}</h4>
-                        <Badge variant="outline">{treatment.frequency}</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">{treatment.product}</p>
-                      <p className="text-xs text-gray-600">{treatment.instruction}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="products" className="space-y-6">
-            <div className="grid gap-4">
-              {treatmentPlan.products.map((product) => (
-                <Card key={product.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold">{product.name}</h3>
-                          <Badge className={getProductStatusColor(product.status)}>
-                            {product.status === 'in-stock' && 'I lager'}
-                            {product.status === 'low-stock' && 'Lågt lager'}
-                            {product.status === 'out-of-stock' && 'Slut i lager'}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{product.brand} • {product.category}</p>
-                        <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
-                          <div>Senast beställd: {formatDate(product.lastOrdered)}</div>
-                          <div>Beräknas ta slut: {formatDate(product.estimatedEmpty)}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        {product.status === 'low-stock' && (
-                          <Button size="sm" className="flex items-center gap-1">
-                            <AlertCircle className="h-3 w-3" />
-                            Beställ nu
-                          </Button>
-                        )}
-                        {product.status === 'in-stock' && (
-                          <Button size="sm" variant="outline">
-                            Beställ mer
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            <Card className="bg-blue-50 border-blue-200">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold text-blue-900">Produktpåminnelser</h3>
-                    <p className="text-sm text-blue-800 mt-1">
-                      Du får automatiska påminnelser när dina produkter börjar ta slut. 
-                      Håll alltid rätt produkter hemma för bästa resultat.
-                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-semibold">{treatment.price}</div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Home Care Plan */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Home className="h-5 w-5 text-green-600" />
+              Hemmavårdsplan
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {treatmentPlan.homeCarePlan.map((product, index) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <h4 className="font-semibold">{product.product}</h4>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>{product.usage}</span>
+                      <span>•</span>
+                      <span>{product.duration}</span>
+                    </div>
+                  </div>
+                  <div className="font-semibold">{product.price}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Start Treatment Button */}
+        <div className="text-center">
+          <Dialog open={showStartModal} onOpenChange={setShowStartModal}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 px-12">
+                <Zap className="h-5 w-5 mr-2" />
+                Starta behandlingsplan
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Välj betalningsalternativ</DialogTitle>
+              </DialogHeader>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {/* Commit Option */}
+                <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100">
+                  <CardHeader className="text-center">
+                    <CardTitle className="text-xl text-purple-800">Commit</CardTitle>
+                    <div className="text-3xl font-bold text-purple-600">{treatmentPlan.pricing.commitTotal}</div>
+                    <p className="text-sm text-purple-700">
+                      Spara {treatmentPlan.pricing.savings} jämfört med pay-as-you-go
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-center text-purple-700 mb-4">
+                      Betala en gång - få hela behandlingsplanen med alla fördelar. Inga extra kostnader, inga överraskningar.
+                    </p>
+                    <div className="space-y-3">
+                      {commitBenefits.map((benefit, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                          <span className="text-sm">{benefit.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 mt-6">
+                      Välj Commit
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Pay-as-you-go Option */}
+                <Card className="border-2 border-gray-200">
+                  <CardHeader className="text-center">
+                    <CardTitle className="text-xl">Pay-as-you-go</CardTitle>
+                    <div className="text-3xl font-bold">{treatmentPlan.pricing.payAsYouGoTotal}</div>
+                    <p className="text-sm text-muted-foreground">
+                      Betala per behandling
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-center text-muted-foreground mb-4">
+                      Börja din behandling steg för steg. Prova det innan du fullständigt commitar.
+                    </p>
+                    <div className="space-y-3">
+                      {payAsYouGoBenefits.map((benefit, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          {benefit.included ? (
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <X className="h-5 w-5 text-red-500" />
+                          )}
+                          <span className={`text-sm ${!benefit.included ? 'text-muted-foreground line-through' : ''}`}>
+                            {benefit.text}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button variant="outline" className="w-full mt-6">
+                      Välj Pay-as-you-go
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </CustomerPortalLayout>
   );
