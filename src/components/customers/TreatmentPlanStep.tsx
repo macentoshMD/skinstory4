@@ -595,7 +595,10 @@ export function TreatmentPlanStep({
                             <div key={index} className="flex items-center justify-between">
                               <span>{product.name}</span>
                               <div className="text-gray-500 text-xs">
-                                {selectedStrength && <span>{selectedStrength}</span>}
+                                {/* Only show strength for Cleanser and Activator */}
+                                {(product.name.includes('Cleanser') || product.name.includes('Activator')) && selectedStrength && (
+                                  <span>{selectedStrength}</span>
+                                )}
                                 {selectedPeelingkorn === 'yes' && product.name.includes('Cleanser') && (
                                   <span className="ml-2 text-blue-600">Med peelingkorn</span>
                                 )}
