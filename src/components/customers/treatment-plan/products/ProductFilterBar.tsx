@@ -54,7 +54,6 @@ export function ProductFilterBar({
 
   const handleProblemSelect = (value: string) => {
     if (value === 'all') {
-      // Clear all problems
       selectedProblems.forEach(problem => onProblemToggle(problem));
     } else {
       onProblemToggle(value);
@@ -63,7 +62,6 @@ export function ProductFilterBar({
 
   const handleBrandSelect = (value: string) => {
     if (value === 'all') {
-      // Clear all brands
       selectedBrands.forEach(brand => onBrandToggle(brand));
     } else {
       onBrandToggle(value);
@@ -72,10 +70,9 @@ export function ProductFilterBar({
 
   const handleTypeSelect = (value: string) => {
     if (value === 'all') {
-      // Clear all types
       selectedTypes.forEach(type => onTypeToggle(type));
     } else {
-      onTypeToggle(type);
+      onTypeToggle(value);
     }
   };
 
@@ -194,15 +191,15 @@ export function ProductFilterBar({
             </SelectTrigger>
             <SelectContent className="bg-white border shadow-lg z-50">
               <SelectItem value="all">Alla typer</SelectItem>
-              {availableTypes.map(type => (
+              {availableTypes.map(productType => (
                 <SelectItem 
-                  key={type} 
-                  value={type}
-                  className={selectedTypes.includes(type) ? 'bg-blue-50 font-medium' : ''}
+                  key={productType} 
+                  value={productType}
+                  className={selectedTypes.includes(productType) ? 'bg-blue-50 font-medium' : ''}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span>{TYPE_LABELS[type] || type}</span>
-                    {selectedTypes.includes(type) && (
+                    <span>{TYPE_LABELS[productType] || productType}</span>
+                    {selectedTypes.includes(productType) && (
                       <span className="ml-2 text-blue-600">✓</span>
                     )}
                   </div>
@@ -239,11 +236,11 @@ export function ProductFilterBar({
               </button>
             </span>
           ))}
-          {selectedTypes.map(type => (
-            <span key={type} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
-              {TYPE_LABELS[type] || type}
+          {selectedTypes.map(productType => (
+            <span key={productType} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+              {TYPE_LABELS[productType] || productType}
               <button
-                onClick={() => onTypeToggle(type)}
+                onClick={() => onTypeToggle(productType))
                 className="hover:bg-purple-200 rounded-full p-0.5"
               >
                 <X className="h-3 w-3" />
