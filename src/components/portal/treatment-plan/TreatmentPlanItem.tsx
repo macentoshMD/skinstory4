@@ -7,7 +7,7 @@ import HomeCareCard from './HomeCareCard';
 import TreatmentStatusBadge from './TreatmentStatusBadge';
 import { getSeverityColor } from '@/utils/treatmentPlanHelpers';
 import { TreatmentPlan } from '@/types/treatment-plan';
-import { Clock, Users, TrendingUp, ChevronDown, CreditCard, Calendar } from 'lucide-react';
+import { Clock, Users, TrendingUp, ChevronDown, CreditCard, Calendar, Building2, User } from 'lucide-react';
 import { useState } from 'react';
 import PaymentOptionModal from './PaymentOptionModal';
 
@@ -71,25 +71,24 @@ const TreatmentPlanItem = ({
             <div className="grid grid-cols-3 gap-6 text-center">
               <div>
                 <div className="flex items-center justify-center gap-2 mb-1">
+                  <Building2 className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-500">Klinik</span>
+                </div>
+                <div className="font-semibold">AcneSpecialisten</div>
+              </div>
+              <div>
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <User className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-500">Din Terapeut</span>
+                </div>
+                <div className="font-semibold">Cazzandra</div>
+              </div>
+              <div>
+                <div className="flex items-center justify-center gap-2 mb-1">
                   <Clock className="h-4 w-4 text-gray-500" />
                   <span className="text-sm text-gray-500">Varaktighet</span>
                 </div>
                 <div className="font-semibold">{treatmentPlan.plan.duration}</div>
-              </div>
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Users className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-500">Sessioner</span>
-                </div>
-                <div className="font-semibold">{treatmentPlan.plan.clinicSessions}</div>
-              </div>
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-blue-500" />
-                  <span className="text-sm text-gray-500">Hudterapeut</span>
-                </div>
-                <div className="font-semibold text-blue-600">Sarah Andersson</div>
-                <div className="text-xs text-gray-500">Skincare Clinic Stockholm</div>
               </div>
             </div>
           </div>
