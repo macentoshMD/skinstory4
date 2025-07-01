@@ -422,12 +422,14 @@ export function TreatmentPlanStep({
     setMethodModalOpen(false);
   };
   const handleTreatmentSelect = (treatment: DetailedTreatmentRecommendation) => {
+    console.log('handleTreatmentSelect called with:', treatment.name);
     // Open service configuration directly
     setServiceConfigModal({
       service: treatment,
       method: null
     });
     setTreatmentModalOpen(false);
+    console.log('Service config modal should open now');
   };
 
   const handleServiceSelect = (service: DetailedTreatmentRecommendation) => {
@@ -534,7 +536,7 @@ export function TreatmentPlanStep({
             </CardHeader>
             <CardContent className="space-y-4">
               {skinPlans.length === 0 ? <p className="text-gray-500 text-center py-8">
-                  Inga behandlingsplaner skapade. Klicka på "Lägg till plan" för att börja.
+                  Inga behandlingar skapade. Klicka på "Lägg till behandling" för att börja.
                 </p> : skinPlans.map(plan => <SkinPlanCard key={plan.id} skinPlan={plan} onEdit={editSkinPlan} onDelete={removeSkinPlan} />)}
             </CardContent>
           </Card>
