@@ -5,7 +5,6 @@ import { DetailedProductRecommendation, ProductPackage } from '@/types/consultat
 import { ProductFilterBar } from '../products/ProductFilterBar';
 import { EnhancedProductCard } from '../products/EnhancedProductCard';
 import { ProductPackageCard } from '../products/ProductPackageCard';
-import { ProductToggle } from '../products/ProductToggle';
 
 interface ProductSelectionModalProps {
   isOpen: boolean;
@@ -30,7 +29,6 @@ export function ProductSelectionModal({
   const [selectedProblemFilters, setSelectedProblemFilters] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [showPackages, setShowPackages] = useState(false);
 
   // Auto-set problem filters based on diagnosis
   useEffect(() => {
@@ -39,47 +37,35 @@ export function ProductSelectionModal({
     }
   }, [selectedProblems]);
 
-  // Get available options based on current view
-  const availableProblems = showPackages 
-    ? [...new Set(availablePackages.flatMap(p => p.problems))]
-    : [...new Set(availableProducts.flatMap(p => p.problems))];
-  
-  const availableBrands = showPackages
-    ? [...new Set(availablePackages.map(p => p.brand))]
-    : [...new Set(availableProducts.map(p => p.brand))];
-  
-  const availableTypes = showPackages
-    ? ['package'] // Only packages when showing packages
-    : [...new Set(availableProducts.map(p => p.type))];
+  // Combine products and packages for unified filtering
+  const allItems = [
+    ...availableProducts.map(p => ({ ...p, itemType: 'product' as const })),
+    ...availablePackages.map(p => ({ ...p, itemType: 'package' as const, type: 'package' }))
+  ];
 
-  // Filter logic for products
-  const filteredProducts = availableProducts.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
+  // Get available filter options from all items
+  const availableProblems = [...new Set(allItems.flatMap(item => item.problems))];
+  const availableBrands = [...new Set(allItems.map(item => item.brand))];
+  const availableTypes = [...new Set(allItems.map(item => item.type))];
+
+  // Unified filter logic for all items
+  const filteredItems = allItems.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesProblems = selectedProblemFilters.length === 0 || 
-                           selectedProblemFilters.some(problem => product.problems.includes(problem));
+                           selectedProblemFilters.some(problem => item.problems.includes(problem));
     
-    const matchesBrands = selectedBrands.length === 0 || selectedBrands.includes(product.brand);
-    const matchesTypes = selectedTypes.length === 0 || selectedTypes.includes(product.type);
+    const matchesBrands = selectedBrands.length === 0 || selectedBrands.includes(item.brand);
+    const matchesTypes = selectedTypes.length === 0 || selectedTypes.includes(item.type);
     
     return matchesSearch && matchesProblems && matchesBrands && matchesTypes;
   });
 
-  // Filter logic for packages
-  const filteredPackages = availablePackages.filter(pkg => {
-    const matchesSearch = pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pkg.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pkg.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesProblems = selectedProblemFilters.length === 0 || 
-                           selectedProblemFilters.some(problem => pkg.problems.includes(problem));
-    
-    const matchesBrands = selectedBrands.length === 0 || selectedBrands.includes(pkg.brand);
-    
-    return matchesSearch && matchesProblems && matchesBrands;
-  });
+  // Separate filtered items back into products and packages for rendering
+  const filteredProducts = filteredItems.filter(item => item.itemType === 'product') as (DetailedProductRecommendation & { itemType: 'product' })[];
+  const filteredPackages = filteredItems.filter(item => item.itemType === 'package') as (ProductPackage & { itemType: 'package' })[];
 
   const handleProblemToggle = (problem: string) => {
     setSelectedProblemFilters(prev => 
@@ -120,16 +106,6 @@ export function ProductSelectionModal({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Product/Package Toggle */}
-          {availablePackages.length > 0 && (
-            <div className="flex justify-center">
-              <ProductToggle 
-                showPackages={showPackages}
-                onToggle={setShowPackages}
-              />
-            </div>
-          )}
-
           {/* Enhanced Filter Bar */}
           <ProductFilterBar
             searchTerm={searchTerm}
@@ -144,42 +120,40 @@ export function ProductSelectionModal({
             availableBrands={availableBrands}
             availableTypes={availableTypes}
             onClearFilters={handleClearFilters}
-            showPackages={showPackages}
           />
 
           {/* Results Count */}
           <div className="text-sm text-gray-600">
-            {showPackages ? (
-              <>Visar {filteredPackages.length} av {availablePackages.length} produktpaket</>
-            ) : (
-              <>Visar {filteredProducts.length} av {availableProducts.length} produkter</>
+            Visar {filteredItems.length} av {allItems.length} produkter och paket
+            {filteredProducts.length > 0 && filteredPackages.length > 0 && (
+              <span className="ml-2 text-gray-500">
+                ({filteredProducts.length} produkter, {filteredPackages.length} paket)
+              </span>
             )}
           </div>
 
-          {/* Products/Packages Grid */}
+          {/* Unified Products/Packages Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-            {showPackages ? (
-              filteredPackages.map(pkg => (
+            {filteredItems.map(item => (
+              item.itemType === 'package' ? (
                 <ProductPackageCard
-                  key={pkg.id}
-                  package={pkg}
-                  onSelect={() => onPackageSelect?.(pkg)}
+                  key={item.id}
+                  package={item as ProductPackage}
+                  onSelect={() => onPackageSelect?.(item as ProductPackage)}
                 />
-              ))
-            ) : (
-              filteredProducts.map(product => (
+              ) : (
                 <EnhancedProductCard
-                  key={product.id}
-                  product={product}
-                  onSelect={() => onProductSelect(product)}
+                  key={item.id}
+                  product={item as DetailedProductRecommendation}
+                  onSelect={() => onProductSelect(item as DetailedProductRecommendation)}
                 />
-              ))
-            )}
+              )
+            ))}
           </div>
 
-          {((showPackages && filteredPackages.length === 0) || (!showPackages && filteredProducts.length === 0)) && (
+          {filteredItems.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              {showPackages ? 'Inga produktpaket hittades med de valda filtren' : 'Inga produkter hittades med de valda filtren'}
+              Inga produkter eller paket hittades med de valda filtren
             </div>
           )}
         </div>
