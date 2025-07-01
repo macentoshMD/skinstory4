@@ -587,12 +587,22 @@ export function TreatmentPlanStep({
                       
                       <div className="text-sm space-y-1 bg-white p-3 rounded">
                         <p className="font-medium mb-2">Paketinnehåll:</p>
-                        {pkg.products.map((product, index) => (
-                          <div key={index} className="flex items-center justify-between">
-                            <span>{product.name} ({product.size})</span>
-                            <span className="text-gray-500">{product.duration}</span>
-                          </div>
-                        ))}
+                        {pkg.products.map((product, index) => {
+                          const selectedStrength = pkg.configuration?.selectedProducts?.[product.productId]?.selectedStrength || product.attributes?.strength;
+                          const selectedPeelingkorn = (pkg.configuration?.selectedProducts?.[product.productId] as any)?.selectedPeelingkorn;
+                          
+                          return (
+                            <div key={index} className="flex items-center justify-between">
+                              <span>{product.name}</span>
+                              <div className="text-gray-500 text-xs">
+                                {selectedStrength && <span>{selectedStrength}</span>}
+                                {selectedPeelingkorn === 'yes' && product.name.includes('Cleanser') && (
+                                  <span className="ml-2 text-blue-600">Med peelingkorn</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                         <div className="flex items-center justify-between pt-2 border-t">
                           <span className="font-bold text-blue-600">Totalt: {pkg.configuration?.finalPrice || pkg.totalPrice} kr</span>
                           {pkg.discountPercent && (
