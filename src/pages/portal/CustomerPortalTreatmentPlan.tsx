@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CustomerPortalLayout } from '@/components/portal/CustomerPortalLayout';
+import TreatmentTimeline from '@/components/portal/TreatmentTimeline';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -133,6 +134,9 @@ const CustomerPortalTreatmentPlan = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Treatment Timeline */}
+        <TreatmentTimeline />
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4">
