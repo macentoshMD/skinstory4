@@ -71,17 +71,17 @@ const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [
 
 // Enhanced product data with new DAHL products
 const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [
-  // New DAHL Balancing Cleanser products
+  // DAHL Balancing Cleanser
   {
-    id: 'balancing-cleanser-level-1',
-    name: 'Balancing Cleanser Level 1',
+    id: 'balancing-cleanser',
+    name: 'Balancing Cleanser',
     brand: 'DAHL',
     type: 'cleanser',
     problems: ['acne', 'rosacea', 'blandhy'],
     usage: 'Kväll',
     price: 395,
     priority: 'need',
-    description: 'Mild rengöring för känslig aknebenägen hud - Level 1',
+    description: 'Balanserande rengöring för aknebenägen hud',
     duration: '2-3 månader',
     costPerMonth: 175,
     sizes: [
@@ -89,28 +89,7 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [
       { size: '240ml', price: 595, duration: '4-5 månader' }
     ],
     availableOptions: {
-      strength: ['Level 1'],
-      peelingkorn: true
-    }
-  },
-  {
-    id: 'balancing-cleanser-level-2',
-    name: 'Balancing Cleanser Level 2',
-    brand: 'DAHL',
-    type: 'cleanser',
-    problems: ['acne', 'rosacea', 'blandhy'],
-    usage: 'Kväll',
-    price: 395,
-    priority: 'need',
-    description: 'Mer intensiv rengöring för aknebenägen hud - Level 2',
-    duration: '2-3 månader',
-    costPerMonth: 175,
-    sizes: [
-      { size: '120ml', price: 395, duration: '2-3 månader' },
-      { size: '240ml', price: 595, duration: '4-5 månader' }
-    ],
-    availableOptions: {
-      strength: ['Level 2'],
+      strength: ['Level 1', 'Level 2', 'Level 3'],
       peelingkorn: true
     }
   },
@@ -133,62 +112,24 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [
     ],
     availableOptions: {}
   },
-  // Activator products
+  // DAHL Activator
   {
-    id: 'activator-level-1',
-    name: 'Activator Level 1',
+    id: 'activator',
+    name: 'Activator',
     brand: 'DAHL',
     type: 'serum',
     problems: ['acne', 'rosacea'],
     usage: 'Enligt rutin',
     price: 395,
     priority: 'need',
-    description: 'Aktiverande serum för aknebehandling - Level 1',
+    description: 'Aktiverande serum för aknebehandling',
     duration: '4-6 månader',
     costPerMonth: 80,
     sizes: [
       { size: '60ml', price: 395, duration: '4-6 månader' }
     ],
     availableOptions: {
-      strength: ['Level 1']
-    }
-  },
-  {
-    id: 'activator-level-2',
-    name: 'Activator Level 2',
-    brand: 'DAHL',
-    type: 'serum',
-    problems: ['acne', 'rosacea'],
-    usage: 'Enligt rutin',
-    price: 395,
-    priority: 'need',
-    description: 'Aktiverande serum för aknebehandling - Level 2',
-    duration: '4-6 månader',
-    costPerMonth: 80,
-    sizes: [
-      { size: '60ml', price: 395, duration: '4-6 månader' }
-    ],
-    availableOptions: {
-      strength: ['Level 2']
-    }
-  },
-  {
-    id: 'activator-level-3',
-    name: 'Activator Level 3',
-    brand: 'DAHL',
-    type: 'serum',
-    problems: ['acne', 'rosacea'],
-    usage: 'Enligt rutin',
-    price: 395,
-    priority: 'need',
-    description: 'Aktiverande serum för aknebehandling - Level 3',
-    duration: '4-6 månader',
-    costPerMonth: 80,
-    sizes: [
-      { size: '60ml', price: 395, duration: '4-6 månader' }
-    ],
-    availableOptions: {
-      strength: ['Level 3']
+      strength: ['Level 1', 'Level 2', 'Level 3']
     }
   },
   // Balancing Sulfur Mask
@@ -336,31 +277,31 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [
 
 // New product packages with Start and Standard options
 const MOCK_PRODUCT_PACKAGES: ProductPackage[] = [
-  // Start Package
+  // Single Acne Package
   {
-    id: 'produktpaket-mot-akne-start',
-    name: 'Produktpaket mot Akne - Start',
-    description: 'Komplett hudvårdsrutin specifikt utvecklat för aknebenägen hud - Startpaket',
+    id: 'produktpaket-mot-akne',
+    name: 'Produktpaket mot Akne',
+    description: 'Komplett hudvårdsrutin specifikt utvecklat för aknebenägen hud',
     brand: 'DAHL',
     problems: ['acne'],
     priority: 'need',
-    duration: '2-3 månader',
-    costPerMonth: 500,
-    totalPrice: 1495,
-    originalPrice: 1765,
-    discountPercent: 15,
+    duration: '3-4 månader',
+    costPerMonth: 450,
+    totalPrice: 1650,
+    originalPrice: 1980,
+    discountPercent: 17,
     products: [
       {
-        productId: 'balancing-cleanser-level-2',
-        name: 'Balancing Cleanser Level 2',
+        productId: 'balancing-cleanser',
+        name: 'Balancing Cleanser',
         size: '120ml',
         quantity: 1,
         duration: '2-3 månader',
-        attributes: { strength: 'Level 2', peelingkorn: true }
+        attributes: { strength: 'Level 2', peelingkorn: false }
       },
       {
-        productId: 'activator-level-2',
-        name: 'Activator Level 2',
+        productId: 'activator',
+        name: 'Activator',
         size: '60ml',
         quantity: 1,
         duration: '4-6 månader',
@@ -379,52 +320,6 @@ const MOCK_PRODUCT_PACKAGES: ProductPackage[] = [
         size: '120ml',
         quantity: 1,
         duration: '3-4 månader'
-      }
-    ]
-  },
-  // Standard Package
-  {
-    id: 'produktpaket-mot-akne-standard',
-    name: 'Produktpaket mot Akne - Standard',
-    description: 'Komplett hudvårdsrutin specifikt utvecklat för aknebenägen hud - Standardpaket',
-    brand: 'DAHL',
-    problems: ['acne'],
-    priority: 'need',
-    duration: '4-6 månader',
-    costPerMonth: 360,
-    totalPrice: 1795,
-    originalPrice: 2315,
-    discountPercent: 22,
-    products: [
-      {
-        productId: 'balancing-cleanser-level-2',
-        name: 'Balancing Cleanser Level 2',
-        size: '240ml',
-        quantity: 1,
-        duration: '4-5 månader',
-        attributes: { strength: 'Level 2', peelingkorn: true }
-      },
-      {
-        productId: 'activator-level-2',
-        name: 'Activator Level 2',
-        size: '60ml',
-        quantity: 1,
-        duration: '4-6 månader',
-        attributes: { strength: 'Level 2' }
-      },
-      {
-        productId: 'balancing-sulfur-mask',
-        name: 'Balancing Sulfur Mask',
-        size: '120ml',
-        quantity: 1,
-        duration: '8-10 månader'
-      },
-      {
-        productId: 'balancing-day-cream',
-        name: 'Balancing Day Cream',
-        size: '240ml',
-        quantity: 1,
-        duration: '6-7 månader'
       }
     ]
   },

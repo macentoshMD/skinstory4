@@ -7,7 +7,7 @@ interface ProductConfigurationSectionProps {
     [productId: string]: {
       selectedSize?: string;
       selectedStrength?: string;
-      selectedAdditives?: string[];
+      selectedPeelingkorn?: string;
     };
   };
   onConfigurationChange: (productId: string, field: string, value: string) => void;
@@ -31,41 +31,62 @@ export function ProductConfigurationSection({
             </div>
           </div>
 
-          {/* Strength Selection - Primary focus */}
+          {/* Configuration Options */}
           <div className="space-y-4">
-            {product.attributes?.strength && (
+            {/* Strength Selection */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Välj styrka</label>
+              <Select 
+                value={selectedConfigurations[product.productId]?.selectedStrength || product.attributes?.strength || "Level 2"}
+                onValueChange={(value) => onConfigurationChange(product.productId, 'selectedStrength', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Välj styrka" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border border-border z-50">
+                  <SelectItem value="Level 1">Level 1 (Mild)</SelectItem>
+                  <SelectItem value="Level 2">Level 2 (Standard)</SelectItem>
+                  <SelectItem value="Level 3">Level 3 (Stark)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Size Selection for Mask and Day Cream */}
+            {(product.name.includes('Mask') || product.name.includes('Day Cream')) && (
               <div>
-                <label className="block text-sm font-medium mb-2">Välj styrka</label>
+                <label className="block text-sm font-medium mb-2">Välj storlek</label>
                 <Select 
-                  value={selectedConfigurations[product.productId]?.selectedStrength || product.attributes.strength}
-                  onValueChange={(value) => onConfigurationChange(product.productId, 'selectedStrength', value)}
+                  value={selectedConfigurations[product.productId]?.selectedSize || product.size}
+                  onValueChange={(value) => onConfigurationChange(product.productId, 'selectedSize', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Välj styrka" />
+                    <SelectValue placeholder="Välj storlek" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="Level 1">Level 1 (Mild)</SelectItem>
-                    <SelectItem value="Level 2">Level 2 (Standard)</SelectItem>
-                    <SelectItem value="Level 3">Level 3 (Stark)</SelectItem>
+                    <SelectItem value="60ml">60ml</SelectItem>
+                    <SelectItem value="120ml">120ml</SelectItem>
+                    {product.name.includes('Day Cream') && (
+                      <SelectItem value="240ml">240ml</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
             )}
-            
-            {!product.attributes?.strength && (
+
+            {/* Peelingkorn Selection for Cleanser */}
+            {product.name.includes('Cleanser') && (
               <div>
-                <label className="block text-sm font-medium mb-2">Välj styrka</label>
+                <label className="block text-sm font-medium mb-2">Peelingkorn</label>
                 <Select 
-                  value={selectedConfigurations[product.productId]?.selectedStrength || "Level 2"}
-                  onValueChange={(value) => onConfigurationChange(product.productId, 'selectedStrength', value)}
+                  value={selectedConfigurations[product.productId]?.selectedPeelingkorn || (product.attributes?.peelingkorn ? 'yes' : 'no')}
+                  onValueChange={(value) => onConfigurationChange(product.productId, 'selectedPeelingkorn', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Välj styrka" />
+                    <SelectValue placeholder="Välj peelingkorn" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="Level 1">Level 1 (Mild)</SelectItem>
-                    <SelectItem value="Level 2">Level 2 (Standard)</SelectItem>
-                    <SelectItem value="Level 3">Level 3 (Stark)</SelectItem>
+                    <SelectItem value="no">Utan peelingkorn</SelectItem>
+                    <SelectItem value="yes">Med peelingkorn</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

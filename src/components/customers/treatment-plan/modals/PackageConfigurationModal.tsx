@@ -24,7 +24,7 @@ export function PackageConfigurationModal({
     [productId: string]: {
       selectedSize?: string;
       selectedStrength?: string;
-      selectedAdditives?: string[];
+      selectedPeelingkorn?: string;
     };
   }>({});
 
@@ -35,8 +35,8 @@ export function PackageConfigurationModal({
       pkg.products.forEach(product => {
         defaultConfigs[product.productId] = {
           selectedSize: product.size,
-          selectedStrength: product.attributes?.strength,
-          selectedAdditives: product.attributes?.additives || []
+          selectedStrength: product.attributes?.strength || 'Level 2',
+          selectedPeelingkorn: product.attributes?.peelingkorn ? 'yes' : 'no'
         };
       });
       setSelectedConfigurations(defaultConfigs);
