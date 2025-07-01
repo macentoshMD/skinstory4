@@ -205,158 +205,15 @@ const CustomerPortalProblems = () => {
           </div>
         </div>
 
-        {/* Main Problem Details Card */}
-        <Card className="border border-border/60 shadow-sm">
-          <CardHeader className="pb-6">
-            <div className="space-y-3">
-              <CardTitle className="text-2xl flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <AlertCircle className="h-6 w-6 text-primary" />
-                </div>
-                Ditt Huvudproblem: {mockData.mainProblem.name}
-              </CardTitle>
-              <div className="ml-11">
-                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
-                  {mockData.mainProblem.subtype}
-                </Badge>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">Allvarlighetsgrad</h4>
-                  <Badge variant="secondary" className="bg-accent text-accent-foreground">
-                    {mockData.mainProblem.severity}
-                  </Badge>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">Drabbade områden</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {mockData.mainProblem.areas.map((area, index) => (
-                      <Badge key={index} variant="outline" className="bg-muted">
-                        {area}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">Problembeskrivning</h4>
-                  <p className="text-sm text-foreground leading-relaxed">{mockData.mainProblem.description}</p>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">Behandlingsmål</h4>
-                  <p className="text-sm text-foreground leading-relaxed">{mockData.mainProblem.treatmentGoal}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t border-border/60">
-              <Button 
-                size="lg" 
-                className="flex-1 h-12"
-                onClick={() => window.location.href = '/portal/behandlingsplan'}
-              >
-                <Zap className="h-5 w-5 mr-2" />
-                Starta behandlingsplan
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="flex-1 h-12"
-                onClick={() => window.location.href = '/portal/behandlingsplan'}
-              >
-                <Calendar className="h-5 w-5 mr-2" />
-                Visa behandlingsplan
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Symptoms Analysis Card */}
-        <Card className="border border-border/60 shadow-sm">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-xl flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Droplets className="h-5 w-5 text-primary" />
-              </div>
-              Symptomanalys
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {mockData.symptoms.map((symptom, index) => (
-                <div key={index} className="p-4 bg-muted/30 rounded-lg space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-sm">{symptom.name}</h4>
-                    <Badge 
-                      variant="outline" 
-                      className={`${
-                        symptom.severity === 'Hög' 
-                          ? 'bg-destructive/10 text-destructive border-destructive/20' 
-                          : symptom.severity === 'Måttlig'
-                          ? 'bg-accent text-accent-foreground border-accent/20'
-                          : 'bg-primary/10 text-primary border-primary/20'
-                      }`}
-                    >
-                      {symptom.severity}
-                    </Badge>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Poäng</span>
-                      <span className="font-semibold">{symptom.score}%</span>
-                    </div>
-                    <Progress value={symptom.score} className="h-2" />
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="pt-4 border-t border-border/60">
-              <p className="text-sm text-muted-foreground text-center">
-                Symptompoängen baseras på din konsultation och hjälper till att skräddarsy din behandlingsplan
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Overall Progress */}
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <h2 className="text-lg font-semibold">Övergripande förbättring</h2>
-                <p className="text-sm text-muted-foreground">Genomsnittlig progress för alla problem</p>
-              </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold text-purple-600">{overallProgress}%</div>
-                <div className="flex items-center gap-1 text-sm text-green-600">
-                  <TrendingUp className="h-4 w-4" />
-                  Förbättras
-                </div>
-              </div>
-            </div>
-            <Progress value={overallProgress} className="mt-4 h-3" />
-          </CardContent>
-        </Card>
-
         {/* Collapsible Problems List */}
         <Accordion 
           type="multiple" 
           defaultValue={defaultExpandedValue ? [defaultExpandedValue] : []}
           className="space-y-4"
         >
-          {problemsData.map((problem) => {
+          {problemsData.map((problem, index) => {
             const statusBadge = getTreatmentStatusBadge(problem.treatmentStatus);
+            const isMainProblem = problem.name === 'Akne'; // Main problem integration
             
             return (
               <AccordionItem key={problem.id} value={problem.id.toString()} className="border-0">
@@ -366,7 +223,16 @@ const CustomerPortalProblems = () => {
                       <div className="flex items-start justify-between w-full">
                         <div className="space-y-2 text-left">
                           <CardTitle className="flex items-center gap-3">
-                            {problem.name}
+                            {isMainProblem ? (
+                              <>
+                                <div className="p-1.5 rounded-lg bg-primary/10">
+                                  <AlertCircle className="h-4 w-4 text-primary" />
+                                </div>
+                                Ditt Huvudproblem: {problem.name}
+                              </>
+                            ) : (
+                              problem.name
+                            )}
                             <Badge className={getSeverityColor(problem.severity)}>
                               {problem.severity}
                             </Badge>
@@ -374,8 +240,15 @@ const CustomerPortalProblems = () => {
                               {statusBadge.icon}
                               {statusBadge.text}
                             </Badge>
+                            {isMainProblem && (
+                              <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
+                                {mockData.mainProblem.subtype}
+                              </Badge>
+                            )}
                           </CardTitle>
-                          <p className="text-sm text-muted-foreground">{problem.description}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {isMainProblem ? mockData.mainProblem.description : problem.description}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           {getStatusIcon(problem.trend)}
@@ -389,6 +262,14 @@ const CustomerPortalProblems = () => {
 
                   <AccordionContent className="p-0">
                     <CardContent className="space-y-6 pt-0">
+                      {/* Main Problem Treatment Goal (only for Akne) */}
+                      {isMainProblem && (
+                        <div className="p-4 bg-primary/5 rounded-lg border border-primary/10">
+                          <h4 className="font-semibold text-sm text-primary mb-2 uppercase tracking-wide">Behandlingsmål</h4>
+                          <p className="text-sm text-foreground leading-relaxed">{mockData.mainProblem.treatmentGoal}</p>
+                        </div>
+                      )}
+
                       {/* Progress */}
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
@@ -403,8 +284,8 @@ const CustomerPortalProblems = () => {
                         <div>
                           <label className="font-medium text-muted-foreground">Behandlingsområden</label>
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {problem.areas.map((area, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">
+                            {(isMainProblem ? mockData.mainProblem.areas : problem.areas).map((area, areaIndex) => (
+                              <Badge key={areaIndex} variant="outline" className="text-xs">
                                 {area}
                               </Badge>
                             ))}
@@ -426,6 +307,75 @@ const CustomerPortalProblems = () => {
                           <p className="mt-1">{formatDate(problem.lastAssessed)}</p>
                         </div>
                       </div>
+
+                      {/* Symptom Analysis (only for main problem - Akne) */}
+                      {isMainProblem && (
+                        <div className="border-t pt-6">
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 rounded-lg bg-primary/10">
+                              <Droplets className="h-5 w-5 text-primary" />
+                            </div>
+                            <h3 className="text-lg font-semibold">Symptomanalys</h3>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            {mockData.symptoms.map((symptom, symptomIndex) => (
+                              <div key={symptomIndex} className="p-4 bg-muted/30 rounded-lg space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="font-medium text-sm">{symptom.name}</h4>
+                                  <Badge 
+                                    variant="outline" 
+                                    className={`${
+                                      symptom.severity === 'Hög' 
+                                        ? 'bg-destructive/10 text-destructive border-destructive/20' 
+                                        : symptom.severity === 'Måttlig'
+                                        ? 'bg-accent text-accent-foreground border-accent/20'
+                                        : 'bg-primary/10 text-primary border-primary/20'
+                                    }`}
+                                  >
+                                    {symptom.severity}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-2">
+                                  <div className="flex items-center justify-between text-sm">
+                                    <span className="text-muted-foreground">Poäng</span>
+                                    <span className="font-semibold">{symptom.score}%</span>
+                                  </div>
+                                  <Progress value={symptom.score} className="h-2" />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="p-4 bg-muted/20 rounded-lg">
+                            <p className="text-sm text-muted-foreground text-center">
+                              Symptompoängen baseras på din konsultation och hjälper till att skräddarsy din behandlingsplan
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Action Buttons (only for main problem) */}
+                      {isMainProblem && (
+                        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border/60">
+                          <Button 
+                            size="lg" 
+                            className="flex-1 h-12"
+                            onClick={() => window.location.href = '/portal/behandlingsplan'}
+                          >
+                            <Zap className="h-5 w-5 mr-2" />
+                            Starta behandlingsplan
+                          </Button>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="lg" 
+                            className="flex-1 h-12"
+                            onClick={() => window.location.href = '/portal/behandlingsplan'}
+                          >
+                            <Calendar className="h-5 w-5 mr-2" />
+                            Visa behandlingsplan
+                          </Button>
+                        </div>
+                      )}
 
                       {/* Treatment Completion Date for completed treatments */}
                       {problem.treatmentStatus === 'slutförd' && problem.treatmentCompleted && (
