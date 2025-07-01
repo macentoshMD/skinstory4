@@ -13,194 +13,145 @@ import {
 } from 'lucide-react';
 
 const CustomerPortalDashboard = () => {
-  // Mock data - in real app this would come from API/context
+  // First-time login state - customer just had consultation
   const mockData = {
-    nextAppointment: {
-      date: '2024-07-15',
-      time: '14:00',
-      treatment: 'Laser behandling - Akne',
-      location: 'Östermalm'
-    },
-    activeTreatments: 3,
-    completedSessions: 4,
-    totalSessions: 8,
-    skinScore: 75,
-    problems: ['Akne', 'Ojämn hudton'],
-    recentActivity: [
-      {
-        date: '2024-07-01',
-        type: 'Behandling',
-        description: 'LED-terapi genomförd',
-        status: 'completed'
-      },
-      {
-        date: '2024-06-28',
-        type: 'Hemmavård',
-        description: 'Morgonrutin utförd',
-        status: 'completed'
-      },
-      {
-        date: '2024-06-25',
-        type: 'Konsultation',
-        description: 'Uppföljning med hudterapeut',
-        status: 'completed'
-      }
-    ]
+    isFirstLogin: true,
+    customerName: 'Anna',
+    consultationDate: '2024-07-01',
+    skinScore: 65,
+    mainProblem: {
+      name: 'Akne',
+      severity: 'Måttlig',
+      areas: ['Panna', 'Kinder', 'Haka'],
+      description: 'Inflammatorisk akne med komedoner och papler främst i T-zonen. Förhöjd talgproduktion och tilltäppta porer.',
+      treatmentGoal: 'Minska inflammation, rena porer och förbättra hudtextur'
+    }
   };
-
-  const progressPercentage = (mockData.completedSessions / mockData.totalSessions) * 100;
 
   return (
     <CustomerPortalLayout>
       <div className="space-y-8">
-        {/* Welcome Section */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900">Välkommen tillbaka!</h1>
-          <p className="text-muted-foreground">Här är en översikt av din hudresa</p>
+        {/* Welcome Message for First Login */}
+        <div className="text-center space-y-4">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Välkommen {mockData.customerName}!
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Din hudanalys är klar och din personliga behandlingsplan är redo
+          </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            Konsultation genomförd {new Date(mockData.consultationDate).toLocaleDateString('sv-SE')}
+          </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-100 text-sm">Hudpoäng</p>
-                  <p className="text-3xl font-bold">{mockData.skinScore}%</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-purple-200" />
-              </div>
-            </CardContent>
-          </Card>
+        {/* Skin Score Card */}
+        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <CardContent className="p-8 text-center">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Din Hudpoäng</h2>
+              <div className="text-6xl font-bold">{mockData.skinScore}%</div>
+              <p className="text-purple-100">
+                Baserat på din hudanalys och konsultation
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+        {/* Main Problem Details Card */}
+        <Card className="border-2 border-purple-200">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="text-xl flex items-center gap-2">
+              <AlertCircle className="h-6 w-6 text-purple-600" />
+              Ditt Huvudproblem: {mockData.mainProblem.name}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div>
-                  <p className="text-muted-foreground text-sm">Aktiva behandlingar</p>
-                  <p className="text-3xl font-bold">{mockData.activeTreatments}</p>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">ALLVARLIGHETSGRAD</h4>
+                  <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                    {mockData.mainProblem.severity}
+                  </Badge>
                 </div>
-                <Droplets className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+                
                 <div>
-                  <p className="text-muted-foreground text-sm">Genomförda</p>
-                  <p className="text-3xl font-bold">{mockData.completedSessions}/{mockData.totalSessions}</p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm">Problem</p>
-                  <p className="text-3xl font-bold">{mockData.problems.length}</p>
-                </div>
-                <AlertCircle className="h-8 w-8 text-orange-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Next Appointment */}
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-800">
-                <Calendar className="h-5 w-5" />
-                Nästa bokade tid
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-white rounded-lg p-4 shadow-sm">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">{mockData.nextAppointment.treatment}</h3>
-                    <p className="text-muted-foreground">{mockData.nextAppointment.location}</p>
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(mockData.nextAppointment.date).toLocaleDateString('sv-SE')}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {mockData.nextAppointment.time}
-                      </span>
-                    </div>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">DRABBADE OMRÅDEN</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {mockData.mainProblem.areas.map((area, index) => (
+                      <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
+                        {area}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
               </div>
-              <Button className="w-full bg-green-600 hover:bg-green-700">
-                Visa detaljer
-              </Button>
-            </CardContent>
-          </Card>
 
-          {/* Treatment Progress */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Behandlingsframsteg</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Genomförda sessioner</span>
-                  <span>{mockData.completedSessions} av {mockData.totalSessions}</span>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">PROBLEMBESKRIVNING</h4>
+                  <p className="text-sm text-gray-700">{mockData.mainProblem.description}</p>
                 </div>
-                <Progress value={progressPercentage} className="h-3" />
+                
+                <div>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">BEHANDLINGSMÅL</h4>
+                  <p className="text-sm text-gray-700">{mockData.mainProblem.treatmentGoal}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
+              <Button 
+                size="lg" 
+                className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              >
+                <TrendingUp className="h-5 w-5 mr-2" />
+                Starta behandlingsplan
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="flex-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+              >
+                <Calendar className="h-5 w-5 mr-2" />
+                Visa behandlingsplan
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Next Steps */}
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <CardHeader>
+            <CardTitle className="text-green-800 flex items-center gap-2">
+              <CheckCircle className="h-5 w-5" />
+              Nästa steg
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-green-500 text-white text-xs flex items-center justify-center font-bold mt-0.5">
+                  1
+                </div>
+                <div>
+                  <p className="font-medium">Bekanta dig med din behandlingsplan</p>
+                  <p className="text-sm text-muted-foreground">Läs igenom rekommendationerna och förstå behandlingsstegen</p>
+                </div>
               </div>
               
-              <div className="space-y-3">
-                <h4 className="font-semibold">Aktiva problem:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {mockData.problems.map((problem, index) => (
-                    <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
-                      {problem}
-                    </Badge>
-                  ))}
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-gray-300 text-gray-600 text-xs flex items-center justify-center font-bold mt-0.5">
+                  2
+                </div>
+                <div>
+                  <p className="font-medium text-muted-foreground">Boka din första behandling</p>
+                  <p className="text-sm text-muted-foreground">Välj tid som passar dig för att påbörja din hudresa</p>
                 </div>
               </div>
-
-              <Button variant="outline" className="w-full">
-                Visa fullständig plan
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Senaste aktivitet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockData.recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                  <div className="flex-shrink-0">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{activity.description}</p>
-                        <p className="text-sm text-muted-foreground">{activity.type}</p>
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(activity.date).toLocaleDateString('sv-SE')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </CardContent>
         </Card>
