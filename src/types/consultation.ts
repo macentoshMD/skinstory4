@@ -1,3 +1,4 @@
+
 export interface CustomerFormData {
   personalNumber: string;
   firstName: string;
@@ -206,14 +207,24 @@ export interface DetailedTreatmentRecommendation extends TreatmentRecommendation
 }
 
 export interface DetailedProductRecommendation extends ProductRecommendation {
+  problems: string[]; // Vilka problem produkten behandlar
+  image?: string; // Produktbild URL
+  sizes: {
+    size: string;
+    price: number;
+  }[];
   availableOptions: {
     strength?: string[];
     spf?: number[];
+    sizes?: string[];
+    additives?: string[];
     microbeads?: boolean;
   };
   configuration?: {
     selectedStrength?: string;
     selectedSPF?: number;
+    selectedSize?: string;
+    selectedAdditives?: string[];
     withMicrobeads?: boolean;
     finalPrice: number;
   };

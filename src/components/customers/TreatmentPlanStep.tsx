@@ -16,6 +16,7 @@ import { ProductConfigurationModal } from './treatment-plan/modals/ProductConfig
 import { TreatmentPlan, DetailedTreatmentRecommendation, DetailedProductRecommendation } from '@/types/consultation';
 import { TreatmentMethod, SkinPlan, ConfiguredTreatment, FollowUpAppointment } from '@/types/treatment-methods';
 import { Badge } from '@/components/ui/badge';
+
 interface TreatmentPlanStepProps {
   treatmentPlan: TreatmentPlan;
   onTreatmentPlanChange: (plan: TreatmentPlan) => void;
@@ -64,44 +65,97 @@ const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [{
   availableHandpieces: [],
   treatmentAreas: ['Ansikte', 'Hals', 'Rygg', 'Bröst']
 }];
+// Enhanced product data with problem mapping and images
 const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
-  id: 'cleanse-1',
+  id: 'dahl-cleanse-gel',
   name: 'Gentle Cleansing Gel',
-  brand: 'SkinCeuticals',
+  brand: 'DAHL',
   type: 'cleanser',
+  problems: ['acne', 'känslig-hud'],
   usage: 'Morgon och kväll',
   price: 450,
   priority: 'essential',
-  description: 'Mild rengöring för känslig aknebenägen hud',
+  description: 'Mild rengöring för känslig aknebenägen hud med salicylsyra',
+  sizes: [
+    { size: '150ml', price: 450 },
+    { size: '250ml', price: 650 }
+  ],
   availableOptions: {
-    strength: ['Mild', 'Medium', 'Strong']
+    strength: ['Mild', 'Medium', 'Strong'],
+    additives: ['Salicylsyra', 'Niacinamide']
   }
 }, {
-  id: 'serum-1',
-  name: 'Niacinamide 10% + Zinc',
-  brand: 'The Ordinary',
+  id: 'dahl-acne-serum',
+  name: 'Acne Control Serum',
+  brand: 'DAHL',
   type: 'serum',
+  problems: ['acne'],
   usage: 'Kvällsrutinen',
-  price: 89,
+  price: 780,
   priority: 'essential',
-  description: 'Minskar synligheten av porer och kontrollerar talgproduktion',
+  description: 'Kraftfullt serum med retinol och niacinamide för aknebenägen hud',
+  sizes: [
+    { size: '30ml', price: 780 },
+    { size: '50ml', price: 1200 }
+  ],
   availableOptions: {
-    strength: ['5%', '10%', '15%']
+    strength: ['0.25%', '0.5%', '1%'],
+    additives: ['Hyaluronsyra', 'Peptider']
   }
 }, {
-  id: 'sunscreen-1',
-  name: 'Anthelios Fluid SPF 50+',
+  id: 'laroche-toleriane-cleanser',
+  name: 'Toleriane Caring Wash',
+  brand: 'La Roche-Posay',
+  type: 'cleanser',
+  problems: ['känslig-hud', 'rosacea'],
+  usage: 'Morgon och kväll',
+  price: 189,
+  priority: 'recommended',
+  description: 'Extra mild rengöring för mycket känslig hud',
+  sizes: [
+    { size: '200ml', price: 189 },
+    { size: '400ml', price: 320 }
+  ],
+  availableOptions: {
+    additives: ['Prebiotika', 'Ceramider']
+  }
+}, {
+  id: 'laroche-anthelios-sunscreen',
+  name: 'Anthelios Ultra Fluid',
   brand: 'La Roche-Posay',
   type: 'sunscreen',
+  problems: ['acne', 'pigmentflackar', 'känslig-hud'],
   usage: 'Varje morgon',
   price: 225,
   priority: 'essential',
   description: 'Bred spektrum solskydd för aknebenägen hud',
+  sizes: [
+    { size: '50ml', price: 225 },
+    { size: '100ml', price: 380 }
+  ],
   availableOptions: {
-    spf: [25, 30, 50],
-    microbeads: true
+    spf: [30, 50, 60],
+    microbeads: true,
+    additives: ['Antioxidanter', 'Niacinamide']
+  }
+}, {
+  id: 'skinceuticals-ce-ferulic',
+  name: 'CE Ferulic',
+  brand: 'SkinCeuticals',
+  type: 'serum',
+  problems: ['anti-age', 'pigmentflackar'],
+  usage: 'Morgonrutinen',
+  price: 1750,
+  priority: 'recommended',
+  description: 'Antioxidantserum med vitamin C, E och ferulasyra',
+  sizes: [
+    { size: '30ml', price: 1750 }
+  ],
+  availableOptions: {
+    strength: ['15%', '20%']
   }
 }];
+
 export function TreatmentPlanStep({
   treatmentPlan,
   onTreatmentPlanChange,
@@ -125,6 +179,7 @@ export function TreatmentPlanStep({
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [productConfigModal, setProductConfigModal] = useState<DetailedProductRecommendation | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<TreatmentMethod | null>(null);
+
   const generateRecommendations = () => {
     const hasAcne = selectedProblems.some(p => p.toLowerCase().includes('acne'));
     const severity = skinScore > 70 ? 'severe' : skinScore > 40 ? 'medium' : 'light';
@@ -196,6 +251,17 @@ export function TreatmentPlanStep({
   };
   const totalTreatmentPrice = skinPlans.reduce((sum, plan) => sum + plan.treatments.reduce((treatmentSum, treatment) => treatmentSum + treatment.pricing.totalPrice, 0), 0);
   const totalProductPrice = selectedProducts.reduce((sum, product) => sum + (product.configuration?.finalPrice || product.price), 0);
+
+  const getBrandColor = (brand: string) => {
+    const colors: { [key: string]: string } = {
+      'DAHL': 'text-blue-600',
+      'La Roche-Posay': 'text-green-600',
+      'SkinCeuticals': 'text-purple-600',
+      'The Ordinary': 'text-orange-600'
+    };
+    return colors[brand] || 'text-gray-600';
+  };
+
   return <div className="space-y-6">
       <ConsultationHeader onBack={onBack} onContinue={onContinue} canContinue={true} currentStep={10} totalSteps={11} continueText="Slutför behandlingsplan" />
 
@@ -237,10 +303,20 @@ export function TreatmentPlanStep({
             </CardHeader>
             <CardContent className="space-y-4">
               {selectedProducts.length === 0 ? <p className="text-gray-500 text-center py-8">Inga produkter valda</p> : selectedProducts.map(product => <div key={product.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-medium">{product.name}</h4>
-                        <p className="text-sm text-gray-600">{product.brand}</p>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium">{product.name}</h4>
+                          <Badge variant="outline" className={getBrandColor(product.brand)}>
+                            {product.brand}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-1">{product.description}</p>
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <span>{product.usage}</span>
+                          <span>•</span>
+                          <span>{product.type}</span>
+                        </div>
                       </div>
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline" onClick={() => setProductConfigModal(product)}>
@@ -252,11 +328,15 @@ export function TreatmentPlanStep({
                       </div>
                     </div>
                     
-                    {product.configuration && <div className="text-sm text-gray-600 space-y-1">
-                        {product.configuration.selectedStrength && <p>Styrka: {product.configuration.selectedStrength}</p>}
-                        {product.configuration.selectedSPF && <p>SPF: {product.configuration.selectedSPF}</p>}
-                        {product.configuration.withMicrobeads && <p>Med mikrobeads</p>}
-                        <p className="font-medium">Pris: {product.configuration.finalPrice} kr</p>
+                    {product.configuration && <div className="text-sm space-y-1 bg-gray-50 p-3 rounded">
+                        {product.configuration.selectedSize && <p><span className="font-medium">Storlek:</span> {product.configuration.selectedSize}</p>}
+                        {product.configuration.selectedStrength && <p><span className="font-medium">Styrka:</span> {product.configuration.selectedStrength}</p>}
+                        {product.configuration.selectedSPF && <p><span className="font-medium">SPF:</span> {product.configuration.selectedSPF}</p>}
+                        {product.configuration.selectedAdditives && product.configuration.selectedAdditives.length > 0 && (
+                          <p><span className="font-medium">Tillsatser:</span> {product.configuration.selectedAdditives.join(', ')}</p>
+                        )}
+                        {product.configuration.withMicrobeads && <p><span className="font-medium">Med mikrobeads</span></p>}
+                        <p className="font-bold text-blue-600 pt-1">Pris: {product.configuration.finalPrice} kr</p>
                       </div>}
                   </div>)}
             </CardContent>
@@ -297,7 +377,13 @@ export function TreatmentPlanStep({
 
       <EnhancedServiceConfigurationModal isOpen={!!serviceConfigModal} onClose={() => setServiceConfigModal(null)} service={serviceConfigModal?.service || null} method={serviceConfigModal?.method || null} onConfirm={handleServiceConfirm} />
 
-      <ProductSelectionModal isOpen={productModalOpen} onClose={() => setProductModalOpen(false)} availableProducts={MOCK_DETAILED_PRODUCTS} onProductSelect={handleProductSelect} />
+      <ProductSelectionModal 
+        isOpen={productModalOpen} 
+        onClose={() => setProductModalOpen(false)} 
+        availableProducts={MOCK_DETAILED_PRODUCTS} 
+        onProductSelect={handleProductSelect}
+        selectedProblems={selectedProblems}
+      />
 
       <ProductConfigurationModal isOpen={!!productConfigModal} onClose={() => setProductConfigModal(null)} product={productConfigModal} onConfirm={handleProductConfirm} />
     </div>;

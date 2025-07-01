@@ -1,125 +1,132 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { DetailedProductRecommendation } from '@/types/consultation';
+import { ProductFilterBar } from '../products/ProductFilterBar';
+import { EnhancedProductCard } from '../products/EnhancedProductCard';
 
 interface ProductSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   availableProducts: DetailedProductRecommendation[];
   onProductSelect: (product: DetailedProductRecommendation) => void;
+  selectedProblems?: string[];
 }
 
 export function ProductSelectionModal({ 
   isOpen, 
   onClose, 
   availableProducts, 
-  onProductSelect 
+  onProductSelect,
+  selectedProblems = []
 }: ProductSelectionModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [brandFilter, setBrandFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [selectedProblemFilters, setSelectedProblemFilters] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+
+  // Auto-set problem filters based on diagnosis
+  useEffect(() => {
+    if (selectedProblems.length > 0) {
+      setSelectedProblemFilters(selectedProblems);
+    }
+  }, [selectedProblems]);
+
+  const availableProblems = [...new Set(availableProducts.flatMap(p => p.problems))];
+  const availableBrands = [...new Set(availableProducts.map(p => p.brand))];
+  const availableTypes = [...new Set(availableProducts.map(p => p.type))];
 
   const filteredProducts = availableProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.brand.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBrand = brandFilter === 'all' || product.brand === brandFilter;
-    const matchesType = typeFilter === 'all' || product.type === typeFilter;
+                         product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
     
-    return matchesSearch && matchesBrand && matchesType;
+    const matchesProblems = selectedProblemFilters.length === 0 || 
+                           selectedProblemFilters.some(problem => product.problems.includes(problem));
+    
+    const matchesBrands = selectedBrands.length === 0 || selectedBrands.includes(product.brand);
+    const matchesTypes = selectedTypes.length === 0 || selectedTypes.includes(product.type);
+    
+    return matchesSearch && matchesProblems && matchesBrands && matchesTypes;
   });
 
-  const brands = [...new Set(availableProducts.map(p => p.brand))];
-  const types = [...new Set(availableProducts.map(p => p.type))];
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'essential': return 'bg-red-100 text-red-800 border-red-200';
-      case 'recommended': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'optional': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+  const handleProblemToggle = (problem: string) => {
+    setSelectedProblemFilters(prev => 
+      prev.includes(problem) 
+        ? prev.filter(p => p !== problem)
+        : [...prev, problem]
+    );
   };
 
-  const getPriorityText = (priority: string) => {
-    switch (priority) {
-      case 'essential': return 'Nödvändig';
-      case 'recommended': return 'Rekommenderad';
-      case 'optional': return 'Valfri';
-      default: return priority;
-    }
+  const handleBrandToggle = (brand: string) => {
+    setSelectedBrands(prev => 
+      prev.includes(brand) 
+        ? prev.filter(b => b !== brand)
+        : [...prev, brand]
+    );
+  };
+
+  const handleTypeToggle = (type: string) => {
+    setSelectedTypes(prev => 
+      prev.includes(type) 
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    );
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedProblemFilters(selectedProblems); // Keep auto-set problems
+    setSelectedBrands([]);
+    setSelectedTypes([]);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Välj Produkter</DialogTitle>
         </DialogHeader>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Sök produkter..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Select value={brandFilter} onValueChange={setBrandFilter}>
-            <SelectTrigger className="w-full sm:w-48">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Märke" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Alla märken</SelectItem>
-              {brands.map(brand => (
-                <SelectItem key={brand} value={brand}>{brand}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Typ" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Alla typer</SelectItem>
-              {types.map(type => (
-                <SelectItem key={type} value={type}>{type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <div className="space-y-4">
+          {/* Enhanced Filter Bar */}
+          <ProductFilterBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            selectedProblems={selectedProblemFilters}
+            onProblemToggle={handleProblemToggle}
+            selectedBrands={selectedBrands}
+            onBrandToggle={handleBrandToggle}
+            selectedTypes={selectedTypes}
+            onTypeToggle={handleTypeToggle}
+            availableProblems={availableProblems}
+            availableBrands={availableBrands}
+            availableTypes={availableTypes}
+            onClearFilters={handleClearFilters}
+          />
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-          {filteredProducts.map(product => (
-            <div
-              key={product.id}
-              className="border rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group"
-              onClick={() => onProductSelect(product)}
-            >
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="font-medium text-sm group-hover:text-blue-600">{product.name}</h3>
-                <Badge className={getPriorityColor(product.priority)}>
-                  {getPriorityText(product.priority)}
-                </Badge>
-              </div>
-              <p className="text-xs text-gray-600 mb-1">{product.brand}</p>
-              <p className="text-xs text-gray-700 mb-3 line-clamp-2">{product.description}</p>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">{product.price} kr</span>
-                <span className="text-xs text-gray-500">{product.usage}</span>
-              </div>
+          {/* Results Count */}
+          <div className="text-sm text-gray-600">
+            Visar {filteredProducts.length} av {availableProducts.length} produkter
+          </div>
+
+          {/* Products Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+            {filteredProducts.map(product => (
+              <EnhancedProductCard
+                key={product.id}
+                product={product}
+                onSelect={() => onProductSelect(product)}
+              />
+            ))}
+          </div>
+
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              Inga produkter hittades med de valda filtren
             </div>
-          ))}
+          )}
         </div>
 
         <div className="flex justify-end gap-2 pt-4 border-t">
