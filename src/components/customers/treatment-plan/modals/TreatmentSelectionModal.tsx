@@ -150,19 +150,13 @@ export function TreatmentSelectionModal({
 
           {/* Enhanced Treatments Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-h-[500px] overflow-y-auto p-1">
-            {filteredTreatments.map(treatment => {
-              console.log('Rendering treatment card:', treatment.name);
-              return (
-                <EnhancedTreatmentCard
-                  key={treatment.id}
-                  treatment={treatment}
-                  onSelect={() => {
-                    console.log('Treatment card clicked:', treatment.name);
-                    onTreatmentSelect(treatment);
-                  }}
-                />
-              );
-            })}
+            {filteredTreatments.map(treatment => (
+              <EnhancedTreatmentCard
+                key={treatment.id}
+                treatment={treatment}
+                onSelect={() => onTreatmentSelect(treatment)}
+              />
+            ))}
           </div>
 
           {filteredTreatments.length === 0 && (

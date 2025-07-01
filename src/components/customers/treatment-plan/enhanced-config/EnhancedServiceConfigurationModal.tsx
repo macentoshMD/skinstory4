@@ -50,7 +50,7 @@ export function EnhancedServiceConfigurationModal({
     }
   }, [service]);
 
-  if (!service || !method) return null;
+  if (!service) return null;
 
   const pricePerTreatment = service.price;
   const subtotal = pricePerTreatment * numberOfSessions[0];
@@ -67,7 +67,7 @@ export function EnhancedServiceConfigurationModal({
 
     const configuredTreatment: ConfiguredTreatment = {
       id: `configured-${service.id}-${Date.now()}`,
-      methodId: method.id,
+      methodId: method?.id || 'direct',
       serviceId: service.id,
       serviceName: service.name,
       configuration: {
@@ -124,10 +124,10 @@ export function EnhancedServiceConfigurationModal({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
-            <span className="text-2xl">{method.icon}</span>
+            {method && <span className="text-2xl">{method.icon}</span>}
             <div>
-              <div>Konfigurera Behandling</div>
-              <div className="text-sm font-normal text-gray-600">{method.name} - {service.name}</div>
+              <div>Konfigurera {service.name}</div>
+              {method && <div className="text-sm font-normal text-gray-600">{method.name}</div>}
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -148,7 +148,7 @@ export function EnhancedServiceConfigurationModal({
               {/* Equipment Selection */}
               {service.availableHandpieces.length > 0 && (
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Utrustning ({method.name})</Label>
+                  <Label className="text-sm font-medium mb-2 block">Utrustning</Label>
                   <div className="grid grid-cols-1 gap-2">
                     {service.availableHandpieces.map(handpiece => (
                       <button

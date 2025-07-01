@@ -54,12 +54,7 @@ export function EnhancedTreatmentCard({
   return (
     <div 
       className="bg-background border border-border rounded-lg p-4 hover:border-primary/30 hover:shadow-lg transition-all cursor-pointer group duration-200 h-full flex flex-col" 
-      onClick={(e) => {
-        console.log('Treatment card div clicked:', treatment.name);
-        e.preventDefault();
-        e.stopPropagation();
-        onSelect();
-      }}
+      onClick={onSelect}
     >
       {/* Treatment Image/Icon */}
       <div className={`w-full aspect-square rounded-lg mb-4 flex items-center justify-center text-white font-bold text-lg overflow-hidden ${getCategoryColor(treatment.category)}`}>

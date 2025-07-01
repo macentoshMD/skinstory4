@@ -422,14 +422,12 @@ export function TreatmentPlanStep({
     setMethodModalOpen(false);
   };
   const handleTreatmentSelect = (treatment: DetailedTreatmentRecommendation) => {
-    console.log('handleTreatmentSelect called with:', treatment.name);
     // Open service configuration directly
     setServiceConfigModal({
       service: treatment,
       method: null
     });
     setTreatmentModalOpen(false);
-    console.log('Service config modal should open now');
   };
 
   const handleServiceSelect = (service: DetailedTreatmentRecommendation) => {
