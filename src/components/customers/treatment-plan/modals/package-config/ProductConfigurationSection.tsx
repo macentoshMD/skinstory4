@@ -33,47 +33,27 @@ export function ProductConfigurationSection({
 
           {/* Configuration Options */}
           <div className="space-y-4">
-            {/* Strength Selection */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Välj styrka</label>
-              <Select 
-                value={selectedConfigurations[product.productId]?.selectedStrength || product.attributes?.strength || "Level 2"}
-                onValueChange={(value) => onConfigurationChange(product.productId, 'selectedStrength', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Välj styrka" />
-                </SelectTrigger>
-                <SelectContent className="bg-background border border-border z-50">
-                  <SelectItem value="Level 1">Level 1 (Mild)</SelectItem>
-                  <SelectItem value="Level 2">Level 2 (Standard)</SelectItem>
-                  <SelectItem value="Level 3">Level 3 (Stark)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Size Selection for Mask and Day Cream */}
-            {(product.name.includes('Mask') || product.name.includes('Day Cream')) && (
+            {/* Strength Selection - Only for Cleanser and Activator */}
+            {(product.name.includes('Cleanser') || product.name.includes('Activator')) && (
               <div>
-                <label className="block text-sm font-medium mb-2">Välj storlek</label>
+                <label className="block text-sm font-medium mb-2">Välj styrka</label>
                 <Select 
-                  value={selectedConfigurations[product.productId]?.selectedSize || product.size}
-                  onValueChange={(value) => onConfigurationChange(product.productId, 'selectedSize', value)}
+                  value={selectedConfigurations[product.productId]?.selectedStrength || product.attributes?.strength || "Level 2"}
+                  onValueChange={(value) => onConfigurationChange(product.productId, 'selectedStrength', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Välj storlek" />
+                    <SelectValue placeholder="Välj styrka" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="60ml">60ml</SelectItem>
-                    <SelectItem value="120ml">120ml</SelectItem>
-                    {product.name.includes('Day Cream') && (
-                      <SelectItem value="240ml">240ml</SelectItem>
-                    )}
+                    <SelectItem value="Level 1">Level 1 (Mild)</SelectItem>
+                    <SelectItem value="Level 2">Level 2 (Standard)</SelectItem>
+                    <SelectItem value="Level 3">Level 3 (Stark)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             )}
 
-            {/* Peelingkorn Selection for Cleanser */}
+            {/* Peelingkorn Selection - Only for Cleanser */}
             {product.name.includes('Cleanser') && (
               <div>
                 <label className="block text-sm font-medium mb-2">Peelingkorn</label>
