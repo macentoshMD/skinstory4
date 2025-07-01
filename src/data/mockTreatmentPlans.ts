@@ -20,6 +20,88 @@ export const mockTreatmentPlansData: TreatmentPlan[] = [
       homeProducts: 5,
       expectedResults: '70-80% förbättring'
     },
+    clinicCare: {
+      treatments: [
+        {
+          id: '1',
+          name: 'HydraFacial Djuprengöring',
+          method: 'HydraFacial',
+          sessions: 3,
+          interval: 'Var 3:e vecka',
+          equipment: 'HydraFacial MD',
+          areas: ['Panna', 'Kinder', 'Haka'],
+          price: 1500
+        },
+        {
+          id: '2',
+          name: 'LED Ljusterapi',
+          method: 'LED Blue Light',
+          sessions: 6,
+          interval: 'Veckovis',
+          equipment: 'LED Panel 415nm',
+          areas: ['Hela ansiktet'],
+          price: 800
+        },
+        {
+          id: '3',
+          name: 'Kemisk Peeling',
+          method: 'Salicylsyra 20%',
+          sessions: 2,
+          interval: 'Var 6:e vecka',
+          equipment: 'Professional Peel Kit',
+          areas: ['T-zon'],
+          price: 2000
+        }
+      ],
+      totalSessions: 11,
+      schedule: 'Var 2:a vecka under första månaden, sedan månatliga uppföljningar'
+    },
+    homeCare: {
+      productPackages: [
+        {
+          id: '1',
+          name: 'Akne Starterpaket',
+          brand: 'CeraVe',
+          category: 'Grundvård',
+          usage: 'Morgon & kväll',
+          duration: '3 månader',
+          price: 1200,
+          description: 'Skonsam rengöring + fuktgivning för aknebenägen hud'
+        },
+        {
+          id: '2',
+          name: 'Salicylsyra Serum 2%',
+          brand: 'The Ordinary',
+          category: 'Behandling',
+          usage: 'Kväll, 3x/vecka',
+          duration: '2 månader',
+          price: 400,
+          description: 'Exfolierar och rengör porer djupt'
+        },
+        {
+          id: '3',
+          name: 'Niacinamide Serum 10%',
+          brand: 'The Ordinary',
+          category: 'Behandling',
+          usage: 'Morgon',
+          duration: '2 månader',
+          price: 350,
+          description: 'Reglerar talgproduktion och minskar inflammation'
+        },
+        {
+          id: '4',
+          name: 'Solskydd SPF 50',
+          brand: 'La Roche-Posay',
+          category: 'Skydd',
+          usage: 'Dagligen',
+          duration: '3 månader',
+          price: 600,
+          description: 'Oljefritt solskydd för aknebenägen hud'
+        }
+      ],
+      methods: ['Dubbel rengöring', 'Layering teknik', 'Gradvis introduktion'],
+      instructions: 'Börja med grundprodukter första veckan, lägg till behandlingsprodukter vecka 2-3'
+    },
     pricing: {
       commitTotal: '12 969 kr',
       commitMonthly: '4 323 kr/månad i 3 månader',
@@ -46,6 +128,48 @@ export const mockTreatmentPlansData: TreatmentPlan[] = [
       homeProducts: 3,
       expectedResults: '85-90% förbättring'
     },
+    clinicCare: {
+      treatments: [
+        {
+          id: '1',
+          name: 'IPL Pigmentbehandling',
+          method: 'IPL',
+          sessions: 4,
+          interval: 'Var 2:a vecka',
+          equipment: 'IPL Lumenis M22',
+          areas: ['Kinder', 'Panna'],
+          price: 2200
+        }
+      ],
+      totalSessions: 4,
+      schedule: 'Var 2:a vecka, totalt 8 veckor'
+    },
+    homeCare: {
+      productPackages: [
+        {
+          id: '1',
+          name: 'Vitamin C Serum',
+          brand: 'Skinceuticals',
+          category: 'Behandling',
+          usage: 'Morgon',
+          duration: '2 månader',
+          price: 1800,
+          description: 'Antioxidant serum för ljusare hudton'
+        },
+        {
+          id: '2',
+          name: 'Retinol 0.5%',
+          brand: 'Paula\'s Choice',
+          category: 'Behandling',
+          usage: 'Kväll, 2x/vecka',
+          duration: '3 månader',
+          price: 950,
+          description: 'Mild retinol för hudförnyelse'
+        }
+      ],
+      methods: ['Gradvis retinol introduktion', 'Morgon antioxidant rutin'],
+      instructions: 'Starta med vitamin C morgon vecka 1, lägg till retinol kväll vecka 3'
+    },
     pricing: {
       commitTotal: '8 500 kr',
       commitMonthly: '2 833 kr/månad i 3 månader',
@@ -71,6 +195,68 @@ export const mockTreatmentPlansData: TreatmentPlan[] = [
       clinicSessions: 5,
       homeProducts: 4,
       expectedResults: '60-70% förbättring'
+    },
+    clinicCare: {
+      treatments: [
+        {
+          id: '1',
+          name: 'Microneedling',
+          method: 'Dermaroller 1.0mm',
+          sessions: 3,
+          interval: 'Var 4:e vecka',
+          equipment: 'Professional Dermaroller',
+          areas: ['Näsa', 'Kinder'],
+          price: 1800
+        },
+        {
+          id: '2',
+          name: 'Kemisk Peeling BHA',
+          method: 'Salicylsyra 30%',
+          sessions: 2,
+          interval: 'Var 5:e vecka',
+          equipment: 'Professional Peel Kit',
+          areas: ['T-zon'],
+          price: 2500
+        }
+      ],
+      totalSessions: 5,
+      schedule: 'Microneedling månadsvis, peeling mellan sessionerna'
+    },
+    homeCare: {
+      productPackages: [
+        {
+          id: '1',
+          name: 'BHA Exfoliant 2%',
+          brand: 'Paula\'s Choice',
+          category: 'Behandling',
+          usage: 'Kväll, varannan dag',
+          duration: '3 månader',
+          price: 650,
+          description: 'Exfolierar och rengör porer'
+        },
+        {
+          id: '2',
+          name: 'Niacinamide Toner',
+          brand: 'The INKEY List',
+          category: 'Behandling',
+          usage: 'Morgon & kväll',
+          duration: '2 månader',
+          price: 400,
+          description: 'Minimerar porer och kontrollerar talg'
+        },
+        {
+          id: '3',
+          name: 'Hyaluronsyra Serum',
+          brand: 'The Ordinary',
+          category: 'Grundvård',
+          usage: 'Morgon & kväll',
+          duration: '2 månader',
+          price: 300,
+          description: 'Återfuktar utan att täppa till porer'
+        }
+      ],
+      methods: ['Porminimering rutin', 'Balanserad fuktgivning'],
+      instructions: 'Använd BHA 3x första veckan, öka gradvis till varannan dag'
     },
     pricing: {
       commitTotal: '10 500 kr',

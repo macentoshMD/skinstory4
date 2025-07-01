@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import TreatmentTimeline from '@/components/portal/TreatmentTimeline';
-import ProblemDescriptionCard from './ProblemDescriptionCard';
-import TreatmentOverviewCard from './TreatmentOverviewCard';
+import ClinicCareCard from './ClinicCareCard';
+import HomeCareCard from './HomeCareCard';
 import TreatmentStatusBadge from './TreatmentStatusBadge';
 import { getSeverityColor, getButtonTextForStatus } from '@/utils/treatmentPlanHelpers';
 import { TreatmentPlan } from '@/types/treatment-plan';
@@ -49,12 +49,17 @@ const TreatmentPlanItem = ({
 
         <AccordionContent className="p-0">
           <CardContent className="space-y-6 pt-0">
-            <ProblemDescriptionCard 
-              problem={treatmentPlan.problem}
-              goals={treatmentPlan.goals}
+            <ClinicCareCard 
+              treatments={treatmentPlan.clinicCare.treatments}
+              totalSessions={treatmentPlan.clinicCare.totalSessions}
+              schedule={treatmentPlan.clinicCare.schedule}
             />
 
-            <TreatmentOverviewCard plan={treatmentPlan.plan} />
+            <HomeCareCard 
+              productPackages={treatmentPlan.homeCare.productPackages}
+              methods={treatmentPlan.homeCare.methods}
+              instructions={treatmentPlan.homeCare.instructions}
+            />
 
             <TreatmentTimeline />
 
