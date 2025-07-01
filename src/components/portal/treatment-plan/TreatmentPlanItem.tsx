@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ClinicCareCard from './ClinicCareCard';
 import HomeCareCard from './HomeCareCard';
 import TreatmentStatusBadge from './TreatmentStatusBadge';
@@ -12,7 +13,7 @@ import ReasoningSection from './ReasoningSection';
 import PricingBreakdownSection from './PricingBreakdownSection';
 import { getSeverityColor } from '@/utils/treatmentPlanHelpers';
 import { TreatmentPlan } from '@/types/treatment-plan';
-import { Clock, Building2, User } from 'lucide-react';
+import { Clock, Building2, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import PaymentOptionModal from './PaymentOptionModal';
 
@@ -27,6 +28,7 @@ const TreatmentPlanItem = ({
   onStartTreatment, 
   onShowDetailedPlan 
 }: TreatmentPlanItemProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     type: 'treatment' | 'product';
@@ -57,49 +59,56 @@ const TreatmentPlanItem = ({
 
   return (
     <Card className="overflow-hidden bg-white">
-      {/* Clean Header */}
-      <CardHeader className="pb-6">
-        <div className="space-y-4">
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
-              <CardTitle className="text-3xl font-bold text-gray-900">
-                {treatmentPlan.problem.name}
-              </CardTitle>
-              <p className="text-gray-600 text-lg max-w-2xl">{treatmentPlan.problem.description}</p>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        {/* Clean Header */}
+        <CollapsibleTrigger asChild>
+          <CardHeader className="pb-6 cursor-pointer hover:bg-gray-50/50 transition-colors">
+            <div className="space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2 flex-1">
+                  <div className="flex items-center gap-3">
+                    <CardTitle className="text-3xl font-bold text-gray-900">
+                      {treatmentPlan.problem.name}
+                    </CardTitle>
+                    {isOpen ? <ChevronUp className="h-5 w-5 text-gray-500" /> : <ChevronDown className="h-5 w-5 text-gray-500" />}
+                  </div>
+                  <p className="text-gray-600 text-lg max-w-2xl">{treatmentPlan.problem.description}</p>
+                </div>
+                <TreatmentStatusBadge status={treatmentPlan.treatmentStatus} />
+              </div>
+              
+              {/* Simple Overview */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="grid grid-cols-3 gap-6 text-center">
+                  <div>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <Building2 className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-500">Klinik</span>
+                    </div>
+                    <div className="font-semibold">AcneSpecialisten</div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <User className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-500">Din Terapeut</span>
+                    </div>
+                    <div className="font-semibold">Cazzandra</div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <Clock className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-500">Varaktighet</span>
+                    </div>
+                    <div className="font-semibold">{treatmentPlan.plan.duration}</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <TreatmentStatusBadge status={treatmentPlan.treatmentStatus} />
-          </div>
-          
-          {/* Simple Overview */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="grid grid-cols-3 gap-6 text-center">
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Building2 className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-500">Klinik</span>
-                </div>
-                <div className="font-semibold">AcneSpecialisten</div>
-              </div>
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <User className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-500">Din Terapeut</span>
-                </div>
-                <div className="font-semibold">Cazzandra</div>
-              </div>
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-500">Varaktighet</span>
-                </div>
-                <div className="font-semibold">{treatmentPlan.plan.duration}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </CardHeader>
+          </CardHeader>
+        </CollapsibleTrigger>
 
-      <CardContent className="space-y-6">
+        <CollapsibleContent>
+          <CardContent className="space-y-6 pt-0">
         {/* Timeline Section */}
         <TimelineSection 
           timeline={treatmentPlan.timeline}
@@ -152,16 +161,19 @@ const TreatmentPlanItem = ({
           description={treatmentPlan.beforeAfter.description}
         />
 
-        {/* Payment Option Modal */}
-        <PaymentOptionModal
-          isOpen={paymentModal.isOpen}
-          onClose={() => setPaymentModal({ ...paymentModal, isOpen: false })}
-          onSelectPayment={handlePaymentSelection}
-          type={paymentModal.type}
-          itemName={paymentModal.itemName}
-          pricing={treatmentPlan.pricing}
-        />
-      </CardContent>
+          </CardContent>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* Payment Option Modal */}
+      <PaymentOptionModal
+        isOpen={paymentModal.isOpen}
+        onClose={() => setPaymentModal({ ...paymentModal, isOpen: false })}
+        onSelectPayment={handlePaymentSelection}
+        type={paymentModal.type}
+        itemName={paymentModal.itemName}
+        pricing={treatmentPlan.pricing}
+      />
     </Card>
   );
 };
