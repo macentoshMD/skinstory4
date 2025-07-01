@@ -142,36 +142,11 @@ export function PackageConfigurationModal({
                   </div>
                 </div>
 
-                {/* Size Selection */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Storlek</label>
-                    <Select 
-                      value={selectedConfigurations[product.productId]?.selectedSize || product.size}
-                      onValueChange={(value) => {
-                        setSelectedConfigurations(prev => ({
-                          ...prev,
-                          [product.productId]: {
-                            ...prev[product.productId],
-                            selectedSize: value
-                          }
-                        }));
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Välj storlek" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={product.size}>{product.size}</SelectItem>
-                        {/* Add more size options if available */}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Strength Selection */}
+                {/* Strength Selection - Primary focus */}
+                <div className="space-y-4">
                   {product.attributes?.strength && (
                     <div>
-                      <label className="block text-sm font-medium mb-2">Styrka</label>
+                      <label className="block text-sm font-medium mb-2">Välj styrka</label>
                       <Select 
                         value={selectedConfigurations[product.productId]?.selectedStrength || product.attributes.strength}
                         onValueChange={(value) => {
@@ -188,8 +163,36 @@ export function PackageConfigurationModal({
                           <SelectValue placeholder="Välj styrka" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={product.attributes.strength}>{product.attributes.strength}</SelectItem>
-                          {/* Add more strength options if available */}
+                          <SelectItem value="Level 1">Level 1 (Mild)</SelectItem>
+                          <SelectItem value="Level 2">Level 2 (Standard)</SelectItem>
+                          <SelectItem value="Level 3">Level 3 (Stark)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  
+                  {!product.attributes?.strength && (
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Välj styrka</label>
+                      <Select 
+                        value={selectedConfigurations[product.productId]?.selectedStrength || "Level 2"}
+                        onValueChange={(value) => {
+                          setSelectedConfigurations(prev => ({
+                            ...prev,
+                            [product.productId]: {
+                              ...prev[product.productId],
+                              selectedStrength: value
+                            }
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Välj styrka" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Level 1">Level 1 (Mild)</SelectItem>
+                          <SelectItem value="Level 2">Level 2 (Standard)</SelectItem>
+                          <SelectItem value="Level 3">Level 3 (Stark)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

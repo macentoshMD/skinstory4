@@ -85,15 +85,14 @@ export function ProductPackageCard({
         <div className="space-y-2 flex-1">
           <h4 className="text-xs font-medium text-foreground">Innehåller:</h4>
           <div className="space-y-1">
-            {pkg.products.slice(0, 2).map((product, index) => (
-              <div key={index} className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground line-clamp-1">{product.name}</span>
-                <span className="text-xs text-muted-foreground shrink-0">({product.size})</span>
+            {pkg.products.slice(0, 3).map((product, index) => (
+              <div key={index} className="text-xs text-muted-foreground line-clamp-1">
+                {product.name}
               </div>
             ))}
-            {pkg.products.length > 2 && (
+            {pkg.products.length > 3 && (
               <div className="text-xs text-muted-foreground">
-                +{pkg.products.length - 2} fler produkter
+                +{pkg.products.length - 3} fler produkter
               </div>
             )}
           </div>
