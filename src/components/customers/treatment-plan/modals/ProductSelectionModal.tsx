@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,7 @@ interface ProductSelectionModalProps {
   availableProducts: DetailedProductRecommendation[];
   availablePackages?: ProductPackage[];
   onProductSelect: (product: DetailedProductRecommendation) => void;
-  onPackageSelect?: (package: ProductPackage) => void;
+  onPackageSelect?: (pkg: ProductPackage) => void;
   selectedProblems?: string[];
 }
 

@@ -284,7 +284,7 @@ export function TreatmentPlanStep({
     });
     let recommendedProducts = MOCK_DETAILED_PRODUCTS.filter(product => {
       if (hasAcne) return true;
-      return product.priority === 'essential';
+      return product.priority === 'need'; // Changed from 'essential' to 'need'
     });
 
     // You can now use recommendedTreatments and recommendedProducts to update your state or UI
