@@ -26,25 +26,6 @@ const ClinicCareCard = ({ treatments, totalSessions, schedule, onBookTreatment }
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Quick Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <div className="text-lg font-bold text-blue-600">{totalSessions}</div>
-            <p className="text-xs text-muted-foreground">Sessioner</p>
-          </div>
-          <div className="text-center p-3 bg-green-50 rounded-lg">
-            <div className="text-lg font-bold text-green-600">{totalClinicPrice.toLocaleString('sv-SE')} kr</div>
-            <p className="text-xs text-muted-foreground">Totalkostnad</p>
-          </div>
-          <div className="text-center p-3 bg-purple-50 rounded-lg">
-            <div className="text-lg font-bold text-purple-600">{treatments[0]?.interval || 'N/A'}</div>
-            <p className="text-xs text-muted-foreground">Intervall</p>
-          </div>
-          <div className="text-center p-3 bg-orange-50 rounded-lg">
-            <div className="text-lg font-bold text-orange-600">{treatments[0]?.areas.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Områden</p>
-          </div>
-        </div>
 
         {/* Treatments List */}
         <div className="space-y-3">
@@ -63,13 +44,6 @@ const ClinicCareCard = ({ treatments, totalSessions, schedule, onBookTreatment }
                 </div>
               </div>
               
-              <div className="flex flex-wrap gap-2">
-                {treatment.areas.map(area => (
-                  <Badge key={area} className="bg-blue-200 text-blue-800 text-xs">
-                    {area}
-                  </Badge>
-                ))}
-              </div>
             </div>
           ))}
         </div>

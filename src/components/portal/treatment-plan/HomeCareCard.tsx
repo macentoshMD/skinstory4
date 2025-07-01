@@ -36,25 +36,6 @@ const HomeCareCard = ({ productPackages, methods, instructions, onOrderProducts 
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Quick Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="text-center p-3 bg-green-50 rounded-lg">
-            <div className="text-lg font-bold text-green-600">1</div>
-            <p className="text-xs text-muted-foreground">Produktpaket</p>
-          </div>
-          <div className="text-center p-3 bg-purple-50 rounded-lg">
-            <div className="text-lg font-bold text-purple-600">{akneStarterpaket?.price.toLocaleString('sv-SE')} kr</div>
-            <p className="text-xs text-muted-foreground">Totalkostnad</p>
-          </div>
-          <div className="text-center p-3 bg-orange-50 rounded-lg">
-            <div className="text-lg font-bold text-orange-600">{methods.length}</div>
-            <p className="text-xs text-muted-foreground">Metoder</p>
-          </div>
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <div className="text-lg font-bold text-blue-600">3</div>
-            <p className="text-xs text-muted-foreground">Månader</p>
-          </div>
-        </div>
 
         {/* Single Product Package */}
         {akneStarterpaket && (
@@ -62,50 +43,34 @@ const HomeCareCard = ({ productPackages, methods, instructions, onOrderProducts 
             <h4 className="font-semibold text-sm text-green-800 bg-green-100 px-3 py-1 rounded-full inline-block">
               {akneStarterpaket.category}
             </h4>
-            <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex-1">
-                  <h5 className="font-semibold text-lg text-green-900">{akneStarterpaket.name}</h5>
-                  <p className="text-sm text-green-700">{akneStarterpaket.brand} • {akneStarterpaket.usage}</p>
-                  <p className="text-sm text-green-600 mt-1">{akneStarterpaket.description}</p>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-xl text-green-900">{akneStarterpaket.price} kr</div>
-                  <div className="text-sm text-green-600">{akneStarterpaket.duration}</div>
-                </div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1">
+                <h5 className="font-semibold text-lg text-green-900">{akneStarterpaket.name}</h5>
+                <p className="text-sm text-green-700">{akneStarterpaket.brand} • {akneStarterpaket.usage}</p>
+                <p className="text-sm text-green-600 mt-1">{akneStarterpaket.description}</p>
               </div>
-              
-              {/* CTA Buttons */}
-              <div className="flex gap-3">
-                <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={() => onOrderProducts?.()}>
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Beställ
-                </Button>
-                <Button variant="outline" className="flex-1 border-green-200 text-green-700 hover:bg-green-50">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Boka
-                </Button>
+              <div className="text-right">
+                <div className="font-bold text-xl text-green-900">{akneStarterpaket.price} kr</div>
+                <div className="text-sm text-green-600">{akneStarterpaket.duration}</div>
               </div>
+            </div>
+            
+            {/* CTA Buttons */}
+            <div className="flex gap-3">
+              <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={() => onOrderProducts?.()}>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Beställ
+              </Button>
+              <Button variant="outline" className="flex-1 border-green-200 text-green-700 hover:bg-green-50">
+                <Info className="h-4 w-4 mr-2" />
+                Hudvårdsrutiner
+              </Button>
             </div>
           </div>
         )}
 
-        {/* Methods & Instructions */}
-        <div className="space-y-4 border-t pt-4">
-          <div>
-            <h4 className="font-semibold mb-2 flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Behandlingsmetoder
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {methods.map(method => (
-                <Badge key={method} variant="outline" className="text-xs">
-                  {method}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
+        {/* Instructions */}
+        <div className="border-t pt-4">
           <div>
             <h4 className="font-semibold mb-2 flex items-center gap-2">
               <Info className="h-4 w-4" />
