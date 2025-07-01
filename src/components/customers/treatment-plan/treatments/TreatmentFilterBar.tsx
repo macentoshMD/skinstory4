@@ -1,11 +1,12 @@
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, X } from 'lucide-react';
+import { Search, Filter, X } from 'lucide-react';
 
 interface TreatmentFilterBarProps {
   searchTerm: string;
-  onSearchChange: (value: string) => void;
+  onSearchChange: (term: string) => void;
   selectedProblems: string[];
   onProblemToggle: (problem: string) => void;
   selectedMethods: string[];
@@ -19,6 +20,14 @@ interface TreatmentFilterBarProps {
   totalCount: number;
   filteredCount: number;
 }
+
+const PROBLEM_LABELS: { [key: string]: string } = {
+  'acne': 'Akne',
+  'rosacea': 'Rosacea',
+  'pigment': 'Pigmentfläckar',
+  'wrinkles': 'Rynkor',
+  'scars': 'Ärr'
+};
 
 export function TreatmentFilterBar({
   searchTerm,
@@ -36,99 +45,150 @@ export function TreatmentFilterBar({
   totalCount,
   filteredCount
 }: TreatmentFilterBarProps) {
-  const hasActiveFilters = selectedProblems.length > 0 || selectedMethods.length > 0 || selectedModels.length > 0 || searchTerm.length > 0;
+  const activeTags = [
+    ...selectedProblems.map(p => ({ type: 'problem', value: p, label: PROBLEM_LABELS[p] || p })),
+    ...selectedMethods.map(m => ({ type: 'method', value: m, label: m })),
+    ...selectedModels.map(m => ({ type: 'model', value: m, label: m }))
+  ];
 
-  const getProblemDisplayName = (problem: string) => {
-    const names: { [key: string]: string } = {
-      'acne': 'Akne',
-      'rosacea': 'Rosacea',
-      'pigment': 'Pigmentfläckar',
-      'wrinkles': 'Rynkor',
-      'scars': 'Ärr'
-    };
-    return names[problem] || problem;
+  const handleProblemSelect = (value: string) => {
+    if (value === 'all') {
+      selectedProblems.forEach(problem => onProblemToggle(problem));
+    } else {
+      onProblemToggle(value);
+    }
+  };
+
+  const handleMethodSelect = (value: string) => {
+    if (value === 'all') {
+      selectedMethods.forEach(method => onMethodToggle(method));
+    } else {
+      onMethodToggle(value);
+    }
+  };
+
+  const handleModelSelect = (value: string) => {
+    if (value === 'all') {
+      selectedModels.forEach(model => onModelToggle(model));
+    } else {
+      onModelToggle(value);
+    }
+  };
+
+  const getSelectedProblemsLabel = () => {
+    if (selectedProblems.length === 0) return 'Välj problem';
+    if (selectedProblems.length === 1) return PROBLEM_LABELS[selectedProblems[0]] || selectedProblems[0];
+    return `${selectedProblems.length} problem valda`;
+  };
+
+  const getSelectedMethodsLabel = () => {
+    if (selectedMethods.length === 0) return 'Välj metod';
+    if (selectedMethods.length === 1) return selectedMethods[0];
+    return `${selectedMethods.length} metoder valda`;
+  };
+
+  const getSelectedModelsLabel = () => {
+    if (selectedModels.length === 0) return 'Välj modell';
+    if (selectedModels.length === 1) return selectedModels[0];
+    return `${selectedModels.length} modeller valda`;
   };
 
   return (
-    <div className="space-y-4 p-4 bg-gray-50 rounded-lg border">
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <Input
-          placeholder="Sök behandlingar..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10"
-        />
-      </div>
-
-      {/* Problem Filters */}
-      <div>
-        <h4 className="text-sm font-medium mb-2">Problem:</h4>
-        <div className="flex flex-wrap gap-2">
-          {availableProblems.map(problem => (
-            <Badge
-              key={problem}
-              variant={selectedProblems.includes(problem) ? "default" : "outline"}
-              className="cursor-pointer hover:bg-primary/20"
-              onClick={() => onProblemToggle(problem)}
-            >
-              {getProblemDisplayName(problem)}
-            </Badge>
-          ))}
+    <div className="space-y-6 bg-background">
+      {/* Search and Filter Row */}
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+        {/* Search */}
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Sök behandlingar..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10 h-10 bg-background border-border"
+          />
         </div>
-      </div>
 
-      {/* Method Filters */}
-      <div>
-        <h4 className="text-sm font-medium mb-2">Metod:</h4>
-        <div className="flex flex-wrap gap-2">
-          {availableMethods.map(method => (
-            <Badge
-              key={method}
-              variant={selectedMethods.includes(method) ? "default" : "outline"}
-              className="cursor-pointer hover:bg-primary/20"
-              onClick={() => onMethodToggle(method)}
-            >
-              {method}
-            </Badge>
-          ))}
-        </div>
-      </div>
+        {/* Filter Dropdowns */}
+        <div className="flex flex-wrap gap-3">
+          {/* Problem Filter */}
+          <Select onValueChange={handleProblemSelect}>
+            <SelectTrigger className="w-[160px] h-10 bg-background border-border">
+              <SelectValue placeholder={getSelectedProblemsLabel()} />
+            </SelectTrigger>
+            <SelectContent>
+              {availableProblems.map(problem => (
+                <SelectItem key={problem} value={problem}>
+                  {PROBLEM_LABELS[problem] || problem}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-      {/* Model Filters */}
-      <div>
-        <h4 className="text-sm font-medium mb-2">Modell:</h4>
-        <div className="flex flex-wrap gap-2">
-          {availableModels.map(model => (
-            <Badge
-              key={model}
-              variant={selectedModels.includes(model) ? "default" : "outline"}
-              className="cursor-pointer hover:bg-primary/20"
-              onClick={() => onModelToggle(model)}
-            >
-              {model}
-            </Badge>
-          ))}
-        </div>
-      </div>
+          {/* Method Filter */}
+          <Select onValueChange={handleMethodSelect}>
+            <SelectTrigger className="w-[160px] h-10 bg-background border-border">
+              <SelectValue placeholder={getSelectedMethodsLabel()} />
+            </SelectTrigger>
+            <SelectContent>
+              {availableMethods.map(method => (
+                <SelectItem key={method} value={method}>
+                  {method}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-      {/* Filter Summary and Clear */}
-      <div className="flex items-center justify-between pt-2 border-t">
-        <div className="text-sm text-gray-600">
-          Visar {filteredCount} av {totalCount} behandlingar
-        </div>
-        {hasActiveFilters && (
+          {/* Model Filter */}
+          <Select onValueChange={handleModelSelect}>
+            <SelectTrigger className="w-[160px] h-10 bg-background border-border">
+              <SelectValue placeholder={getSelectedModelsLabel()} />
+            </SelectTrigger>
+            <SelectContent>
+              {availableModels.map(model => (
+                <SelectItem key={model} value={model}>
+                  {model}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Clear Filters Button */}
           <Button 
-            variant="ghost" 
-            size="sm" 
+            variant="outline" 
+            size="sm"
             onClick={onClearFilters}
-            className="text-gray-500 hover:text-gray-700"
+            className="h-10 px-4"
           >
-            <X className="h-4 w-4 mr-1" />
             Rensa filter
           </Button>
-        )}
+        </div>
+      </div>
+
+      {/* Active Filter Tags */}
+      {activeTags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {activeTags.map((tag, index) => (
+            <Badge
+              key={index}
+              variant="secondary"
+              className="px-3 py-1 bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"
+              onClick={() => {
+                if (tag.type === 'problem') onProblemToggle(tag.value);
+                else if (tag.type === 'method') onMethodToggle(tag.value);
+                else if (tag.type === 'model') onModelToggle(tag.value);
+              }}
+            >
+              {tag.label}
+              <X className="ml-1 h-3 w-3" />
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {/* Results Counter */}
+      <div className="text-sm text-muted-foreground">
+        <span className="font-medium">Treatments found - {filteredCount}</span>
+        <span className="ml-1">av {totalCount} totalt</span>
       </div>
     </div>
   );
