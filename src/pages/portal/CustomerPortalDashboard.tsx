@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
-  CheckCircle
+  CheckCircle,
+  TrendingUp,
+  Calendar,
+  AlertCircle,
+  ArrowRight
 } from 'lucide-react';
 
 const CustomerPortalDashboard = () => {
@@ -32,15 +36,21 @@ const CustomerPortalDashboard = () => {
           </div>
         </div>
 
-        {/* Skin Score Card */}
-        <Card className="border-0 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground mb-12">
+        {/* Treatment Plan Call to Action */}
+        <Card className="border-0 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground mb-12 cursor-pointer hover:from-primary/90 hover:to-primary/70 transition-all duration-300" onClick={() => window.location.href = '/portal/behandlingsplan'}>
           <CardContent className="p-12 text-center">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold">Din Hudpoäng</h2>
-              <div className="text-7xl font-bold">{mockData.skinScore}%</div>
-              <p className="text-primary-foreground/80 text-lg">
-                Baserat på din hudanalys och konsultation
+              <div className="p-3 rounded-full bg-primary-foreground/20 w-fit mx-auto">
+                <AlertCircle className="h-8 w-8 text-primary-foreground" />
+              </div>
+              <h2 className="text-3xl font-bold">Din behandlingsplan för Akne är klar!</h2>
+              <p className="text-primary-foreground/90 text-lg max-w-2xl mx-auto">
+                Baserat på din konsultation har vi skapat en personlig behandlingsplan för att behandla din akne
               </p>
+              <div className="flex items-center justify-center gap-3 text-primary-foreground/80">
+                <span className="text-lg font-medium">Se din behandlingsplan</span>
+                <ArrowRight className="h-6 w-6" />
+              </div>
             </div>
           </CardContent>
         </Card>
