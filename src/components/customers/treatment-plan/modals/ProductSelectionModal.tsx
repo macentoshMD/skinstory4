@@ -37,9 +37,44 @@ export function ProductSelectionModal({
     }
   }, [selectedProblems]);
 
-  // Combine products and packages for unified filtering
+  // Group products by name and combine their attributes
+  const groupedProducts = availableProducts.reduce((acc, product) => {
+    const baseName = product.name.replace(/\s+(Level\s+\d+|Styrka\s+\d+)/i, '').trim();
+    
+    if (!acc[baseName]) {
+      acc[baseName] = {
+        ...product,
+        name: baseName,
+        availableStrengths: [],
+        availableSizes: [...(product.sizes || [])],
+        baseProduct: product
+      };
+    }
+    
+    // Extract strength/level from name
+    const strengthMatch = product.name.match(/(Level|Styrka)\s+(\d+)/i);
+    if (strengthMatch) {
+      acc[baseName].availableStrengths.push({
+        level: strengthMatch[2],
+        product: product
+      });
+    }
+    
+    // Merge sizes if different
+    if (product.sizes) {
+      product.sizes.forEach(size => {
+        if (!acc[baseName].availableSizes.find(s => s.size === size.size)) {
+          acc[baseName].availableSizes.push(size);
+        }
+      });
+    }
+    
+    return acc;
+  }, {} as Record<string, any>);
+
+  // Combine grouped products and packages for unified filtering
   const allItems = [
-    ...availableProducts.map(p => ({ ...p, itemType: 'product' as const })),
+    ...Object.values(groupedProducts).map(p => ({ ...p, itemType: 'product' as const })),
     ...availablePackages.map(p => ({ ...p, itemType: 'package' as const, type: 'package' }))
   ];
 
@@ -137,7 +172,7 @@ export function ProductSelectionModal({
                 <EnhancedProductCard
                   key={item.id}
                   product={item as DetailedProductRecommendation}
-                  onSelect={() => onProductSelect(item as DetailedProductRecommendation)}
+                  onSelect={() => onProductSelect(item.baseProduct || item as DetailedProductRecommendation)}
                 />
               )
             ))}

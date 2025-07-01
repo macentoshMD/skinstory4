@@ -70,11 +70,16 @@ export function EnhancedProductCard({
           {product.description}
         </p>
 
-        {/* Type Badge */}
-        <div className="flex justify-start">
+        {/* Type and Attributes */}
+        <div className="flex flex-wrap gap-1">
           <Badge variant="secondary" className="text-xs">
             {product.type}
           </Badge>
+          {(product as any).availableStrengths?.length > 0 && (
+            <Badge variant="outline" className="text-xs">
+              {(product as any).availableStrengths.length} styrkor
+            </Badge>
+          )}
         </div>
 
         {/* Duration */}
@@ -94,10 +99,13 @@ export function EnhancedProductCard({
             
             {/* Available Options Indicators */}
             <div className="flex flex-col items-end space-y-1">
-              {product.availableOptions.strength && <Badge variant="outline" className="text-xs">
+              {(product as any).availableStrengths?.length > 0 && <Badge variant="outline" className="text-xs">
+                  {(product as any).availableStrengths.length} nivåer
+                </Badge>}
+              {product.availableOptions?.strength && <Badge variant="outline" className="text-xs">
                   {product.availableOptions.strength.length} styrkor
                 </Badge>}
-              {product.availableOptions.spf && <Badge variant="outline" className="text-xs">
+              {product.availableOptions?.spf && <Badge variant="outline" className="text-xs">
                   SPF
                 </Badge>}
             </div>
