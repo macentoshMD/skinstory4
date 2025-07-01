@@ -223,6 +223,7 @@ export interface DetailedProductRecommendation extends ProductRecommendation {
     sizes?: string[];
     additives?: string[];
     microbeads?: boolean;
+    peelingkorn?: boolean; // Add support for peelingkorn option
   };
   configuration?: {
     selectedStrength?: string;
@@ -230,6 +231,7 @@ export interface DetailedProductRecommendation extends ProductRecommendation {
     selectedSize?: string;
     selectedAdditives?: string[];
     withMicrobeads?: boolean;
+    withPeelingkorn?: boolean; // Add support for peelingkorn configuration
     finalPrice: number;
   };
 }
@@ -244,6 +246,7 @@ export interface ProductInPackage {
     strength?: string;
     spf?: number;
     additives?: string[];
+    peelingkorn?: boolean; // Add support for peelingkorn in packages
   };
 }
 

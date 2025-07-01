@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -25,6 +24,7 @@ export function ProductConfigurationModal({
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedAdditives, setSelectedAdditives] = useState<string[]>([]);
   const [withMicrobeads, setWithMicrobeads] = useState<boolean>(false);
+  const [withPeelingkorn, setWithPeelingkorn] = useState<boolean>(false);
 
   useEffect(() => {
     if (product) {
@@ -33,6 +33,7 @@ export function ProductConfigurationModal({
       setSelectedSize(product.sizes?.[0]?.size || '');
       setSelectedAdditives([]);
       setWithMicrobeads(false);
+      setWithPeelingkorn(false);
     }
   }, [product]);
 
@@ -58,6 +59,11 @@ export function ProductConfigurationModal({
       price += 150;
     }
     
+    // Peelingkorn modifier
+    if (withPeelingkorn) {
+      price += 100;
+    }
+    
     // Additives modifier
     price += selectedAdditives.length * 75;
     
@@ -75,6 +81,7 @@ export function ProductConfigurationModal({
         selectedSize: selectedSize || undefined,
         selectedAdditives,
         withMicrobeads,
+        withPeelingkorn,
         finalPrice
       }
     };
@@ -223,6 +230,20 @@ export function ProductConfigurationModal({
             </div>
           )}
 
+          {/* Peelingkorn Option */}
+          {product.availableOptions.peelingkorn && (
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-medium">Med peelingkorn</label>
+                <p className="text-xs text-gray-500">Naturliga peelingkorn för mild exfoliering (+100 kr)</p>
+              </div>
+              <Switch
+                checked={withPeelingkorn}
+                onCheckedChange={setWithPeelingkorn}
+              />
+            </div>
+          )}
+
           {/* Price Summary */}
           <div className="border-t pt-4">
             <div className="space-y-2">
@@ -249,6 +270,13 @@ export function ProductConfigurationModal({
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Mikrobeads:</span>
                   <span>+150 kr</span>
+                </div>
+              )}
+              
+              {withPeelingkorn && (
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Peelingkorn:</span>
+                  <span>+100 kr</span>
                 </div>
               )}
               
