@@ -100,13 +100,6 @@ const TreatmentPlanItem = ({
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Before & After Section */}
-        <BeforeAfterSection 
-          expectedImprovement={treatmentPlan.beforeAfter.expectedImprovement}
-          timeframe={treatmentPlan.beforeAfter.timeframe}
-          description={treatmentPlan.beforeAfter.description}
-        />
-
         {/* Timeline Section */}
         <TimelineSection 
           timeline={treatmentPlan.timeline}
@@ -150,6 +143,13 @@ const TreatmentPlanItem = ({
           methods={treatmentPlan.homeCare.methods}
           instructions={treatmentPlan.homeCare.instructions}
           onOrderProducts={handleOrderProducts}
+        />
+
+        {/* Before & After Section - Moved to bottom and made collapsible */}
+        <BeforeAfterSection 
+          expectedImprovement={treatmentPlan.beforeAfter.expectedImprovement}
+          timeframe={treatmentPlan.beforeAfter.timeframe}
+          description={treatmentPlan.beforeAfter.description}
         />
 
         {/* Payment Option Modal */}
