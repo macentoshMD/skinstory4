@@ -16,7 +16,6 @@ import { ProductConfigurationModal } from './treatment-plan/modals/ProductConfig
 import { TreatmentPlan, DetailedTreatmentRecommendation, DetailedProductRecommendation } from '@/types/consultation';
 import { TreatmentMethod, SkinPlan, ConfiguredTreatment, FollowUpAppointment } from '@/types/treatment-methods';
 import { Badge } from '@/components/ui/badge';
-
 interface TreatmentPlanStepProps {
   treatmentPlan: TreatmentPlan;
   onTreatmentPlanChange: (plan: TreatmentPlan) => void;
@@ -65,7 +64,6 @@ const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [{
   availableHandpieces: [],
   treatmentAreas: ['Ansikte', 'Hals', 'Rygg', 'Bröst']
 }];
-
 const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
   id: 'cleanse-1',
   name: 'Gentle Cleansing Gel',
@@ -104,7 +102,6 @@ const MOCK_DETAILED_PRODUCTS: DetailedProductRecommendation[] = [{
     microbeads: true
   }
 }];
-
 export function TreatmentPlanStep({
   treatmentPlan,
   onTreatmentPlanChange,
@@ -128,16 +125,13 @@ export function TreatmentPlanStep({
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [productConfigModal, setProductConfigModal] = useState<DetailedProductRecommendation | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<TreatmentMethod | null>(null);
-
   const generateRecommendations = () => {
     const hasAcne = selectedProblems.some(p => p.toLowerCase().includes('acne'));
     const severity = skinScore > 70 ? 'severe' : skinScore > 40 ? 'medium' : 'light';
-
     let recommendedTreatments = MOCK_DETAILED_TREATMENTS.filter(treatment => {
       if (riskLevel === 'high') return treatment.priority === 'essential';
       return severity === 'severe' || treatment.priority === 'essential';
     });
-
     let recommendedProducts = MOCK_DETAILED_PRODUCTS.filter(product => {
       if (hasAcne) return true;
       return product.priority === 'essential';
@@ -148,26 +142,25 @@ export function TreatmentPlanStep({
     // setSelectedServices(recommendedTreatments);
     // setSelectedProducts(recommendedProducts);
   };
-
   const clearAllRecommendations = () => {
     setSkinPlans([]);
     setSelectedProducts([]);
     setNotes('');
   };
-
   const handleMethodSelect = (method: TreatmentMethod) => {
     setSelectedMethod(method);
     setServiceModalOpen(true);
     setMethodModalOpen(false);
   };
-
   const handleServiceSelect = (service: DetailedTreatmentRecommendation) => {
     if (selectedMethod) {
-      setServiceConfigModal({ service, method: selectedMethod });
+      setServiceConfigModal({
+        service,
+        method: selectedMethod
+      });
       setServiceModalOpen(false);
     }
   };
-
   const handleServiceConfirm = (configuredTreatment: ConfiguredTreatment, followUps: FollowUpAppointment[]) => {
     const newSkinPlan: SkinPlan = {
       id: `plan-${Date.now()}`,
@@ -180,62 +173,34 @@ export function TreatmentPlanStep({
       status: 'planned',
       notes: ''
     };
-    
     setSkinPlans(prev => [...prev, newSkinPlan]);
     setServiceConfigModal(null);
   };
-
   const handleProductSelect = (product: DetailedProductRecommendation) => {
     setProductConfigModal(product);
     setProductModalOpen(false);
   };
-
   const handleProductConfirm = (configuredProduct: DetailedProductRecommendation) => {
     setSelectedProducts(prev => [...prev, configuredProduct]);
     setProductConfigModal(null);
   };
-
   const removeSkinPlan = (skinPlanId: string) => {
     setSkinPlans(prev => prev.filter(plan => plan.id !== skinPlanId));
   };
-
   const editSkinPlan = (skinPlan: SkinPlan) => {
     // TODO: Implement edit functionality
     console.log('Edit skin plan:', skinPlan);
   };
-
   const removeProduct = (productId: string) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== productId));
   };
+  const totalTreatmentPrice = skinPlans.reduce((sum, plan) => sum + plan.treatments.reduce((treatmentSum, treatment) => treatmentSum + treatment.pricing.totalPrice, 0), 0);
+  const totalProductPrice = selectedProducts.reduce((sum, product) => sum + (product.configuration?.finalPrice || product.price), 0);
+  return <div className="space-y-6">
+      <ConsultationHeader onBack={onBack} onContinue={onContinue} canContinue={true} currentStep={10} totalSteps={11} continueText="Slutför behandlingsplan" />
 
-  const totalTreatmentPrice = skinPlans.reduce((sum, plan) => 
-    sum + plan.treatments.reduce((treatmentSum, treatment) => 
-      treatmentSum + treatment.pricing.totalPrice, 0), 0
-  );
-  
-  const totalProductPrice = selectedProducts.reduce((sum, product) => 
-    sum + (product.configuration?.finalPrice || product.price), 0
-  );
-
-  return (
-    <div className="space-y-6">
-      <ConsultationHeader 
-        onBack={onBack} 
-        onContinue={onContinue} 
-        canContinue={true} 
-        currentStep={10} 
-        totalSteps={11} 
-        continueText="Slutför behandlingsplan" 
-      />
-
-      <StepWrapper 
-        title="Behandlingsplan & Rekommendationer" 
-        subtitle="Skapa personliga behandlingsplaner med metodfokus"
-      >
-        <RecommendationControls 
-          onGenerateRecommendations={generateRecommendations}
-          onClearRecommendations={clearAllRecommendations}
-        />
+      <StepWrapper title="Behandlingsplan & Rekommendationer" subtitle="Skapa personliga behandlingsplaner med metodfokus">
+        <RecommendationControls onGenerateRecommendations={generateRecommendations} onClearRecommendations={clearAllRecommendations} />
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Treatment Plans Section */}
@@ -244,7 +209,7 @@ export function TreatmentPlanStep({
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5" />
-                  <span>Behandlingsplaner</span>
+                  <span>Behandlingar</span>
                 </div>
                 <Button onClick={() => setMethodModalOpen(true)} size="sm">
                   <Plus className="h-4 w-4 mr-2" />
@@ -253,20 +218,9 @@ export function TreatmentPlanStep({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {skinPlans.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">
+              {skinPlans.length === 0 ? <p className="text-gray-500 text-center py-8">
                   Inga behandlingsplaner skapade. Klicka på "Lägg till plan" för att börja.
-                </p>
-              ) : (
-                skinPlans.map(plan => (
-                  <SkinPlanCard
-                    key={plan.id}
-                    skinPlan={plan}
-                    onEdit={editSkinPlan}
-                    onDelete={removeSkinPlan}
-                  />
-                ))
-              )}
+                </p> : skinPlans.map(plan => <SkinPlanCard key={plan.id} skinPlan={plan} onEdit={editSkinPlan} onDelete={removeSkinPlan} />)}
             </CardContent>
           </Card>
 
@@ -282,11 +236,7 @@ export function TreatmentPlanStep({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {selectedProducts.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">Inga produkter valda</p>
-              ) : (
-                selectedProducts.map(product => (
-                  <div key={product.id} className="border rounded-lg p-4">
+              {selectedProducts.length === 0 ? <p className="text-gray-500 text-center py-8">Inga produkter valda</p> : selectedProducts.map(product => <div key={product.id} className="border rounded-lg p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <h4 className="font-medium">{product.name}</h4>
@@ -302,21 +252,13 @@ export function TreatmentPlanStep({
                       </div>
                     </div>
                     
-                    {product.configuration && (
-                      <div className="text-sm text-gray-600 space-y-1">
-                        {product.configuration.selectedStrength && (
-                          <p>Styrka: {product.configuration.selectedStrength}</p>
-                        )}
-                        {product.configuration.selectedSPF && (
-                          <p>SPF: {product.configuration.selectedSPF}</p>
-                        )}
+                    {product.configuration && <div className="text-sm text-gray-600 space-y-1">
+                        {product.configuration.selectedStrength && <p>Styrka: {product.configuration.selectedStrength}</p>}
+                        {product.configuration.selectedSPF && <p>SPF: {product.configuration.selectedSPF}</p>}
                         {product.configuration.withMicrobeads && <p>Med mikrobeads</p>}
                         <p className="font-medium">Pris: {product.configuration.finalPrice} kr</p>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
+                      </div>}
+                  </div>)}
             </CardContent>
           </Card>
         </div>
@@ -327,12 +269,7 @@ export function TreatmentPlanStep({
             <CardTitle>Anteckningar</CardTitle>
           </CardHeader>
           <CardContent>
-            <Textarea
-              placeholder="Lägg till anteckningar om behandlingsplanen..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={4}
-            />
+            <Textarea placeholder="Lägg till anteckningar om behandlingsplanen..." value={notes} onChange={e => setNotes(e.target.value)} rows={4} />
           </CardContent>
         </Card>
 
@@ -354,42 +291,14 @@ export function TreatmentPlanStep({
       </StepWrapper>
 
       {/* Modals */}
-      <MethodSelectionModal 
-        isOpen={methodModalOpen}
-        onClose={() => setMethodModalOpen(false)}
-        onMethodSelect={handleMethodSelect}
-        selectedProblems={selectedProblems}
-      />
+      <MethodSelectionModal isOpen={methodModalOpen} onClose={() => setMethodModalOpen(false)} onMethodSelect={handleMethodSelect} selectedProblems={selectedProblems} />
 
-      <MethodBasedServiceModal
-        isOpen={serviceModalOpen}
-        onClose={() => setServiceModalOpen(false)}
-        method={selectedMethod}
-        availableServices={MOCK_DETAILED_TREATMENTS}
-        onServiceSelect={handleServiceSelect}
-      />
+      <MethodBasedServiceModal isOpen={serviceModalOpen} onClose={() => setServiceModalOpen(false)} method={selectedMethod} availableServices={MOCK_DETAILED_TREATMENTS} onServiceSelect={handleServiceSelect} />
 
-      <EnhancedServiceConfigurationModal
-        isOpen={!!serviceConfigModal}
-        onClose={() => setServiceConfigModal(null)}
-        service={serviceConfigModal?.service || null}
-        method={serviceConfigModal?.method || null}
-        onConfirm={handleServiceConfirm}
-      />
+      <EnhancedServiceConfigurationModal isOpen={!!serviceConfigModal} onClose={() => setServiceConfigModal(null)} service={serviceConfigModal?.service || null} method={serviceConfigModal?.method || null} onConfirm={handleServiceConfirm} />
 
-      <ProductSelectionModal
-        isOpen={productModalOpen}
-        onClose={() => setProductModalOpen(false)}
-        availableProducts={MOCK_DETAILED_PRODUCTS}
-        onProductSelect={handleProductSelect}
-      />
+      <ProductSelectionModal isOpen={productModalOpen} onClose={() => setProductModalOpen(false)} availableProducts={MOCK_DETAILED_PRODUCTS} onProductSelect={handleProductSelect} />
 
-      <ProductConfigurationModal
-        isOpen={!!productConfigModal}
-        onClose={() => setProductConfigModal(null)}
-        product={productConfigModal}
-        onConfirm={handleProductConfirm}
-      />
-    </div>
-  );
+      <ProductConfigurationModal isOpen={!!productConfigModal} onClose={() => setProductConfigModal(null)} product={productConfigModal} onConfirm={handleProductConfirm} />
+    </div>;
 }
