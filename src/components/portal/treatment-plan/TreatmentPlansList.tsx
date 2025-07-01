@@ -1,4 +1,3 @@
-import { Accordion } from '@/components/ui/accordion';
 import TreatmentPlanItem from './TreatmentPlanItem';
 import { TreatmentPlan } from '@/types/treatment-plan';
 
@@ -13,24 +12,24 @@ const TreatmentPlansList = ({
   onStartTreatment, 
   onShowDetailedPlan 
 }: TreatmentPlansListProps) => {
-  // Determine default expanded state: expand all if only 1 plan, collapse if multiple
-  const defaultExpandedValue = treatmentPlans.length === 1 ? treatmentPlans[0].id.toString() : undefined;
-
   return (
-    <Accordion 
-      type="multiple" 
-      defaultValue={defaultExpandedValue ? [defaultExpandedValue] : []}
-      className="space-y-4"
-    >
-      {treatmentPlans.map((treatmentPlan) => (
-        <TreatmentPlanItem
-          key={treatmentPlan.id}
-          treatmentPlan={treatmentPlan}
-          onStartTreatment={onStartTreatment}
-          onShowDetailedPlan={onShowDetailedPlan}
-        />
-      ))}
-    </Accordion>
+    <div className="space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-3xl font-bold">Dina behandlingsplaner</h2>
+        <p className="text-gray-600 text-lg">Välj en behandlingsplan för att komma igång</p>
+      </div>
+      
+      <div className="space-y-8">
+        {treatmentPlans.map(plan => (
+          <TreatmentPlanItem
+            key={plan.id}
+            treatmentPlan={plan}
+            onStartTreatment={onStartTreatment}
+            onShowDetailedPlan={onShowDetailedPlan}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 
