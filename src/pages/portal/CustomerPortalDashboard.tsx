@@ -106,6 +106,7 @@ const CustomerPortalDashboard = () => {
               <Button 
                 size="lg" 
                 className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+                onClick={() => window.location.href = '/portal/behandlingsplan'}
               >
                 <TrendingUp className="h-5 w-5 mr-2" />
                 Starta behandlingsplan
@@ -115,6 +116,7 @@ const CustomerPortalDashboard = () => {
                 variant="outline" 
                 size="lg" 
                 className="flex-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+                onClick={() => window.location.href = '/portal/behandlingsplan'}
               >
                 <Calendar className="h-5 w-5 mr-2" />
                 Visa behandlingsplan
