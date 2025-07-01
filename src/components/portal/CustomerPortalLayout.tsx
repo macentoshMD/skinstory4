@@ -2,22 +2,13 @@ import { ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { 
   Home, 
   User, 
   Activity, 
   Calendar, 
   History,
-  LogOut,
-  ChevronDown
+  LogOut
 } from 'lucide-react';
 
 interface CustomerPortalLayoutProps {
@@ -55,71 +46,14 @@ export function CustomerPortalLayout({ children, customer }: CustomerPortalLayou
     navigate('/');
   };
 
-  const handlePortalSwitch = (portal: string) => {
-    switch (portal) {
-      case 'Admin Portal':
-        navigate('/');
-        break;
-      case 'User Portal':
-        navigate('/'); // Replace with user portal route when available
-        break;
-      case 'Customer Portal':
-        navigate('/portal');
-        break;
-      default:
-        break;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2 sm:gap-4">
-              {/* Portal Switcher */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2 h-9 text-xs sm:text-sm px-2 sm:px-3">
-                    <span className="font-medium">Kundportal</span>
-                    <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56 bg-white border shadow-lg z-50">
-                  <DropdownMenuLabel className="font-semibold">Växla Portal</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => handlePortalSwitch("Admin Portal")}
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium">Admin Portal</span>
-                      <span className="text-xs text-muted-foreground">Fullständig systemadministration</span>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => handlePortalSwitch("User Portal")}
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium">User Portal</span>
-                      <span className="text-xs text-muted-foreground">Personal- och behandlingshantering</span>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => handlePortalSwitch("Customer Portal")}
-                    className="bg-purple-50 text-purple-700"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium">Kundportal</span>
-                      <span className="text-xs text-muted-foreground">Kundinloggning och bokningar</span>
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <div className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                SkinStory
-              </div>
+            <div className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              SkinStory
             </div>
             
             <div className="flex items-center gap-2 sm:gap-4">

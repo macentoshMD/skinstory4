@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Bell, User, ChevronDown } from "lucide-react";
@@ -16,6 +17,7 @@ import {
 export function Header() {
   const [globalSearch, setGlobalSearch] = useState("");
   const [currentPortal, setCurrentPortal] = useState("Admin Portal");
+  const navigate = useNavigate();
 
   const handleGlobalSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +27,19 @@ export function Header() {
 
   const handlePortalSwitch = (portal: string) => {
     setCurrentPortal(portal);
-    // TODO: Implement portal switching logic
-    console.log("Switching to:", portal);
+    switch (portal) {
+      case 'Admin Portal':
+        navigate('/');
+        break;
+      case 'User Portal':
+        navigate('/'); // Replace with user portal route when available
+        break;
+      case 'Customer Portal':
+        navigate('/portal');
+        break;
+      default:
+        break;
+    }
   };
 
   return (
