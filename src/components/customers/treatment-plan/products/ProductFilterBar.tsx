@@ -70,7 +70,7 @@ export function ProductFilterBar({
 
   const handleTypeSelect = (value: string) => {
     if (value === 'all') {
-      selectedTypes.forEach(type => onTypeToggle(type));
+      selectedTypes.forEach(productType => onTypeToggle(productType));
     } else {
       onTypeToggle(value);
     }
@@ -240,7 +240,7 @@ export function ProductFilterBar({
             <span key={productType} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
               {TYPE_LABELS[productType] || productType}
               <button
-                onClick={() => onTypeToggle(productType))
+                onClick={() => onTypeToggle(productType)}
                 className="hover:bg-purple-200 rounded-full p-0.5"
               >
                 <X className="h-3 w-3" />
