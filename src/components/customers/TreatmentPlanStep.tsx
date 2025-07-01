@@ -12,6 +12,7 @@ import { MethodBasedServiceModal } from './treatment-plan/method-selection/Metho
 import { EnhancedServiceConfigurationModal } from './treatment-plan/enhanced-config/EnhancedServiceConfigurationModal';
 import { SkinPlanCard } from './treatment-plan/skin-plan/SkinPlanCard';
 import { ProductSelectionModal } from './treatment-plan/modals/ProductSelectionModal';
+import { TreatmentSelectionModal } from './treatment-plan/modals/TreatmentSelectionModal';
 import { ProductConfigurationModal } from './treatment-plan/modals/ProductConfigurationModal';
 import { PackageConfigurationModal } from './treatment-plan/modals/PackageConfigurationModal';
 import { TreatmentPlan, DetailedTreatmentRecommendation, DetailedProductRecommendation, ProductPackage } from '@/types/consultation';
@@ -42,7 +43,8 @@ const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [
     category: 'Ansiktsbehandling',
     availableHandpieces: ['Standard tip', 'Sensitive tip', 'Deep cleansing tip'],
     treatmentAreas: ['Ansikte', 'Hals', 'Dekolletage', 'Rygg']
-  }, {
+  },
+  {
     id: 'treatment-2',
     name: 'LED-ljusterapi',
     sessions: 8,
@@ -54,7 +56,8 @@ const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [
     category: 'Ljusterapi',
     availableHandpieces: ['Red light panel', 'Blue light panel', 'Combined panel'],
     treatmentAreas: ['Ansikte', 'Rygg', 'Bröst']
-  }, {
+  },
+  {
     id: 'treatment-3',
     name: 'Kemisk peeling (Salicylsyra)',
     sessions: 6,
@@ -66,6 +69,45 @@ const MOCK_DETAILED_TREATMENTS: DetailedTreatmentRecommendation[] = [
     category: 'Kemisk peeling',
     availableHandpieces: [],
     treatmentAreas: ['Ansikte', 'Hals', 'Rygg', 'Bröst']
+  },
+  {
+    id: 'treatment-4',
+    name: 'Alma Hybrid Laser för Akne',
+    sessions: 4,
+    frequency: 'Var 4:e vecka',
+    price: 2500,
+    priority: 'essential',
+    contraindications: ['Graviditet', 'Solbränd hud'],
+    description: 'Fraktionerad laser som behandlar aktiv akne och akneärr',
+    category: 'Laser',
+    availableHandpieces: ['2940nm handpiece', '1570nm handpiece'],
+    treatmentAreas: ['Ansikte', 'Rygg', 'Bröst']
+  },
+  {
+    id: 'treatment-5',
+    name: 'Nordlys IPL för Rosacea',
+    sessions: 3,
+    frequency: 'Var 6:e vecka',
+    price: 1800,
+    priority: 'recommended',
+    contraindications: ['Mörk hudfärg', 'Brun utan sol'],
+    description: 'Intensivt pulserat ljus för behandling av rodnad och rosacea',
+    category: 'Laser',
+    availableHandpieces: ['IPL handpiece', 'Vascular handpiece'],
+    treatmentAreas: ['Ansikte', 'Hals', 'Dekolletage']
+  },
+  {
+    id: 'treatment-6',
+    name: 'Fraxel Dual för Ärr',
+    sessions: 5,
+    frequency: 'Var 6:e vecka',
+    price: 3200,
+    priority: 'optional',
+    contraindications: ['Aktiv akne', 'Graviditet'],
+    description: 'Fraktionerad laser för ärrbehandling och hudförnyelse',
+    category: 'Laser',
+    availableHandpieces: ['1550nm handpiece', '1927nm handpiece'],
+    treatmentAreas: ['Ansikte', 'Hals', 'Händer']
   }
 ];
 
@@ -341,6 +383,7 @@ export function TreatmentPlanStep({
 
   // Modal states
   const [methodModalOpen, setMethodModalOpen] = useState(false);
+  const [treatmentModalOpen, setTreatmentModalOpen] = useState(false);
   const [serviceModalOpen, setServiceModalOpen] = useState(false);
   const [serviceConfigModal, setServiceConfigModal] = useState<{
     service: DetailedTreatmentRecommendation;
@@ -378,6 +421,15 @@ export function TreatmentPlanStep({
     setServiceModalOpen(true);
     setMethodModalOpen(false);
   };
+  const handleTreatmentSelect = (treatment: DetailedTreatmentRecommendation) => {
+    // Open service configuration directly
+    setServiceConfigModal({
+      service: treatment,
+      method: null
+    });
+    setTreatmentModalOpen(false);
+  };
+
   const handleServiceSelect = (service: DetailedTreatmentRecommendation) => {
     if (selectedMethod) {
       setServiceConfigModal({
@@ -474,9 +526,9 @@ export function TreatmentPlanStep({
                   <Calendar className="h-5 w-5" />
                   <span>Behandlingar</span>
                 </div>
-                <Button onClick={() => setMethodModalOpen(true)} size="sm">
+                <Button onClick={() => setTreatmentModalOpen(true)} size="sm">
                   <Plus className="h-4 w-4 mr-2" />
-                  Lägg till plan
+                  Lägg till behandling
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -650,6 +702,14 @@ export function TreatmentPlanStep({
       </StepWrapper>
 
       {/* Modals */}
+      <TreatmentSelectionModal 
+        isOpen={treatmentModalOpen} 
+        onClose={() => setTreatmentModalOpen(false)} 
+        availableTreatments={MOCK_DETAILED_TREATMENTS}
+        onTreatmentSelect={handleTreatmentSelect}
+        selectedProblems={selectedProblems}
+      />
+
       <MethodSelectionModal isOpen={methodModalOpen} onClose={() => setMethodModalOpen(false)} onMethodSelect={handleMethodSelect} selectedProblems={selectedProblems} />
 
       <MethodBasedServiceModal isOpen={serviceModalOpen} onClose={() => setServiceModalOpen(false)} method={selectedMethod} availableServices={MOCK_DETAILED_TREATMENTS} onServiceSelect={handleServiceSelect} />
