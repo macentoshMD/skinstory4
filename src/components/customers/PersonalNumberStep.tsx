@@ -18,6 +18,11 @@ export function PersonalNumberStep({
   onSubmit,
   onSkip
 }: PersonalNumberStepProps) {
+  const handleQuickFill = () => {
+    onPersonalNumberChange('19901225-1234');
+    setTimeout(() => onSubmit(), 100);
+  };
+
   return (
     <div className="space-y-6">
       <ConsultationHeader
@@ -44,13 +49,22 @@ export function PersonalNumberStep({
               className="mt-2"
             />
           </div>
-          <Button 
-            onClick={onSkip} 
-            variant="outline" 
-            className="w-full"
-          >
-            Skippa och fortsätt manuellt
-          </Button>
+          
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleQuickFill} 
+              className="flex-1 bg-green-600 hover:bg-green-700"
+            >
+              🚀 Snabbfyll
+            </Button>
+            <Button 
+              onClick={onSkip} 
+              variant="outline" 
+              className="flex-1"
+            >
+              Skippa och fortsätt manuellt
+            </Button>
+          </div>
         </div>
       </StepWrapper>
     </div>

@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Camera, User, Bot } from 'lucide-react';
 import { ConsultationHeader } from './ConsultationHeader';
 import { StepWrapper } from './StepWrapper';
+import { useEffect } from 'react';
 
 interface DiagnosisMethodStepProps {
   selectedMethod: 'ai' | 'manual' | '';
@@ -20,6 +20,21 @@ export function DiagnosisMethodStep({
   onBack, 
   onContinue 
 }: DiagnosisMethodStepProps) {
+  const handleQuickSelect = () => {
+    onMethodChange('manual');
+    setTimeout(() => onContinue(), 300);
+  };
+
+  // Auto-select manual method after 1 second if nothing is selected
+  useEffect(() => {
+    if (!selectedMethod) {
+      const timer = setTimeout(() => {
+        onMethodChange('manual');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedMethod, onMethodChange]);
+
   return (
     <div className="space-y-6">
       <ConsultationHeader
@@ -35,6 +50,16 @@ export function DiagnosisMethodStep({
         title="Diagnosmetod" 
         subtitle="Välj hur du vill diagnostisera hudproblemen"
       >
+        <div className="flex justify-end mb-4">
+          <Button 
+            onClick={handleQuickSelect}
+            size="sm"
+            className="bg-green-600 hover:bg-green-700"
+          >
+            🚀 Välj Manuell
+          </Button>
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle className="text-lg font-semibold">Välj diagnosmetod</CardTitle>

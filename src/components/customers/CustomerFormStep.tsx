@@ -32,9 +32,39 @@ export function CustomerFormStep({
   onBack, 
   onSubmit 
 }: CustomerFormStepProps) {
+  const handleQuickFill = () => {
+    const quickData = {
+      firstName: 'Anna',
+      lastName: 'Andersson',
+      phone: '+46 70 123 45 67',
+      email: 'anna.andersson@email.se',
+      birthDay: '15',
+      birthMonth: '03',
+      birthYear: '1990',
+      gender: 'Female' as const,
+      language: 'svenska',
+      howFoundUs: 'google'
+    };
+    
+    Object.entries(quickData).forEach(([key, value]) => {
+      onFormDataChange(key as keyof CustomerFormData, value);
+    });
+    
+    setTimeout(() => onSubmit(), 500);
+  };
+
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-bold">Customer</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-bold">Customer</h3>
+        <Button 
+          onClick={handleQuickFill}
+          size="sm"
+          className="bg-green-600 hover:bg-green-700"
+        >
+          🚀 Snabbfyll allt
+        </Button>
+      </div>
       
       <Card>
         <CardHeader>

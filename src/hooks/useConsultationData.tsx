@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { CustomerFormData, DiagnosisData, ContraIndicationsData, PhotoDocumentation, TreatmentPlan } from '@/types/consultation';
 import { useToast } from '@/hooks/use-toast';
@@ -41,13 +40,13 @@ export function useConsultationData(customerName: string, customerId?: string) {
     symptoms: [],
     skinScore: 0,
     generalDetails: {
-      whenProblemStartsYear: '',
-      whenProblemStartsMonth: '',
-      skinStatusAtMoment: '',
-      treatProblemBefore: '',
-      treatmentDetails: '',
-      skinTexture: '',
-      skinSensitivity: ''
+      whenProblemStartsYear: '2020',
+      whenProblemStartsMonth: '06',
+      skinStatusAtMoment: 'worse',
+      treatProblemBefore: 'yes',
+      treatmentDetails: 'Använt receptbelagda krämer tidigare',
+      skinTexture: 'oily',
+      skinSensitivity: 'medium'
     }
   });
 
@@ -155,10 +154,16 @@ export function useConsultationData(customerName: string, customerId?: string) {
     const [firstName, lastName] = customerName.split(' ');
     setFormData(prev => ({
       ...prev,
-      firstName: firstName || '',
-      lastName: lastName || '',
-      email: `${firstName?.toLowerCase()}.${lastName?.toLowerCase()}@email.se`,
-      phone: '+46 70 123 45 67'
+      firstName: firstName || 'Anna',
+      lastName: lastName || 'Andersson',
+      email: `${(firstName || 'anna')?.toLowerCase()}.${(lastName || 'andersson')?.toLowerCase()}@email.se`,
+      phone: '+46 70 123 45 67',
+      birthDay: '15',
+      birthMonth: '03',
+      birthYear: '1990',
+      gender: 'Female',
+      language: 'svenska',
+      howFoundUs: 'google'
     }));
   };
 

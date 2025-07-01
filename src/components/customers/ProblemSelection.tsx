@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ConsultationHeader } from './ConsultationHeader';
 import { StepWrapper } from './StepWrapper';
 
@@ -88,6 +89,18 @@ const MAIN_PROBLEMS = [
 ];
 
 export function ProblemSelection({ selectedProblems, onProblemToggle, onBack, onContinue }: ProblemSelectionProps) {
+  const handleQuickSelect = () => {
+    // Välj de vanligaste problemen automatiskt
+    const commonProblems = ['acne', 'stora-porer', 'blandhy'];
+    commonProblems.forEach(problem => {
+      if (!selectedProblems.includes(problem)) {
+        onProblemToggle(problem);
+      }
+    });
+    
+    setTimeout(() => onContinue(), 300);
+  };
+
   return (
     <div className="space-y-6">
       <ConsultationHeader
@@ -103,6 +116,16 @@ export function ProblemSelection({ selectedProblems, onProblemToggle, onBack, on
         title="Hudproblem" 
         subtitle="Välj de hudproblem som kunden har"
       >
+        <div className="flex justify-end mb-4">
+          <Button 
+            onClick={handleQuickSelect}
+            size="sm"
+            className="bg-green-600 hover:bg-green-700"
+          >
+            🚀 Välj Vanliga Problem
+          </Button>
+        </div>
+
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {MAIN_PROBLEMS.map((problem) => (
             <Card 
