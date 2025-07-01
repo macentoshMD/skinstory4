@@ -21,11 +21,19 @@ const CustomerPortalDashboard = () => {
     skinScore: 65,
     mainProblem: {
       name: 'Akne',
+      subtype: 'Acne Vulgaris (Tonårsacne)',
       severity: 'Måttlig',
       areas: ['Panna', 'Kinder', 'Haka'],
       description: 'Inflammatorisk akne med komedoner och papler främst i T-zonen. Förhöjd talgproduktion och tilltäppta porer.',
       treatmentGoal: 'Minska inflammation, rena porer och förbättra hudtextur'
-    }
+    },
+    symptoms: [
+      { name: 'Papler (Inflammerade knölar)', score: 70, severity: 'Måttlig' },
+      { name: 'Komedoner öppna (Pormaskar)', score: 80, severity: 'Hög' },
+      { name: 'Komedoner stängda (Vita finnar)', score: 60, severity: 'Måttlig' },
+      { name: 'Förstorade porer', score: 75, severity: 'Hög' },
+      { name: 'Fet hud', score: 85, severity: 'Hög' }
+    ]
   };
 
   return (
@@ -61,12 +69,19 @@ const CustomerPortalDashboard = () => {
         {/* Main Problem Details Card */}
         <Card className="border border-border/60 shadow-sm">
           <CardHeader className="pb-6">
-            <CardTitle className="text-2xl flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <AlertCircle className="h-6 w-6 text-primary" />
+            <div className="space-y-3">
+              <CardTitle className="text-2xl flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <AlertCircle className="h-6 w-6 text-primary" />
+                </div>
+                Ditt Huvudproblem: {mockData.mainProblem.name}
+              </CardTitle>
+              <div className="ml-11">
+                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
+                  {mockData.mainProblem.subtype}
+                </Badge>
               </div>
-              Ditt Huvudproblem: {mockData.mainProblem.name}
-            </CardTitle>
+            </div>
           </CardHeader>
           <CardContent className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -123,6 +138,54 @@ const CustomerPortalDashboard = () => {
                 <Calendar className="h-5 w-5 mr-2" />
                 Visa behandlingsplan
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Symptoms Analysis Card */}
+        <Card className="border border-border/60 shadow-sm">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-xl flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Droplets className="h-5 w-5 text-primary" />
+              </div>
+              Symptomanalys
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {mockData.symptoms.map((symptom, index) => (
+                <div key={index} className="p-4 bg-muted/30 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-sm">{symptom.name}</h4>
+                    <Badge 
+                      variant="outline" 
+                      className={`${
+                        symptom.severity === 'Hög' 
+                          ? 'bg-destructive/10 text-destructive border-destructive/20' 
+                          : symptom.severity === 'Måttlig'
+                          ? 'bg-accent text-accent-foreground border-accent/20'
+                          : 'bg-primary/10 text-primary border-primary/20'
+                      }`}
+                    >
+                      {symptom.severity}
+                    </Badge>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Poäng</span>
+                      <span className="font-semibold">{symptom.score}%</span>
+                    </div>
+                    <Progress value={symptom.score} className="h-2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="pt-4 border-t border-border/60">
+              <p className="text-sm text-muted-foreground text-center">
+                Symptompoängen baseras på din konsultation och hjälper till att skräddarsy din behandlingsplan
+              </p>
             </div>
           </CardContent>
         </Card>
