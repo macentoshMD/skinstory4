@@ -199,15 +199,15 @@ const CustomerPortalHistory = () => {
             <CardTitle>Aktivitetshistorik</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-1">
+            <div className="space-y-4">
               {historyData.map((item) => (
                 <Collapsible key={item.id}>
                   <CollapsibleTrigger asChild>
                     <div 
-                      className="flex items-center gap-4 p-4 rounded-lg border hover:bg-muted/50 cursor-pointer transition-colors group"
+                      className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 cursor-pointer transition-colors group w-full"
                       onClick={() => toggleRow(item.id)}
                     >
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="flex items-center gap-4 flex-1">
                         <div className="flex items-center gap-2">
                           {expandedRows.includes(item.id) ? (
                             <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -215,83 +215,85 @@ const CustomerPortalHistory = () => {
                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
                           )}
                           {item.type === 'booking' ? (
-                            <div className="flex items-center gap-2 bg-blue-50 px-2 py-1 rounded">
+                            <div className="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-md">
                               <Calendar className="h-4 w-4 text-blue-600" />
                               <span className="text-sm font-medium text-blue-700">Bokning</span>
                             </div>
                           ) : (
-                            <div className="flex items-center gap-2 bg-green-50 px-2 py-1 rounded">
+                            <div className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-md">
                               <Package className="h-4 w-4 text-green-600" />
                               <span className="text-sm font-medium text-green-700">Beställning</span>
                             </div>
                           )}
                         </div>
-                      </div>
 
-                      <div className="flex items-center gap-6 flex-1">
-                        <div className="min-w-0 flex-1">
-                          <div className="font-medium text-base">{item.title}</div>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {formatDate(item.date)}
-                            </span>
-                            {item.time && (
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {item.time}
-                              </span>
-                            )}
-                            {item.therapist && (
-                              <span className="flex items-center gap-1">
-                                <User className="h-3 w-3" />
-                                {item.therapist}
-                              </span>
-                            )}
-                            {item.location && (
-                              <span>{item.location}</span>
-                            )}
-                            {item.items && (
-                              <span>{item.items} produkter</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          {getStatusBadge(item.status, item.type)}
-                          
-                          <div className="text-right">
-                            <div className="font-semibold text-lg">
-                              {item.price > 0 ? `${item.price.toLocaleString('sv-SE')} kr` : 'Gratis'}
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                              <h3 className="font-semibold text-lg">{item.title}</h3>
+                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  {formatDate(item.date)}
+                                </span>
+                                {item.time && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {item.time}
+                                  </span>
+                                )}
+                                {item.therapist && (
+                                  <span className="flex items-center gap-1">
+                                    <User className="h-3 w-3" />
+                                    {item.therapist}
+                                  </span>
+                                )}
+                                {item.location && (
+                                  <span>{item.location}</span>
+                                )}
+                                {item.items && (
+                                  <span>{item.items} produkter</span>
+                                )}
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="flex gap-2">
-                            {item.type === 'booking' ? (
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <RefreshCw className="h-3 w-3" />
-                                Boka igen
-                              </Button>
-                            ) : (
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <ShoppingCart className="h-3 w-3" />
-                                Köp igen
-                              </Button>
-                            )}
+                            <div className="flex items-center gap-6">
+                              {getStatusBadge(item.status, item.type)}
+                              
+                              <div className="text-right">
+                                <div className="font-bold text-xl">
+                                  {item.price > 0 ? `${item.price.toLocaleString('sv-SE')} kr` : 'Gratis'}
+                                </div>
+                              </div>
+
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                {item.type === 'booking' ? (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="flex items-center gap-1"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    <RefreshCw className="h-3 w-3" />
+                                    Boka igen
+                                  </Button>
+                                ) : (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="flex items-center gap-1"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    <ShoppingCart className="h-3 w-3" />
+                                    Köp igen
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -300,61 +302,55 @@ const CustomerPortalHistory = () => {
                   
                   <CollapsibleContent className="animate-accordion-down">
                     <div className="px-4 pb-4">
-                      <div className="p-6 bg-muted/30 rounded-lg border">
+                      <div className="p-6 bg-muted/30 rounded-lg border space-y-6">
                         {item.type === 'booking' ? (
                           // Booking details
-                          <div className="space-y-6">
-                            <h4 className="font-semibold text-lg text-foreground">Bokningsdetaljer</h4>
+                          <div>
+                            <h4 className="font-semibold text-lg mb-4">Bokningsdetaljer</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                               <div className="space-y-4">
-                                <div className="flex items-start gap-3">
-                                  <Building2 className="h-5 w-5 text-blue-600 mt-0.5" />
+                                <div className="flex items-center gap-3">
+                                  <Building2 className="h-5 w-5 text-blue-600" />
                                   <div>
-                                    <span className="font-medium text-foreground">Företag</span>
-                                    <p className="text-muted-foreground">{item.company}</p>
+                                    <span className="font-medium">Företag:</span>
+                                    <span className="ml-2">{item.company}</span>
                                   </div>
                                 </div>
-                                <div className="flex items-start gap-3">
-                                  <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
+                                <div className="flex items-center gap-3">
+                                  <MapPin className="h-5 w-5 text-blue-600" />
                                   <div>
-                                    <span className="font-medium text-foreground">Klinik</span>
-                                    <p className="text-muted-foreground">{item.clinic}</p>
+                                    <span className="font-medium">Klinik:</span>
+                                    <span className="ml-2">{item.clinic}</span>
                                   </div>
                                 </div>
-                                <div className="flex items-start gap-3">
-                                  <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
+                                <div className="flex items-center gap-3">
+                                  <Clock className="h-5 w-5 text-blue-600" />
                                   <div>
-                                    <span className="font-medium text-foreground">Varaktighet</span>
-                                    <p className="text-muted-foreground">{item.duration}</p>
+                                    <span className="font-medium">Varaktighet:</span>
+                                    <span className="ml-2">{item.duration}</span>
                                   </div>
                                 </div>
-                                <div className="flex items-start gap-3">
-                                  <Package className="h-5 w-5 text-blue-600 mt-0.5" />
+                                <div className="flex items-center gap-3">
+                                  <Package className="h-5 w-5 text-blue-600" />
                                   <div>
-                                    <span className="font-medium text-foreground">Utrustning</span>
-                                    <p className="text-muted-foreground">{item.equipment}</p>
+                                    <span className="font-medium">Utrustning:</span>
+                                    <span className="ml-2">{item.equipment}</span>
                                   </div>
                                 </div>
                               </div>
-                              <div className="space-y-4">
-                                <h5 className="font-semibold text-foreground">Utövare information</h5>
-                                <div className="bg-background p-4 rounded-lg border shadow-sm space-y-3">
+                              <div>
+                                <h5 className="font-semibold mb-3">Utövare information</h5>
+                                <div className="bg-background p-4 rounded-lg border space-y-3">
                                   <div className="flex items-center gap-2">
                                     <User className="h-5 w-5 text-green-600" />
-                                    <span className="font-semibold text-foreground">{item.practitioner.name}</span>
+                                    <span className="font-semibold">{item.practitioner.name}</span>
                                   </div>
                                   <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                      <span className="text-muted-foreground">Titel:</span>
-                                      <span className="font-medium">{item.practitioner.title}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <span className="text-muted-foreground">Erfarenhet:</span>
-                                      <span className="font-medium">{item.practitioner.experience}</span>
-                                    </div>
+                                    <div><span className="text-muted-foreground">Titel:</span> <span className="font-medium">{item.practitioner.title}</span></div>
+                                    <div><span className="text-muted-foreground">Erfarenhet:</span> <span className="font-medium">{item.practitioner.experience}</span></div>
                                     <div className="pt-2 border-t">
                                       <span className="text-muted-foreground text-xs">Specialisering:</span>
-                                      <p className="text-sm font-medium mt-1">{item.practitioner.specialization}</p>
+                                      <p className="font-medium">{item.practitioner.specialization}</p>
                                     </div>
                                   </div>
                                 </div>
@@ -363,29 +359,27 @@ const CustomerPortalHistory = () => {
                           </div>
                         ) : (
                           // Order details
-                          <div className="space-y-6">
-                            <h4 className="font-semibold text-lg text-foreground">Beställningsdetaljer</h4>
+                          <div>
+                            <h4 className="font-semibold text-lg mb-4">Beställningsdetaljer</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                              <div className="space-y-2">
-                                <span className="font-medium text-foreground">Leveransadress</span>
-                                <p className="text-sm text-muted-foreground bg-background p-3 rounded border">{item.shippingAddress}</p>
+                              <div>
+                                <span className="font-medium">Leveransadress:</span>
+                                <p className="text-sm text-muted-foreground bg-background p-3 rounded border mt-1">{item.shippingAddress}</p>
                               </div>
-                              <div className="space-y-2">
-                                <span className="font-medium text-foreground">Spårningsnummer</span>
-                                <p className="text-sm text-muted-foreground bg-background p-3 rounded border font-mono">{item.trackingNumber}</p>
+                              <div>
+                                <span className="font-medium">Spårningsnummer:</span>
+                                <p className="text-sm text-muted-foreground bg-background p-3 rounded border font-mono mt-1">{item.trackingNumber}</p>
                               </div>
                             </div>
                             
                             <div>
-                              <h5 className="font-semibold text-foreground mb-4">Produkter</h5>
+                              <h5 className="font-semibold mb-3">Produkter</h5>
                               <div className="space-y-3">
                                 {item.products?.map((product, idx) => (
                                   <div key={idx} className="flex items-center justify-between p-4 bg-background rounded-lg border">
-                                    <div className="flex-1">
-                                      <div className="font-medium text-foreground">{product.name}</div>
-                                      <div className="text-sm text-muted-foreground mt-1">
-                                        Antal: {product.quantity}
-                                      </div>
+                                    <div>
+                                      <div className="font-medium">{product.name}</div>
+                                      <div className="text-sm text-muted-foreground">Antal: {product.quantity}</div>
                                     </div>
                                     <div className="flex items-center gap-4">
                                       <Badge 
