@@ -1,0 +1,119 @@
+import { ReactNode } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  Home, 
+  User, 
+  Activity, 
+  Calendar, 
+  History,
+  LogOut
+} from 'lucide-react';
+
+interface CustomerPortalLayoutProps {
+  children: ReactNode;
+  customer?: {
+    name: string;
+    email: string;
+    avatar?: string;
+    initials: string;
+  };
+}
+
+const navigationItems = [
+  { to: '/portal', icon: Home, label: 'Hem', exact: true },
+  { to: '/portal/profil', icon: User, label: 'Min Profil' },
+  { to: '/portal/problem', icon: Activity, label: 'Mina Problem' },
+  { to: '/portal/behandlingsplan', icon: Calendar, label: 'Behandlingsplan' },
+  { to: '/portal/historik', icon: History, label: 'Historik' },
+];
+
+export function CustomerPortalLayout({ children, customer }: CustomerPortalLayoutProps) {
+  const navigate = useNavigate();
+
+  const defaultCustomer = {
+    name: 'Anna Andersson',
+    email: 'anna.andersson@email.com',
+    initials: 'AA',
+    avatar: undefined
+  };
+
+  const currentCustomer = customer || defaultCustomer;
+
+  const handleLogout = () => {
+    // In a real app, this would handle logout logic
+    navigate('/');
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3">
+              <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                SkinStory
+              </div>
+              <span className="text-sm text-muted-foreground">Kundportal</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={currentCustomer.avatar} />
+                  <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm">
+                    {currentCustomer.initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="hidden sm:block">
+                  <p className="text-sm font-medium">{currentCustomer.name}</p>
+                </div>
+              </div>
+              
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleLogout}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation */}
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex space-x-8 overflow-x-auto">
+            {navigationItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.exact}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                    isActive
+                      ? 'border-purple-500 text-purple-600'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                  }`
+                }
+              >
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </main>
+    </div>
+  );
+}
