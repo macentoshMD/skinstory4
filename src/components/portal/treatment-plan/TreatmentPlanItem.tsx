@@ -85,10 +85,11 @@ const TreatmentPlanItem = ({
               </div>
               <div>
                 <div className="flex items-center justify-center gap-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-gray-500">Förväntat resultat</span>
+                  <TrendingUp className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm text-gray-500">Hudterapeut</span>
                 </div>
-                <div className="font-semibold text-green-600">{treatmentPlan.plan.expectedResults}</div>
+                <div className="font-semibold text-blue-600">Sarah Andersson</div>
+                <div className="text-xs text-gray-500">Skincare Clinic Stockholm</div>
               </div>
             </div>
           </div>
