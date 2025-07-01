@@ -82,11 +82,81 @@ export const mockTreatmentPlansData: TreatmentPlan[] = [
       methods: ['Dubbel rengöring', 'Layering teknik', 'Gradvis introduktion'],
       instructions: 'Börja med grundprodukter första veckan, lägg till behandlingsprodukter vecka 2-3'
     },
+    beforeAfter: {
+      expectedImprovement: '70-90% förbättring',
+      timeframe: '12 veckor',
+      description: 'Förbättring av inflammationer inom 12 veckor'
+    },
+    timeline: [
+      {
+        phase: 'Grundvård etableras',
+        weeks: 'Vecka 1-2',
+        description: 'Grundvård etableras, första portömning'
+      },
+      {
+        phase: 'Anpassning',
+        weeks: 'Vecka 3-4',
+        description: 'Andra portömning, huden börjar anpassa sig'
+      },
+      {
+        phase: 'Förbättring',
+        weeks: 'Vecka 5-8',
+        description: 'Fortsatt förbättring, minskade inflammationer'
+      },
+      {
+        phase: 'Slutresultat',
+        weeks: 'Vecka 9-12',
+        description: 'Slutresultat och underhållsplan'
+      }
+    ],
+    valueProposition: {
+      title: 'Vad ingår i din SkinStory',
+      features: [
+        'Personlig terapeut (Cazzandra) - direktkontakt',
+        'Resultatgaranti - vi följer dig till målet',
+        'Anpassad hemrutin dag för dag',
+        'Gratis konsultation vid behov under perioden'
+      ]
+    },
+    phases: [
+      {
+        id: 'start',
+        name: 'STARTFAS',
+        weeks: 'Vecka 1-4',
+        icon: 'rocket',
+        clinicCare: '2x Portömning',
+        homeCare: 'Grundvård etableras'
+      },
+      {
+        id: 'intensive',
+        name: 'INTENSIVFAS',
+        weeks: 'Vecka 5-8',
+        icon: 'zap',
+        clinicCare: '2x Portömning',
+        homeCare: 'Full rutin optimeras'
+      },
+      {
+        id: 'result',
+        name: 'RESULTATFAS',
+        weeks: 'Vecka 9-12',
+        icon: 'target',
+        clinicCare: '1x Portömning + utvärdering',
+        homeCare: 'Underhållsrutin'
+      }
+    ],
+    reasoning: {
+      title: 'Varför just denna kombination',
+      description: 'Inflammatorisk akne i T-zonen kräver både djuprengöring (portömning) och hembalansering (CeraVe). Denna kombination har 90% framgångsgrad.',
+      successRate: '90%'
+    },
     pricing: {
       commitTotal: '12 969 kr',
       commitMonthly: '4 323 kr/månad i 3 månader',
       payAsYouGoTotal: '18 745 kr',
-      savings: '5 776 kr'
+      savings: '5 776 kr',
+      clinicCost: '4 000 kr',
+      homeCost: '2 550 kr',
+      weeklyEquivalent: '433 kr'
     }
   },
   {
@@ -150,11 +220,76 @@ export const mockTreatmentPlansData: TreatmentPlan[] = [
       methods: ['Gradvis retinol introduktion', 'Morgon antioxidant rutin'],
       instructions: 'Starta med vitamin C morgon vecka 1, lägg till retinol kväll vecka 3'
     },
+    beforeAfter: {
+      expectedImprovement: '85-90% förbättring',
+      timeframe: '8 veckor',
+      description: 'Jämna ut hudton och minska pigmentfläckar'
+    },
+    timeline: [
+      {
+        phase: 'IPL Start',
+        weeks: 'Vecka 1-2',
+        description: 'Första IPL-behandling, hudens förberedelse'
+      },
+      {
+        phase: 'Intensivbehandling',
+        weeks: 'Vecka 3-6',
+        description: 'Ytterligare IPL-sessioner, pigment börjar ljusna'
+      },
+      {
+        phase: 'Resultat',
+        weeks: 'Vecka 7-8',
+        description: 'Slutbehandling och resultatutvärdering'
+      }
+    ],
+    valueProposition: {
+      title: 'Vad ingår i din behandling',
+      features: [
+        'Professionell IPL-utrustning (Lumenis M22)',
+        'Personlig uppföljning under hela processen',
+        'Hemvårdsprodukter för optimal resultat',
+        'Gratis konsultation efter avslutad behandling'
+      ]
+    },
+    phases: [
+      {
+        id: 'preparation',
+        name: 'FÖRBEREDELSE',
+        weeks: 'Vecka 1-2',
+        icon: 'target',
+        clinicCare: '1x IPL-behandling',
+        homeCare: 'Vitamin C rutin startas'
+      },
+      {
+        id: 'intensive',
+        name: 'INTENSIVFAS',
+        weeks: 'Vecka 3-6',
+        icon: 'zap',
+        clinicCare: '2x IPL-behandling',
+        homeCare: 'Retinol introduceras'
+      },
+      {
+        id: 'completion',
+        name: 'AVSLUTNING',
+        weeks: 'Vecka 7-8',
+        icon: 'check',
+        clinicCare: '1x Slutbehandling',
+        homeCare: 'Underhållsrutin'
+      }
+    ],
+    reasoning: {
+      title: 'Varför IPL för pigmentering',
+      description: 'IPL-teknologi är det mest effektiva sättet att behandla pigmentfläckar. Kombinerat med hemvård ger det optimala resultat.',
+      successRate: '85%'
+    },
     pricing: {
       commitTotal: '8 500 kr',
       commitMonthly: '2 833 kr/månad i 3 månader',
       payAsYouGoTotal: '11 200 kr',
-      savings: '2 700 kr'
+      savings: '2 700 kr',
+      clinicCost: '6 000 kr',
+      homeCost: '2 750 kr',
+      weeklyEquivalent: '354 kr'
     }
   },
   {
@@ -238,11 +373,76 @@ export const mockTreatmentPlansData: TreatmentPlan[] = [
       methods: ['Porminimering rutin', 'Balanserad fuktgivning'],
       instructions: 'Använd BHA 3x första veckan, öka gradvis till varannan dag'
     },
+    beforeAfter: {
+      expectedImprovement: '60-70% förbättring',
+      timeframe: '10 veckor',
+      description: 'Minska porernas synlighet och förbättra hudtextur'
+    },
+    timeline: [
+      {
+        phase: 'Förberedelse',
+        weeks: 'Vecka 1-2',
+        description: 'Första microneedling, hudens förberedelse'
+      },
+      {
+        phase: 'Intensivbehandling',
+        weeks: 'Vecka 3-7',
+        description: 'Kombinerad microneedling och peeling'
+      },
+      {
+        phase: 'Slutresultat',
+        weeks: 'Vecka 8-10',
+        description: 'Slutbehandling och resultatutvärdering'
+      }
+    ],
+    valueProposition: {
+      title: 'Vad ingår i din porbehandling',
+      features: [
+        'Professionell microneedling och peeling',
+        'Specialanpassad hemvårdsrutin',
+        'Månadsvis uppföljning och justering',
+        'Resultatgaranti eller pengarna tillbaka'
+      ]
+    },
+    phases: [
+      {
+        id: 'preparation',
+        name: 'FÖRBEREDELSE',
+        weeks: 'Vecka 1-3',
+        icon: 'target',
+        clinicCare: '1x Microneedling',
+        homeCare: 'BHA-rutin startas försiktigt'
+      },
+      {
+        id: 'intensive',
+        name: 'INTENSIVFAS',
+        weeks: 'Vecka 4-7',
+        icon: 'zap',
+        clinicCare: '2x Microneedling + 1x Peeling',
+        homeCare: 'Full rutin etableras'
+      },
+      {
+        id: 'completion',
+        name: 'AVSLUTNING',
+        weeks: 'Vecka 8-10',
+        icon: 'check',
+        clinicCare: '1x Peeling + utvärdering',
+        homeCare: 'Underhållsrutin'
+      }
+    ],
+    reasoning: {
+      title: 'Varför microneedling + BHA',
+      description: 'Förstorade porer kräver både mekanisk stimulering (microneedling) och kemisk exfoliering (BHA) för optimal förbättring.',
+      successRate: '70%'
+    },
     pricing: {
       commitTotal: '10 500 kr',
       commitMonthly: '3 500 kr/månad i 3 månader',
       payAsYouGoTotal: '13 800 kr',
-      savings: '3 300 kr'
+      savings: '3 300 kr',
+      clinicCost: '8 900 kr',
+      homeCost: '1 350 kr',
+      weeklyEquivalent: '420 kr'
     }
   }
 ];

@@ -27,11 +27,41 @@ export interface TreatmentPlan {
     methods: string[];
     instructions: string;
   };
+  beforeAfter: {
+    expectedImprovement: string;
+    timeframe: string;
+    description: string;
+  };
+  timeline: {
+    phase: string;
+    weeks: string;
+    description: string;
+  }[];
+  valueProposition: {
+    title: string;
+    features: string[];
+  };
+  phases: {
+    id: string;
+    name: string;
+    weeks: string;
+    icon: string;
+    clinicCare: string;
+    homeCare: string;
+  }[];
+  reasoning: {
+    title: string;
+    description: string;
+    successRate: string;
+  };
   pricing: {
     commitTotal: string;
     commitMonthly: string;
     payAsYouGoTotal: string;
     savings: string;
+    clinicCost: string;
+    homeCost: string;
+    weeklyEquivalent: string;
   };
 }
 

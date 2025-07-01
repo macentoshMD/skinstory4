@@ -1,13 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ClinicCareCard from './ClinicCareCard';
 import HomeCareCard from './HomeCareCard';
 import TreatmentStatusBadge from './TreatmentStatusBadge';
+import BeforeAfterSection from './BeforeAfterSection';
+import TimelineSection from './TimelineSection';
+import ValuePropositionSection from './ValuePropositionSection';
+import PhasesSection from './PhasesSection';
+import ReasoningSection from './ReasoningSection';
+import PricingBreakdownSection from './PricingBreakdownSection';
 import { getSeverityColor } from '@/utils/treatmentPlanHelpers';
 import { TreatmentPlan } from '@/types/treatment-plan';
-import { Clock, Users, TrendingUp, ChevronDown, CreditCard, Calendar, Building2, User } from 'lucide-react';
+import { Clock, Building2, User } from 'lucide-react';
 import { useState } from 'react';
 import PaymentOptionModal from './PaymentOptionModal';
 
@@ -22,7 +27,6 @@ const TreatmentPlanItem = ({
   onStartTreatment, 
   onShowDetailedPlan 
 }: TreatmentPlanItemProps) => {
-  const [showDetails, setShowDetails] = useState(false);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     type: 'treatment' | 'product';
@@ -96,31 +100,57 @@ const TreatmentPlanItem = ({
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* Before & After Section */}
+        <BeforeAfterSection 
+          expectedImprovement={treatmentPlan.beforeAfter.expectedImprovement}
+          timeframe={treatmentPlan.beforeAfter.timeframe}
+          description={treatmentPlan.beforeAfter.description}
+        />
 
-        {/* Collapsible Details */}
-        <Collapsible open={showDetails} onOpenChange={setShowDetails}>
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900">
-              {showDetails ? 'Dölj detaljer' : 'Visa behandlingsdetaljer'}
-              <ChevronDown className={`h-4 w-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-6 pt-4">
-            <ClinicCareCard 
-              treatments={treatmentPlan.clinicCare.treatments}
-              totalSessions={treatmentPlan.clinicCare.totalSessions}
-              schedule={treatmentPlan.clinicCare.schedule}
-              onBookTreatment={handleBookTreatment}
-            />
+        {/* Timeline Section */}
+        <TimelineSection 
+          timeline={treatmentPlan.timeline}
+          duration={treatmentPlan.plan.duration}
+        />
 
-            <HomeCareCard 
-              productPackages={treatmentPlan.homeCare.productPackages}
-              methods={treatmentPlan.homeCare.methods}
-              instructions={treatmentPlan.homeCare.instructions}
-              onOrderProducts={handleOrderProducts}
-            />
-          </CollapsibleContent>
-        </Collapsible>
+        {/* Value Proposition */}
+        <ValuePropositionSection 
+          title={treatmentPlan.valueProposition.title}
+          features={treatmentPlan.valueProposition.features}
+        />
+
+        {/* Phases Section */}
+        <PhasesSection phases={treatmentPlan.phases} />
+
+        {/* Reasoning Section */}
+        <ReasoningSection 
+          title={treatmentPlan.reasoning.title}
+          description={treatmentPlan.reasoning.description}
+          successRate={treatmentPlan.reasoning.successRate}
+        />
+
+        {/* Pricing Breakdown */}
+        <PricingBreakdownSection 
+          clinicCost={treatmentPlan.pricing.clinicCost}
+          homeCost={treatmentPlan.pricing.homeCost}
+          commitTotal={treatmentPlan.pricing.commitTotal}
+          weeklyEquivalent={treatmentPlan.pricing.weeklyEquivalent}
+        />
+
+        {/* Clinic Care and Home Care Details */}
+        <ClinicCareCard 
+          treatments={treatmentPlan.clinicCare.treatments}
+          totalSessions={treatmentPlan.clinicCare.totalSessions}
+          schedule={treatmentPlan.clinicCare.schedule}
+          onBookTreatment={handleBookTreatment}
+        />
+
+        <HomeCareCard 
+          productPackages={treatmentPlan.homeCare.productPackages}
+          methods={treatmentPlan.homeCare.methods}
+          instructions={treatmentPlan.homeCare.instructions}
+          onOrderProducts={handleOrderProducts}
+        />
 
         {/* Payment Option Modal */}
         <PaymentOptionModal
