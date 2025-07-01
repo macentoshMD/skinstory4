@@ -23,48 +23,50 @@ const ClinicCareCard = ({ treatments, totalSessions, schedule }: ClinicCareCardP
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
+        {/* Quick Overview */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-lg font-bold text-blue-600">{totalSessions}</div>
+            <p className="text-xs text-muted-foreground">Sessioner</p>
+          </div>
+          <div className="text-center p-3 bg-green-50 rounded-lg">
+            <div className="text-lg font-bold text-green-600">{totalClinicPrice.toLocaleString('sv-SE')} kr</div>
+            <p className="text-xs text-muted-foreground">Totalkostnad</p>
+          </div>
+          <div className="text-center p-3 bg-purple-50 rounded-lg">
+            <div className="text-lg font-bold text-purple-600">{treatments[0]?.interval || 'N/A'}</div>
+            <p className="text-xs text-muted-foreground">Intervall</p>
+          </div>
+          <div className="text-center p-3 bg-orange-50 rounded-lg">
+            <div className="text-lg font-bold text-orange-600">{treatments[0]?.areas.length || 0}</div>
+            <p className="text-xs text-muted-foreground">Områden</p>
+          </div>
+        </div>
+
         {/* Treatments List */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {treatments.map(treatment => (
-            <div key={treatment.id} className="border rounded-lg p-4 space-y-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h4 className="font-semibold text-lg">{treatment.name}</h4>
-                  <p className="text-sm text-muted-foreground">{treatment.method}</p>
+            <div key={treatment.id} className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-lg text-blue-900">{treatment.name}</h4>
+                  <p className="text-sm text-blue-700">{treatment.method}</p>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold">{treatment.price * treatment.sessions} kr</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="font-bold text-lg text-blue-900">{treatment.price * treatment.sessions} kr</div>
+                  <div className="text-xs text-blue-600">
                     {treatment.price} kr × {treatment.sessions} sessioner
                   </div>
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span className="font-medium">Antal sessioner:</span>
-                  <p className="text-muted-foreground">{treatment.sessions} st</p>
-                </div>
-                <div>
-                  <span className="font-medium">Intervall:</span>
-                  <p className="text-muted-foreground">{treatment.interval}</p>
-                </div>
-                <div>
-                  <span className="font-medium">Utrustning:</span>
-                  <p className="text-muted-foreground">{treatment.equipment}</p>
-                </div>
-              </div>
-
-              <div>
-                <span className="font-medium text-sm">Behandlingsområden:</span>
-                <div className="flex gap-2 mt-1">
-                  {treatment.areas.map(area => (
-                    <Badge key={area} variant="secondary" className="text-xs">
-                      {area}
-                    </Badge>
-                  ))}
-                </div>
+              <div className="flex flex-wrap gap-2">
+                {treatment.areas.map(area => (
+                  <Badge key={area} className="bg-blue-200 text-blue-800 text-xs">
+                    {area}
+                  </Badge>
+                ))}
               </div>
             </div>
           ))}

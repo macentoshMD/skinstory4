@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import TreatmentTimeline from '@/components/portal/TreatmentTimeline';
+import TreatmentOverviewCard from './TreatmentOverviewCard';
 import ClinicCareCard from './ClinicCareCard';
 import HomeCareCard from './HomeCareCard';
 import TreatmentStatusBadge from './TreatmentStatusBadge';
@@ -49,6 +50,8 @@ const TreatmentPlanItem = ({
 
         <AccordionContent className="p-0">
           <CardContent className="space-y-6 pt-0">
+            <TreatmentOverviewCard plan={treatmentPlan.plan} />
+            
             <ClinicCareCard 
               treatments={treatmentPlan.clinicCare.treatments}
               totalSessions={treatmentPlan.clinicCare.totalSessions}

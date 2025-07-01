@@ -32,34 +32,60 @@ const HomeCareCard = ({ productPackages, methods, instructions }: HomeCareCardPr
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Product Packages */}
-        <div className="space-y-4">
-          {productPackages.map(product => (
-            <div key={product.id} className="border rounded-lg p-4 space-y-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-semibold">{product.name}</h4>
-                    <Badge className={getCategoryColor(product.category)}>
-                      {product.category}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{product.brand}</p>
-                  <p className="text-sm mt-1">{product.description}</p>
-                </div>
-                <div className="text-right">
-                  <div className="font-semibold">{product.price} kr</div>
-                  <div className="text-xs text-muted-foreground">{product.duration}</div>
-                </div>
-              </div>
-              
-              <div className="text-sm">
-                <span className="font-medium">Användning:</span>
-                <span className="ml-2 text-muted-foreground">{product.usage}</span>
-              </div>
+      <CardContent className="space-y-4">
+        {/* Quick Overview */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="text-center p-3 bg-green-50 rounded-lg">
+            <div className="text-lg font-bold text-green-600">{productPackages.length}</div>
+            <p className="text-xs text-muted-foreground">Produkter</p>
+          </div>
+          <div className="text-center p-3 bg-purple-50 rounded-lg">
+            <div className="text-lg font-bold text-purple-600">{totalHomeCarePrice.toLocaleString('sv-SE')} kr</div>
+            <p className="text-xs text-muted-foreground">Totalkostnad</p>
+          </div>
+          <div className="text-center p-3 bg-orange-50 rounded-lg">
+            <div className="text-lg font-bold text-orange-600">{methods.length}</div>
+            <p className="text-xs text-muted-foreground">Metoder</p>
+          </div>
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-lg font-bold text-blue-600">
+              {Math.max(...productPackages.map(p => parseInt(p.duration.split(' ')[0])))}
             </div>
-          ))}
+            <p className="text-xs text-muted-foreground">Månader</p>
+          </div>
+        </div>
+
+        {/* Product Categories */}
+        <div className="space-y-4">
+          {['Grundvård', 'Behandling', 'Skydd'].map(category => {
+            const categoryProducts = productPackages.filter(p => p.category === category);
+            if (categoryProducts.length === 0) return null;
+            
+            return (
+              <div key={category} className="space-y-2">
+                <h4 className="font-semibold text-sm text-green-800 bg-green-100 px-3 py-1 rounded-full inline-block">
+                  {category}
+                </h4>
+                <div className="grid gap-2">
+                  {categoryProducts.map(product => (
+                    <div key={product.id} className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-green-900">{product.name}</h5>
+                          <p className="text-xs text-green-700">{product.brand} • {product.usage}</p>
+                          <p className="text-xs text-green-600 mt-1">{product.description}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-green-900">{product.price} kr</div>
+                          <div className="text-xs text-green-600">{product.duration}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Methods & Instructions */}
