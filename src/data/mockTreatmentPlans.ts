@@ -16,7 +16,7 @@ export const mockTreatmentPlansData: TreatmentPlan[] = [
     },
     plan: {
       duration: '12 veckor',
-      clinicSessions: 6,
+      clinicSessions: 5,
       homeProducts: 5,
       expectedResults: '70-80% förbättring'
     },
@@ -24,36 +24,16 @@ export const mockTreatmentPlansData: TreatmentPlan[] = [
       treatments: [
         {
           id: '1',
-          name: 'HydraFacial Djuprengöring',
-          method: 'HydraFacial',
-          sessions: 3,
-          interval: 'Var 3:e vecka',
-          equipment: 'HydraFacial MD',
+          name: 'Portömning',
+          method: 'Manuell portömning',
+          sessions: 5,
+          interval: 'Var 2:a vecka',
+          equipment: 'Portömningsinstrument',
           areas: ['Panna', 'Kinder', 'Haka'],
-          price: 1500
-        },
-        {
-          id: '2',
-          name: 'LED Ljusterapi',
-          method: 'LED Blue Light',
-          sessions: 6,
-          interval: 'Veckovis',
-          equipment: 'LED Panel 415nm',
-          areas: ['Hela ansiktet'],
           price: 800
-        },
-        {
-          id: '3',
-          name: 'Kemisk Peeling',
-          method: 'Salicylsyra 20%',
-          sessions: 2,
-          interval: 'Var 6:e vecka',
-          equipment: 'Professional Peel Kit',
-          areas: ['T-zon'],
-          price: 2000
         }
       ],
-      totalSessions: 11,
+      totalSessions: 5,
       schedule: 'Var 2:a vecka under första månaden, sedan månatliga uppföljningar'
     },
     homeCare: {
