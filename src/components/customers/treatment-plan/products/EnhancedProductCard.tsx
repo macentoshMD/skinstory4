@@ -42,35 +42,41 @@ export function EnhancedProductCard({ product, onSelect }: EnhancedProductCardPr
 
   return (
     <div
-      className="border rounded-lg p-4 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer group transform hover:scale-105 duration-200"
+      className="bg-background border border-border rounded-lg p-4 hover:border-primary/30 hover:shadow-lg transition-all cursor-pointer group duration-200 h-full flex flex-col"
       onClick={onSelect}
     >
-      {/* Product Image Placeholder */}
-      <div className={`w-full h-32 rounded-lg mb-3 flex items-center justify-center text-white font-bold text-lg ${getBrandColor(product.brand)}`}>
+      {/* Product Image */}
+      <div className={`w-full aspect-square rounded-lg mb-4 flex items-center justify-center text-white font-bold text-lg overflow-hidden ${getBrandColor(product.brand)}`}>
         {product.image ? (
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-lg" />
+          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
         ) : (
-          <span>{product.brand}</span>
+          <span className="text-sm">{product.brand}</span>
         )}
       </div>
 
-      {/* Product Info */}
-      <div className="space-y-2">
-        <div className="flex items-start justify-between">
-          <h3 className="font-medium text-sm group-hover:text-blue-600 line-clamp-2">{product.name}</h3>
-          <Badge className={getPriorityColor(product.priority)}>
+      {/* Product Info - Flex grow to fill space */}
+      <div className="space-y-3 flex-1 flex flex-col">
+        {/* Brand and Priority */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-primary">{product.brand}</p>
+          <Badge className={getPriorityColor(product.priority)} variant="outline">
             {getPriorityText(product.priority)}
           </Badge>
         </div>
 
-        <p className="text-xs text-gray-600 font-medium">{product.brand}</p>
+        {/* Product Name */}
+        <h3 className="font-semibold text-sm group-hover:text-primary line-clamp-2 min-h-[2.5rem]">
+          {product.name}
+        </h3>
         
-        <p className="text-xs text-gray-700 line-clamp-2">{product.description}</p>
+        {/* Description */}
+        <p className="text-xs text-muted-foreground line-clamp-3 flex-1">
+          {product.description}
+        </p>
 
-        {/* Usage and Type */}
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-gray-500">{product.usage}</span>
-          <Badge variant="outline" className="text-xs">
+        {/* Type Badge */}
+        <div className="flex justify-start">
+          <Badge variant="secondary" className="text-xs">
             {product.type}
           </Badge>
         </div>
@@ -81,31 +87,33 @@ export function EnhancedProductCard({ product, onSelect }: EnhancedProductCardPr
           costPerMonth={product.costPerMonth}
         />
 
-        {/* Pricing */}
-        <div className="flex items-center justify-between pt-2 border-t">
-          <div className="space-y-1">
-            <div className="font-bold text-lg text-blue-600">
-              från {basePrice} kr
-            </div>
-            {product.sizes && product.sizes.length > 1 && (
-              <div className="text-xs text-gray-500">
-                {product.sizes.length} storlekar
+        {/* Pricing - Always at bottom */}
+        <div className="mt-auto pt-3 border-t border-border">
+          <div className="flex items-end justify-between">
+            <div className="space-y-1">
+              <div className="font-bold text-lg text-primary">
+                från {basePrice} kr
               </div>
-            )}
-          </div>
-          
-          {/* Available Options Indicators */}
-          <div className="flex flex-col items-end space-y-1">
-            {product.availableOptions.strength && (
-              <Badge variant="secondary" className="text-xs">
-                {product.availableOptions.strength.length} styrkor
-              </Badge>
-            )}
-            {product.availableOptions.spf && (
-              <Badge variant="secondary" className="text-xs">
-                SPF tillgänglig
-              </Badge>
-            )}
+              {product.sizes && product.sizes.length > 1 && (
+                <div className="text-xs text-muted-foreground">
+                  {product.sizes.length} storlekar
+                </div>
+              )}
+            </div>
+            
+            {/* Available Options Indicators */}
+            <div className="flex flex-col items-end space-y-1">
+              {product.availableOptions.strength && (
+                <Badge variant="outline" className="text-xs">
+                  {product.availableOptions.strength.length} styrkor
+                </Badge>
+              )}
+              {product.availableOptions.spf && (
+                <Badge variant="outline" className="text-xs">
+                  SPF
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
       </div>

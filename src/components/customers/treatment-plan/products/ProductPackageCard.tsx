@@ -46,58 +46,85 @@ export function ProductPackageCard({
     return colors[brand] || 'bg-gray-500';
   };
   const discountAmount = pkg.originalPrice && pkg.discountPercent ? pkg.originalPrice * (pkg.discountPercent / 100) : 0;
-  return <div className="border rounded-lg p-4 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer group transform hover:scale-105 duration-200" onClick={onSelect}>
-      {/* Package Header */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="font-medium text-lg group-hover:text-blue-600">{pkg.name}</h3>
-            
-          </div>
-          <p className="text-sm text-gray-600 font-medium mb-1">{pkg.brand}</p>
-          <p className="text-sm text-gray-700 mb-2">{pkg.description}</p>
-          
-          <DurationIndicator duration={pkg.duration} costPerMonth={pkg.costPerMonth} />
-        </div>
-      </div>
-
+  
+  return (
+    <div className="bg-background border border-border rounded-lg p-4 hover:border-primary/30 hover:shadow-lg transition-all cursor-pointer group duration-200 h-full flex flex-col" onClick={onSelect}>
       {/* Package Image */}
-      <div className={`w-full h-24 rounded-lg mb-3 flex items-center justify-center text-white font-bold ${getBrandColor(pkg.brand)}`}>
-        {pkg.image ? <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover rounded-lg" /> : <span className="text-sm">PAKET</span>}
+      <div className={`w-full aspect-square rounded-lg mb-4 flex items-center justify-center text-white font-bold text-lg overflow-hidden ${getBrandColor(pkg.brand)}`}>
+        {pkg.image ? (
+          <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-sm">PAKET</span>
+        )}
       </div>
 
-      {/* Products in Package */}
-      <div className="space-y-2 mb-3">
-        <h4 className="text-sm font-medium text-gray-700">Innehåller:</h4>
-        <div className="space-y-1">
-          {pkg.products.slice(0, 3).map((product, index) => <div key={index} className="flex items-center justify-between text-xs">
-              <span className="text-gray-600">{product.name} ({product.size})</span>
-              <span className="text-gray-500">{product.duration}</span>
-            </div>)}
-          {pkg.products.length > 3 && <div className="text-xs text-gray-500">
-              +{pkg.products.length - 3} fler produkter
-            </div>}
+      {/* Package Info - Flex grow to fill space */}
+      <div className="space-y-3 flex-1 flex flex-col">
+        {/* Brand and Package Badge */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-primary">{pkg.brand}</p>
+          <Badge variant="outline" className="text-xs bg-accent text-accent-foreground">
+            PAKET
+          </Badge>
         </div>
-      </div>
 
-      {/* Pricing */}
-      <div className="flex items-center justify-between pt-2 border-t">
-        <div className="space-y-1">
-          {pkg.discountPercent && pkg.originalPrice && <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500 line-through">
-                {pkg.originalPrice} kr
-              </span>
-              <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                -{pkg.discountPercent}%
-              </Badge>
-            </div>}
-          <div className="font-bold text-lg text-blue-600">
-            {pkg.totalPrice} kr
+        {/* Package Name */}
+        <h3 className="font-semibold text-sm group-hover:text-primary line-clamp-2 min-h-[2.5rem]">
+          {pkg.name}
+        </h3>
+        
+        {/* Description */}
+        <p className="text-xs text-muted-foreground line-clamp-2">
+          {pkg.description}
+        </p>
+
+        {/* Duration */}
+        <DurationIndicator duration={pkg.duration} costPerMonth={pkg.costPerMonth} />
+
+        {/* Products in Package */}
+        <div className="space-y-2 flex-1">
+          <h4 className="text-xs font-medium text-foreground">Innehåller:</h4>
+          <div className="space-y-1">
+            {pkg.products.slice(0, 2).map((product, index) => (
+              <div key={index} className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground line-clamp-1">{product.name}</span>
+                <span className="text-xs text-muted-foreground shrink-0">({product.size})</span>
+              </div>
+            ))}
+            {pkg.products.length > 2 && (
+              <div className="text-xs text-muted-foreground">
+                +{pkg.products.length - 2} fler produkter
+              </div>
+            )}
           </div>
-          {discountAmount > 0 && <div className="text-xs text-green-600">
-              Spara {Math.round(discountAmount)} kr
-            </div>}
+        </div>
+
+        {/* Pricing - Always at bottom */}
+        <div className="mt-auto pt-3 border-t border-border">
+          <div className="space-y-2">
+            {pkg.discountPercent && pkg.originalPrice && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground line-through">
+                  {pkg.originalPrice} kr
+                </span>
+                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  -{pkg.discountPercent}%
+                </Badge>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <div className="font-bold text-lg text-primary">
+                {pkg.totalPrice} kr
+              </div>
+              {discountAmount > 0 && (
+                <div className="text-xs text-green-600 dark:text-green-400">
+                  Spara {Math.round(discountAmount)} kr
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 }

@@ -120,20 +120,12 @@ export function ProductSelectionModal({
             availableBrands={availableBrands}
             availableTypes={availableTypes}
             onClearFilters={handleClearFilters}
+            totalCount={allItems.length}
+            filteredCount={filteredItems.length}
           />
 
-          {/* Results Count */}
-          <div className="text-sm text-gray-600">
-            Visar {filteredItems.length} av {allItems.length} produkter och paket
-            {filteredProducts.length > 0 && filteredPackages.length > 0 && (
-              <span className="ml-2 text-gray-500">
-                ({filteredProducts.length} produkter, {filteredPackages.length} paket)
-              </span>
-            )}
-          </div>
-
-          {/* Unified Products/Packages Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+          {/* Enhanced Products/Packages Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-h-[500px] overflow-y-auto p-1">
             {filteredItems.map(item => (
               item.itemType === 'package' ? (
                 <ProductPackageCard

@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { Search, Filter, X } from 'lucide-react';
 
 interface ProductFilterBarProps {
@@ -17,6 +18,8 @@ interface ProductFilterBarProps {
   availableBrands: string[];
   availableTypes: string[];
   onClearFilters: () => void;
+  totalCount: number;
+  filteredCount: number;
 }
 
 const PROBLEM_LABELS: { [key: string]: string } = {
@@ -49,7 +52,9 @@ export function ProductFilterBar({
   availableProblems,
   availableBrands,
   availableTypes,
-  onClearFilters
+  onClearFilters,
+  totalCount,
+  filteredCount
 }: ProductFilterBarProps) {
   const hasActiveFilters = selectedProblems.length > 0 || selectedBrands.length > 0 || selectedTypes.length > 0;
 
@@ -96,160 +101,145 @@ export function ProductFilterBar({
   };
 
   return (
-    <div className="space-y-4 mb-6 p-4 bg-gray-50 rounded-lg border">
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <Input
-          placeholder="Sök produkter och paket..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 bg-white"
-        />
-      </div>
-
-      {/* Filter Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Filter:</span>
+    <div className="space-y-6 bg-background">
+      {/* Search and Filter Row */}
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+        {/* Search */}
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Sök produkter och paket..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10 h-10 bg-background border-border"
+          />
         </div>
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearFilters}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <X className="h-4 w-4 mr-1" />
-            Rensa filter
-          </Button>
-        )}
-      </div>
 
-      {/* Filter Dropdowns */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Problem Filter */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Problem</label>
+        {/* Filter Dropdowns */}
+        <div className="flex flex-wrap gap-3">
+          {/* Problem Filter */}
           <Select onValueChange={handleProblemSelect}>
-            <SelectTrigger className="bg-white">
+            <SelectTrigger className="w-40 h-10 bg-background border-border">
               <SelectValue placeholder={getSelectedProblemsLabel()} />
             </SelectTrigger>
-            <SelectContent className="bg-white border shadow-lg z-50">
+            <SelectContent className="bg-background border-border z-50">
               <SelectItem value="all">Alla problem</SelectItem>
               {availableProblems.map(problem => (
                 <SelectItem 
                   key={problem} 
                   value={problem}
-                  className={selectedProblems.includes(problem) ? 'bg-blue-50 font-medium' : ''}
+                  className={`hover:bg-muted ${selectedProblems.includes(problem) ? 'bg-accent font-medium' : ''}`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <span>{PROBLEM_LABELS[problem] || problem}</span>
                     {selectedProblems.includes(problem) && (
-                      <span className="ml-2 text-blue-600">✓</span>
+                      <span className="ml-2 text-primary">✓</span>
                     )}
                   </div>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        </div>
 
-        {/* Brand Filter */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Märke</label>
+          {/* Brand Filter */}
           <Select onValueChange={handleBrandSelect}>
-            <SelectTrigger className="bg-white">
+            <SelectTrigger className="w-40 h-10 bg-background border-border">
               <SelectValue placeholder={getSelectedBrandsLabel()} />
             </SelectTrigger>
-            <SelectContent className="bg-white border shadow-lg z-50">
+            <SelectContent className="bg-background border-border z-50">
               <SelectItem value="all">Alla märken</SelectItem>
               {availableBrands.map(brand => (
                 <SelectItem 
                   key={brand} 
                   value={brand}
-                  className={selectedBrands.includes(brand) ? 'bg-blue-50 font-medium' : ''}
+                  className={`hover:bg-muted ${selectedBrands.includes(brand) ? 'bg-accent font-medium' : ''}`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <span>{brand}</span>
                     {selectedBrands.includes(brand) && (
-                      <span className="ml-2 text-blue-600">✓</span>
+                      <span className="ml-2 text-primary">✓</span>
                     )}
                   </div>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        </div>
 
-        {/* Type Filter */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Typ</label>
+          {/* Type Filter */}
           <Select onValueChange={handleTypeSelect}>
-            <SelectTrigger className="bg-white">
+            <SelectTrigger className="w-40 h-10 bg-background border-border">
               <SelectValue placeholder={getSelectedTypesLabel()} />
             </SelectTrigger>
-            <SelectContent className="bg-white border shadow-lg z-50">
+            <SelectContent className="bg-background border-border z-50">
               <SelectItem value="all">Alla typer</SelectItem>
               {availableTypes.map(productType => (
                 <SelectItem 
                   key={productType} 
                   value={productType}
-                  className={selectedTypes.includes(productType) ? 'bg-blue-50 font-medium' : ''}
+                  className={`hover:bg-muted ${selectedTypes.includes(productType) ? 'bg-accent font-medium' : ''}`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <span>{TYPE_LABELS[productType] || productType}</span>
                     {selectedTypes.includes(productType) && (
-                      <span className="ml-2 text-blue-600">✓</span>
+                      <span className="ml-2 text-primary">✓</span>
                     )}
                   </div>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+
+          {/* Clear Filters */}
+          {hasActiveFilters && (
+            <Button variant="outline" onClick={onClearFilters} size="sm" className="h-10">
+              Rensa filter
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Active Filters Summary */}
+      {/* Active Filters */}
       {hasActiveFilters && (
-        <div className="flex flex-wrap gap-2 pt-2 border-t">
-          <span className="text-xs text-gray-600">Aktiva filter:</span>
+        <div className="flex flex-wrap gap-2">
           {selectedProblems.map(problem => (
-            <span key={problem} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+            <Badge key={problem} variant="secondary" className="flex items-center gap-1 px-3 py-1">
               {PROBLEM_LABELS[problem] || problem}
-              <button
+              <X 
+                className="h-3 w-3 cursor-pointer hover:text-destructive" 
                 onClick={() => onProblemToggle(problem)}
-                className="hover:bg-blue-200 rounded-full p-0.5"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
+              />
+            </Badge>
           ))}
           {selectedBrands.map(brand => (
-            <span key={brand} className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+            <Badge key={brand} variant="secondary" className="flex items-center gap-1 px-3 py-1">
               {brand}
-              <button
+              <X 
+                className="h-3 w-3 cursor-pointer hover:text-destructive" 
                 onClick={() => onBrandToggle(brand)}
-                className="hover:bg-green-200 rounded-full p-0.5"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
+              />
+            </Badge>
           ))}
           {selectedTypes.map(productType => (
-            <span key={productType} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+            <Badge key={productType} variant="secondary" className="flex items-center gap-1 px-3 py-1">
               {TYPE_LABELS[productType] || productType}
-              <button
+              <X 
+                className="h-3 w-3 cursor-pointer hover:text-destructive" 
                 onClick={() => onTypeToggle(productType)}
-                className="hover:bg-purple-200 rounded-full p-0.5"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
+              />
+            </Badge>
           ))}
         </div>
       )}
+
+      {/* Products Found Counter */}
+      <div className="flex items-center justify-between pt-2 border-t border-border">
+        <div className="text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">Products found - {filteredCount}</span>
+          {filteredCount !== totalCount && (
+            <span className="ml-2">av {totalCount} totalt</span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
