@@ -1,13 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ClinicCareCard from './ClinicCareCard';
 import HomeCareCard from './HomeCareCard';
 import TreatmentStatusBadge from './TreatmentStatusBadge';
-import { getSeverityColor } from '@/utils/treatmentPlanHelpers';
 import { TreatmentPlan } from '@/types/treatment-plan';
-import { Clock, Users, TrendingUp, ChevronDown, CreditCard, Calendar } from 'lucide-react';
+import { Clock, Users, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import PaymentOptionModal from './PaymentOptionModal';
 
@@ -22,7 +19,6 @@ const TreatmentPlanItem = ({
   onStartTreatment, 
   onShowDetailedPlan 
 }: TreatmentPlanItemProps) => {
-  const [showDetails, setShowDetails] = useState(false);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     type: 'treatment' | 'product';
@@ -96,32 +92,23 @@ const TreatmentPlanItem = ({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 p-4 md:p-6">
+        {/* Always visible treatment details - Mobile First */}
+        <div className="space-y-4">
+          <ClinicCareCard 
+            treatments={treatmentPlan.clinicCare.treatments}
+            totalSessions={treatmentPlan.clinicCare.totalSessions}
+            schedule={treatmentPlan.clinicCare.schedule}
+            onBookTreatment={handleBookTreatment}
+          />
 
-        {/* Collapsible Details */}
-        <Collapsible open={showDetails} onOpenChange={setShowDetails}>
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900">
-              {showDetails ? 'Dölj detaljer' : 'Visa behandlingsdetaljer'}
-              <ChevronDown className={`h-4 w-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-6 pt-4">
-            <ClinicCareCard 
-              treatments={treatmentPlan.clinicCare.treatments}
-              totalSessions={treatmentPlan.clinicCare.totalSessions}
-              schedule={treatmentPlan.clinicCare.schedule}
-              onBookTreatment={handleBookTreatment}
-            />
-
-            <HomeCareCard 
-              productPackages={treatmentPlan.homeCare.productPackages}
-              methods={treatmentPlan.homeCare.methods}
-              instructions={treatmentPlan.homeCare.instructions}
-              onOrderProducts={handleOrderProducts}
-            />
-          </CollapsibleContent>
-        </Collapsible>
+          <HomeCareCard 
+            productPackages={treatmentPlan.homeCare.productPackages}
+            methods={treatmentPlan.homeCare.methods}
+            instructions={treatmentPlan.homeCare.instructions}
+            onOrderProducts={handleOrderProducts}
+          />
+        </div>
 
         {/* Payment Option Modal */}
         <PaymentOptionModal
