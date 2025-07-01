@@ -96,13 +96,7 @@ export function EnhancedProductCard({
             </div>
             
             {/* Available Options Indicators */}
-            <div className="flex flex-col items-end space-y-1">
-              {(product as any).availableStrengths?.length > 0}
-              {product.availableOptions?.strength}
-              {product.availableOptions?.spf && <Badge variant="outline" className="text-xs">
-                  SPF
-                </Badge>}
-            </div>
+            
           </div>
         </div>
       </div>
