@@ -1,4 +1,5 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import TreatmentTimeline from '@/components/portal/TreatmentTimeline';
@@ -7,7 +8,7 @@ import TreatmentOverviewCard from './TreatmentOverviewCard';
 import TreatmentStatusBadge from './TreatmentStatusBadge';
 import { getSeverityColor, getButtonTextForStatus } from '@/utils/treatmentPlanHelpers';
 import { TreatmentPlan } from '@/types/treatment-plan';
-import { Calendar, Zap } from 'lucide-react';
+import { Calendar, Zap, TrendingUp } from 'lucide-react';
 
 interface TreatmentPlanItemProps {
   treatmentPlan: TreatmentPlan;
@@ -22,26 +23,32 @@ const TreatmentPlanItem = ({
 }: TreatmentPlanItemProps) => {
   return (
     <AccordionItem value={treatmentPlan.id.toString()} className="border-0">
-      <div className="space-y-6">
+      <Card className="overflow-hidden">
         <AccordionTrigger className="hover:no-underline p-0">
-          <div className="w-full text-left">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-gray-900">
+          <CardHeader className="pb-4 w-full">
+            <div className="flex items-start justify-between w-full">
+              <div className="space-y-2 text-left">
+                <CardTitle className="flex items-center gap-3">
                   {treatmentPlan.problem.name}
-                </h2>
-                <Badge className={getSeverityColor(treatmentPlan.problem.severity)}>
-                  {treatmentPlan.problem.severity}
-                </Badge>
-                <TreatmentStatusBadge status={treatmentPlan.treatmentStatus} />
+                  <Badge className={getSeverityColor(treatmentPlan.problem.severity)}>
+                    {treatmentPlan.problem.severity}
+                  </Badge>
+                  <TreatmentStatusBadge status={treatmentPlan.treatmentStatus} />
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">{treatmentPlan.problem.description}</p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <TrendingUp className="h-4 w-4 text-green-500" />
+                <span className="text-sm font-medium text-green-600">
+                  {treatmentPlan.plan.expectedResults}
+                </span>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">{treatmentPlan.problem.description}</p>
-          </div>
+          </CardHeader>
         </AccordionTrigger>
 
         <AccordionContent className="p-0">
-          <div className="space-y-6">
+          <CardContent className="space-y-6 pt-0">
             <ProblemDescriptionCard 
               problem={treatmentPlan.problem}
               goals={treatmentPlan.goals}
@@ -73,9 +80,9 @@ const TreatmentPlanItem = ({
                 Visa detaljerad plan
               </Button>
             </div>
-          </div>
+          </CardContent>
         </AccordionContent>
-      </div>
+      </Card>
     </AccordionItem>
   );
 };
