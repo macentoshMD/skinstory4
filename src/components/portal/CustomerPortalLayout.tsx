@@ -82,8 +82,7 @@ export function CustomerPortalLayout({ children, customer }: CustomerPortalLayou
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex items-center gap-2 h-9 text-xs sm:text-sm px-2 sm:px-3">
-                    <span className="font-medium hidden sm:inline">Kundportal</span>
-                    <span className="font-medium sm:hidden">Portal</span>
+                    <span className="font-medium">Kundportal</span>
                     <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </DropdownMenuTrigger>
