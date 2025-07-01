@@ -8,9 +8,10 @@ interface HomeCareCardProps {
   productPackages: ProductPackage[];
   methods: string[];
   instructions: string;
+  onOrderProducts?: () => void;
 }
 
-const HomeCareCard = ({ productPackages, methods, instructions }: HomeCareCardProps) => {
+const HomeCareCard = ({ productPackages, methods, instructions, onOrderProducts }: HomeCareCardProps) => {
   // Show only the first product package (Akne Starterpaket)
   const akneStarterpaket = productPackages[0];
   
@@ -76,7 +77,7 @@ const HomeCareCard = ({ productPackages, methods, instructions }: HomeCareCardPr
               
               {/* CTA Buttons */}
               <div className="flex gap-3">
-                <Button className="flex-1 bg-green-600 hover:bg-green-700">
+                <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={() => onOrderProducts?.()}>
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   Beställ
                 </Button>

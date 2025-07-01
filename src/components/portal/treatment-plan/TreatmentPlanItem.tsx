@@ -9,6 +9,7 @@ import { getSeverityColor } from '@/utils/treatmentPlanHelpers';
 import { TreatmentPlan } from '@/types/treatment-plan';
 import { Clock, Users, TrendingUp, ChevronDown, CreditCard, Calendar } from 'lucide-react';
 import { useState } from 'react';
+import PaymentOptionModal from './PaymentOptionModal';
 
 interface TreatmentPlanItemProps {
   treatmentPlan: TreatmentPlan;
@@ -22,6 +23,33 @@ const TreatmentPlanItem = ({
   onShowDetailedPlan 
 }: TreatmentPlanItemProps) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [paymentModal, setPaymentModal] = useState<{
+    isOpen: boolean;
+    type: 'treatment' | 'product';
+    itemName: string;
+  }>({ isOpen: false, type: 'treatment', itemName: '' });
+
+  const handleBookTreatment = () => {
+    setPaymentModal({
+      isOpen: true,
+      type: 'treatment',
+      itemName: treatmentPlan.problem.name
+    });
+  };
+
+  const handleOrderProducts = () => {
+    setPaymentModal({
+      isOpen: true,
+      type: 'product',
+      itemName: treatmentPlan.homeCare.productPackages[0]?.name || 'Produkter'
+    });
+  };
+
+  const handlePaymentSelection = (paymentType: 'commit' | 'payAsYouGo') => {
+    // Close modal and handle payment logic
+    setPaymentModal({ isOpen: false, type: 'treatment', itemName: '' });
+    onStartTreatment(treatmentPlan.id);
+  };
 
   return (
     <Card className="overflow-hidden bg-white">
@@ -68,52 +96,6 @@ const TreatmentPlanItem = ({
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Primary Action - Payment Options */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-center">Välj betalningsalternativ</h3>
-          
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Commit Option */}
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 border-2 border-purple-200 relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-green-600 text-white px-4 py-1">SPARA {treatmentPlan.pricing.savings}</Badge>
-              </div>
-              <div className="text-center space-y-3 pt-2">
-                <h4 className="font-semibold text-purple-800">Betala direkt</h4>
-                <div className="text-3xl font-bold text-purple-600">{treatmentPlan.pricing.commitTotal}</div>
-                <p className="text-sm text-purple-700">{treatmentPlan.pricing.commitMonthly}</p>
-                <Button 
-                  size="lg" 
-                  className="w-full bg-purple-600 hover:bg-purple-700"
-                  onClick={() => onStartTreatment(treatmentPlan.id)}
-                  disabled={treatmentPlan.treatmentStatus === 'slutförd'}
-                >
-                  <CreditCard className="h-5 w-5 mr-2" />
-                  Välj detta alternativ
-                </Button>
-              </div>
-            </div>
-
-            {/* Pay as you go */}
-            <div className="bg-white rounded-lg p-6 border-2 border-gray-200">
-              <div className="text-center space-y-3">
-                <h4 className="font-semibold text-gray-800">Betala per tillfälle</h4>
-                <div className="text-3xl font-bold text-gray-600">{treatmentPlan.pricing.payAsYouGoTotal}</div>
-                <p className="text-sm text-gray-600">Ingen förskottsbetalning</p>
-                <Button 
-                  variant="outline"
-                  size="lg" 
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                  onClick={() => onStartTreatment(treatmentPlan.id)}
-                  disabled={treatmentPlan.treatmentStatus === 'slutförd'}
-                >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Välj detta alternativ
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Collapsible Details */}
         <Collapsible open={showDetails} onOpenChange={setShowDetails}>
@@ -128,15 +110,27 @@ const TreatmentPlanItem = ({
               treatments={treatmentPlan.clinicCare.treatments}
               totalSessions={treatmentPlan.clinicCare.totalSessions}
               schedule={treatmentPlan.clinicCare.schedule}
+              onBookTreatment={handleBookTreatment}
             />
 
             <HomeCareCard 
               productPackages={treatmentPlan.homeCare.productPackages}
               methods={treatmentPlan.homeCare.methods}
               instructions={treatmentPlan.homeCare.instructions}
+              onOrderProducts={handleOrderProducts}
             />
           </CollapsibleContent>
         </Collapsible>
+
+        {/* Payment Option Modal */}
+        <PaymentOptionModal
+          isOpen={paymentModal.isOpen}
+          onClose={() => setPaymentModal({ ...paymentModal, isOpen: false })}
+          onSelectPayment={handlePaymentSelection}
+          type={paymentModal.type}
+          itemName={paymentModal.itemName}
+          pricing={treatmentPlan.pricing}
+        />
       </CardContent>
     </Card>
   );

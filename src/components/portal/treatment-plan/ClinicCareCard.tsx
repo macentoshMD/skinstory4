@@ -1,15 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Clock, Target } from 'lucide-react';
+import { Building2, Clock, Target, Calendar, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ClinicTreatment } from '@/types/treatment-plan';
 
 interface ClinicCareCardProps {
   treatments: ClinicTreatment[];
   totalSessions: number;
   schedule: string;
+  onBookTreatment?: () => void;
 }
 
-const ClinicCareCard = ({ treatments, totalSessions, schedule }: ClinicCareCardProps) => {
+const ClinicCareCard = ({ treatments, totalSessions, schedule, onBookTreatment }: ClinicCareCardProps) => {
   const totalClinicPrice = treatments.reduce((sum, treatment) => sum + (treatment.price * treatment.sessions), 0);
 
   return (
@@ -83,11 +85,23 @@ const ClinicCareCard = ({ treatments, totalSessions, schedule }: ClinicCareCardP
           </div>
         </div>
 
-        {/* Price Summary */}
-        <div className="border-t pt-4">
+        {/* Price Summary & Actions */}
+        <div className="border-t pt-4 space-y-4">
           <div className="flex items-center justify-between">
             <span className="font-semibold">Totalt klinikvård:</span>
             <span className="text-xl font-bold text-blue-600">{totalClinicPrice.toLocaleString('sv-SE')} kr</span>
+          </div>
+          
+          {/* CTA Buttons */}
+          <div className="flex gap-3">
+            <Button className="flex-1 bg-blue-600 hover:bg-blue-700" onClick={() => onBookTreatment?.()}>
+              <Calendar className="h-4 w-4 mr-2" />
+              Boka
+            </Button>
+            <Button variant="outline" className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50">
+              <Info className="h-4 w-4 mr-2" />
+              Info
+            </Button>
           </div>
         </div>
       </CardContent>
