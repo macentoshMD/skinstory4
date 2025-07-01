@@ -3,15 +3,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { useNavigate } from 'react-router-dom';
 import { 
   CheckCircle,
   TrendingUp,
   Calendar,
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  Activity,
+  Play
 } from 'lucide-react';
 
 const CustomerPortalDashboard = () => {
+  const navigate = useNavigate();
+  
   // First-time login state - customer just had consultation
   const mockData = {
     customerName: 'Anna',
@@ -65,9 +70,9 @@ const CustomerPortalDashboard = () => {
           <div className="relative">
             <div className="flex items-center gap-6">
               <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="h-6 w-6 text-white" />
+                <Activity className="h-6 w-6 text-white" />
               </div>
-              <Card className="flex-1 border-blue-200 bg-blue-50 cursor-pointer hover:bg-blue-100 transition-colors" onClick={() => window.location.href = '/portal/problem'}>
+              <Card className="flex-1 border-blue-200 bg-blue-50 cursor-pointer hover:bg-blue-100 transition-colors" onClick={() => navigate('/portal/problem')}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
@@ -82,18 +87,18 @@ const CustomerPortalDashboard = () => {
             <div className="absolute left-6 top-12 w-0.5 h-8 bg-gray-200"></div>
           </div>
 
-          {/* Step 3 - Treatment Plan */}
+          {/* Step 3 - View Treatment Plans */}
           <div className="relative">
             <div className="flex items-center gap-6">
               <div className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0">
                 <Calendar className="h-6 w-6 text-white" />
               </div>
-              <Card className="flex-1 border-purple-200 bg-purple-50 cursor-pointer hover:bg-purple-100 transition-colors" onClick={() => window.location.href = '/portal/behandlingsplan'}>
+              <Card className="flex-1 border-purple-200 bg-purple-50 cursor-pointer hover:bg-purple-100 transition-colors" onClick={() => navigate('/portal/behandlingsplan')}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-semibold text-purple-800">Behandlingsplan</h3>
-                      <p className="text-sm text-purple-600">Din personliga plan för Akne är klar</p>
+                      <h3 className="font-semibold text-purple-800">Se Behandlingsplan</h3>
+                      <p className="text-sm text-purple-600">Granska din personliga plan för Akne</p>
                     </div>
                     <ArrowRight className="h-5 w-5 text-purple-600" />
                   </div>
@@ -103,19 +108,28 @@ const CustomerPortalDashboard = () => {
             <div className="absolute left-6 top-12 w-0.5 h-8 bg-gray-200"></div>
           </div>
 
-          {/* Step 4 - Purchase Treatment */}
+          {/* Step 4 - Start Treatment (CTA) */}
           <div className="flex items-center gap-6">
-            <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
-              <AlertCircle className="h-6 w-6 text-white" />
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+              <Play className="h-6 w-6 text-white" />
             </div>
-            <Card className="flex-1 border-orange-200 bg-gradient-to-r from-orange-50 to-orange-100 cursor-pointer hover:from-orange-100 hover:to-orange-150 transition-all" onClick={() => window.location.href = '/portal/behandlingsplan'}>
+            <Card className="flex-1 border-green-200 bg-gradient-to-r from-green-50 to-green-100 cursor-pointer hover:from-green-100 hover:to-green-150 transition-all shadow-md hover:shadow-lg">
               <CardContent className="p-6">
-                <div className="text-center space-y-3">
-                  <h3 className="font-bold text-orange-800 text-lg">Köp din behandlingsplan</h3>
-                  <p className="text-sm text-orange-700">Starta din hudresa idag med personlig behandling</p>
-                  <div className="flex items-center justify-center gap-2 text-orange-600 font-medium">
-                    <span>Välj betalningsalternativ</span>
-                    <ArrowRight className="h-4 w-4" />
+                <div className="text-center space-y-4">
+                  <h3 className="font-bold text-green-800 text-xl">Starta din behandlingsplan</h3>
+                  <p className="text-green-700">Dags att påbörja din hudresa med personlig behandling</p>
+                  <div className="space-y-3">
+                    <Button 
+                      size="lg" 
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+                      onClick={() => navigate('/portal/behandlingsplan')}
+                    >
+                      <Play className="h-5 w-5 mr-2" />
+                      Starta behandling nu
+                    </Button>
+                    <p className="text-xs text-green-600">
+                      Välj betalningsalternativ och boka din första session
+                    </p>
                   </div>
                 </div>
               </CardContent>
