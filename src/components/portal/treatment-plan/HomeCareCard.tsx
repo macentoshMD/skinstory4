@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Home, Package, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Home, Package, Info, ShoppingCart, Calendar } from 'lucide-react';
 import { ProductPackage } from '@/types/treatment-plan';
 
 interface HomeCareCardProps {
@@ -10,8 +11,9 @@ interface HomeCareCardProps {
 }
 
 const HomeCareCard = ({ productPackages, methods, instructions }: HomeCareCardProps) => {
-  const totalHomeCarePrice = productPackages.reduce((sum, product) => sum + product.price, 0);
-
+  // Show only the first product package (Akne Starterpaket)
+  const akneStarterpaket = productPackages[0];
+  
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Grundvård': return 'bg-green-100 text-green-800';
@@ -36,11 +38,11 @@ const HomeCareCard = ({ productPackages, methods, instructions }: HomeCareCardPr
         {/* Quick Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="text-center p-3 bg-green-50 rounded-lg">
-            <div className="text-lg font-bold text-green-600">{productPackages.length}</div>
-            <p className="text-xs text-muted-foreground">Produkter</p>
+            <div className="text-lg font-bold text-green-600">1</div>
+            <p className="text-xs text-muted-foreground">Produktpaket</p>
           </div>
           <div className="text-center p-3 bg-purple-50 rounded-lg">
-            <div className="text-lg font-bold text-purple-600">{totalHomeCarePrice.toLocaleString('sv-SE')} kr</div>
+            <div className="text-lg font-bold text-purple-600">{akneStarterpaket?.price.toLocaleString('sv-SE')} kr</div>
             <p className="text-xs text-muted-foreground">Totalkostnad</p>
           </div>
           <div className="text-center p-3 bg-orange-50 rounded-lg">
@@ -48,45 +50,44 @@ const HomeCareCard = ({ productPackages, methods, instructions }: HomeCareCardPr
             <p className="text-xs text-muted-foreground">Metoder</p>
           </div>
           <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <div className="text-lg font-bold text-blue-600">
-              {Math.max(...productPackages.map(p => parseInt(p.duration.split(' ')[0])))}
-            </div>
+            <div className="text-lg font-bold text-blue-600">3</div>
             <p className="text-xs text-muted-foreground">Månader</p>
           </div>
         </div>
 
-        {/* Product Categories */}
-        <div className="space-y-4">
-          {['Grundvård', 'Behandling', 'Skydd'].map(category => {
-            const categoryProducts = productPackages.filter(p => p.category === category);
-            if (categoryProducts.length === 0) return null;
-            
-            return (
-              <div key={category} className="space-y-2">
-                <h4 className="font-semibold text-sm text-green-800 bg-green-100 px-3 py-1 rounded-full inline-block">
-                  {category}
-                </h4>
-                <div className="grid gap-2">
-                  {categoryProducts.map(product => (
-                    <div key={product.id} className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h5 className="font-semibold text-green-900">{product.name}</h5>
-                          <p className="text-xs text-green-700">{product.brand} • {product.usage}</p>
-                          <p className="text-xs text-green-600 mt-1">{product.description}</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-green-900">{product.price} kr</div>
-                          <div className="text-xs text-green-600">{product.duration}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+        {/* Single Product Package */}
+        {akneStarterpaket && (
+          <div className="space-y-4">
+            <h4 className="font-semibold text-sm text-green-800 bg-green-100 px-3 py-1 rounded-full inline-block">
+              {akneStarterpaket.category}
+            </h4>
+            <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex-1">
+                  <h5 className="font-semibold text-lg text-green-900">{akneStarterpaket.name}</h5>
+                  <p className="text-sm text-green-700">{akneStarterpaket.brand} • {akneStarterpaket.usage}</p>
+                  <p className="text-sm text-green-600 mt-1">{akneStarterpaket.description}</p>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-xl text-green-900">{akneStarterpaket.price} kr</div>
+                  <div className="text-sm text-green-600">{akneStarterpaket.duration}</div>
                 </div>
               </div>
-            );
-          })}
-        </div>
+              
+              {/* CTA Buttons */}
+              <div className="flex gap-3">
+                <Button className="flex-1 bg-green-600 hover:bg-green-700">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Beställ
+                </Button>
+                <Button variant="outline" className="flex-1 border-green-200 text-green-700 hover:bg-green-50">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Boka
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Methods & Instructions */}
         <div className="space-y-4 border-t pt-4">
@@ -112,14 +113,6 @@ const HomeCareCard = ({ productPackages, methods, instructions }: HomeCareCardPr
             <p className="text-sm text-muted-foreground bg-green-50 p-3 rounded-lg">
               {instructions}
             </p>
-          </div>
-        </div>
-
-        {/* Price Summary */}
-        <div className="border-t pt-4">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold">Totalt hemmavård:</span>
-            <span className="text-xl font-bold text-green-600">{totalHomeCarePrice.toLocaleString('sv-SE')} kr</span>
           </div>
         </div>
       </CardContent>

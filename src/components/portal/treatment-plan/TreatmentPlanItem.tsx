@@ -66,6 +66,34 @@ const TreatmentPlanItem = ({
 
             <TreatmentTimeline />
 
+            {/* Pricing Options */}
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 space-y-4">
+              <h3 className="font-semibold text-lg">Behandlingspaket</h3>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* Commit Option */}
+                <div className="bg-white rounded-lg p-4 border-2 border-purple-200">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold">Förbetalning</span>
+                      <Badge className="bg-green-100 text-green-800">Spara {treatmentPlan.pricing.savings}</Badge>
+                    </div>
+                    <div className="text-2xl font-bold text-purple-600">{treatmentPlan.pricing.commitTotal}</div>
+                    <div className="text-sm text-muted-foreground">{treatmentPlan.pricing.commitMonthly}</div>
+                  </div>
+                </div>
+
+                {/* Pay as you go */}
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <div className="space-y-2">
+                    <span className="font-semibold">Betala per tillfälle</span>
+                    <div className="text-2xl font-bold text-gray-600">{treatmentPlan.pricing.payAsYouGoTotal}</div>
+                    <div className="text-sm text-muted-foreground">Ingen förskottsbetalning</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
