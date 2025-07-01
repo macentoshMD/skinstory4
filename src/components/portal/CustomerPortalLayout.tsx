@@ -23,7 +23,6 @@ interface CustomerPortalLayoutProps {
 
 const navigationItems = [
   { to: '/portal', icon: Home, label: 'Hem', exact: true },
-  { to: '/portal/profil', icon: User, label: 'Min Profil' },
   { to: '/portal/problem', icon: Activity, label: 'Mina Problem' },
   { to: '/portal/behandlingsplan', icon: Calendar, label: 'Behandlingsplan' },
   { to: '/portal/historik', icon: History, label: 'Historik' },

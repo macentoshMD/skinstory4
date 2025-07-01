@@ -18,7 +18,7 @@ import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 import ProblemsAndAreas from "./pages/ProblemsAndAreas";
 import CustomerPortalDashboard from "./pages/portal/CustomerPortalDashboard";
-import CustomerPortalProfile from "./pages/portal/CustomerPortalProfile";
+
 import CustomerPortalProblems from "./pages/portal/CustomerPortalProblems";
 import CustomerPortalTreatmentPlan from "./pages/portal/CustomerPortalTreatmentPlan";
 import CustomerPortalHistory from "./pages/portal/CustomerPortalHistory";
@@ -48,7 +48,7 @@ const App = () => (
             
             {/* Customer Portal Routes */}
             <Route path="/portal" element={<CustomerPortalDashboard />} />
-            <Route path="/portal/profil" element={<CustomerPortalProfile />} />
+            
             <Route path="/portal/problem" element={<CustomerPortalProblems />} />
             <Route path="/portal/behandlingsplan" element={<CustomerPortalTreatmentPlan />} />
             <Route path="/portal/historik" element={<CustomerPortalHistory />} />
