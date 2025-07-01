@@ -47,35 +47,36 @@ export function CustomerPortalLayout({ children, customer }: CustomerPortalLayou
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+      <header className="bg-card border-b border-border/60 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="text-2xl font-bold text-foreground">
               SkinStory
             </div>
             
-            <div className="flex items-center gap-2 sm:gap-4">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-10 w-10 ring-2 ring-primary/10">
                   <AvatarImage src={currentCustomer.avatar} />
-                  <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs sm:text-sm">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
                     {currentCustomer.initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden sm:block">
-                  <p className="text-sm font-medium">{currentCustomer.name}</p>
+                  <p className="text-sm font-medium text-foreground">{currentCustomer.name}</p>
+                  <p className="text-xs text-muted-foreground">{currentCustomer.email}</p>
                 </div>
               </div>
               
               <Button 
                 variant="ghost" 
-                size="sm" 
+                size="icon"
                 onClick={handleLogout}
-                className="text-muted-foreground hover:text-foreground p-1 sm:p-2"
+                className="text-muted-foreground hover:text-foreground"
               >
-                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
+                <LogOut className="h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -83,24 +84,24 @@ export function CustomerPortalLayout({ children, customer }: CustomerPortalLayou
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="px-2 sm:px-4 lg:px-8">
-          <div className="flex space-x-1 sm:space-x-4 overflow-x-auto scrollbar-hide">
+      <nav className="bg-card/50 backdrop-blur-sm border-b border-border/60 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex space-x-8 overflow-x-auto scrollbar-hide">
             {navigationItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.exact}
                 className={({ isActive }) =>
-                  `flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
+                  `flex items-center gap-3 px-1 py-6 text-sm font-medium border-b-2 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
                     isActive
-                      ? 'border-purple-500 text-purple-600'
-                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30'
                   }`
                 }
               >
-                <item.icon className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden xs:inline">{item.label}</span>
+                <item.icon className="h-4 w-4" />
+                <span>{item.label}</span>
               </NavLink>
             ))}
           </div>
@@ -108,7 +109,7 @@ export function CustomerPortalLayout({ children, customer }: CustomerPortalLayou
       </nav>
 
       {/* Main Content */}
-      <main className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
         {children}
       </main>
     </div>

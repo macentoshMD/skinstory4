@@ -32,26 +32,26 @@ const CustomerPortalDashboard = () => {
     <CustomerPortalLayout>
       <div className="space-y-8">
         {/* Welcome Message for First Login */}
-        <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold text-gray-900">
+        <div className="text-center space-y-6 mb-12">
+          <h1 className="text-4xl font-bold text-foreground">
             Välkommen {mockData.customerName}!
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Din hudanalys är klar och din personliga behandlingsplan är redo
           </p>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 text-primary rounded-full text-sm font-medium">
+            <div className="w-2.5 h-2.5 bg-primary rounded-full"></div>
             Konsultation genomförd {new Date(mockData.consultationDate).toLocaleDateString('sv-SE')}
           </div>
         </div>
 
         {/* Skin Score Card */}
-        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-          <CardContent className="p-8 text-center">
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Din Hudpoäng</h2>
-              <div className="text-6xl font-bold">{mockData.skinScore}%</div>
-              <p className="text-purple-100">
+        <Card className="border-0 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground mb-12">
+          <CardContent className="p-12 text-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold">Din Hudpoäng</h2>
+              <div className="text-7xl font-bold">{mockData.skinScore}%</div>
+              <p className="text-primary-foreground/80 text-lg">
                 Baserat på din hudanalys och konsultation
               </p>
             </div>
@@ -59,28 +59,30 @@ const CustomerPortalDashboard = () => {
         </Card>
 
         {/* Main Problem Details Card */}
-        <Card className="border-2 border-purple-200">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
-            <CardTitle className="text-xl flex items-center gap-2">
-              <AlertCircle className="h-6 w-6 text-purple-600" />
+        <Card className="border border-border/60 shadow-sm">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-2xl flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <AlertCircle className="h-6 w-6 text-primary" />
+              </div>
               Ditt Huvudproblem: {mockData.mainProblem.name}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
+          <CardContent className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
                 <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">ALLVARLIGHETSGRAD</h4>
-                  <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">Allvarlighetsgrad</h4>
+                  <Badge variant="secondary" className="bg-accent text-accent-foreground">
                     {mockData.mainProblem.severity}
                   </Badge>
                 </div>
                 
                 <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">DRABBADE OMRÅDEN</h4>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">Drabbade områden</h4>
                   <div className="flex flex-wrap gap-2">
                     {mockData.mainProblem.areas.map((area, index) => (
-                      <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
+                      <Badge key={index} variant="outline" className="bg-muted">
                         {area}
                       </Badge>
                     ))}
@@ -88,24 +90,24 @@ const CustomerPortalDashboard = () => {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">PROBLEMBESKRIVNING</h4>
-                  <p className="text-sm text-gray-700">{mockData.mainProblem.description}</p>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">Problembeskrivning</h4>
+                  <p className="text-sm text-foreground leading-relaxed">{mockData.mainProblem.description}</p>
                 </div>
                 
                 <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">BEHANDLINGSMÅL</h4>
-                  <p className="text-sm text-gray-700">{mockData.mainProblem.treatmentGoal}</p>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">Behandlingsmål</h4>
+                  <p className="text-sm text-foreground leading-relaxed">{mockData.mainProblem.treatmentGoal}</p>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
+            <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t border-border/60">
               <Button 
                 size="lg" 
-                className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+                className="flex-1 h-12"
                 onClick={() => window.location.href = '/portal/behandlingsplan'}
               >
                 <TrendingUp className="h-5 w-5 mr-2" />
@@ -115,7 +117,7 @@ const CustomerPortalDashboard = () => {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="flex-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+                className="flex-1 h-12"
                 onClick={() => window.location.href = '/portal/behandlingsplan'}
               >
                 <Calendar className="h-5 w-5 mr-2" />
@@ -126,32 +128,34 @@ const CustomerPortalDashboard = () => {
         </Card>
 
         {/* Next Steps */}
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-          <CardHeader>
-            <CardTitle className="text-green-800 flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
+        <Card className="border border-border/60 shadow-sm">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-xl flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <CheckCircle className="h-5 w-5 text-primary" />
+              </div>
               Nästa steg
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-green-500 text-white text-xs flex items-center justify-center font-bold mt-0.5">
+          <CardContent className="space-y-6">
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center font-semibold flex-shrink-0 mt-1">
                   1
                 </div>
-                <div>
-                  <p className="font-medium">Bekanta dig med din behandlingsplan</p>
-                  <p className="text-sm text-muted-foreground">Läs igenom rekommendationerna och förstå behandlingsstegen</p>
+                <div className="space-y-1">
+                  <p className="font-medium text-foreground">Bekanta dig med din behandlingsplan</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">Läs igenom rekommendationerna och förstå behandlingsstegen</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-gray-300 text-gray-600 text-xs flex items-center justify-center font-bold mt-0.5">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-muted text-muted-foreground text-sm flex items-center justify-center font-semibold flex-shrink-0 mt-1">
                   2
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="font-medium text-muted-foreground">Boka din första behandling</p>
-                  <p className="text-sm text-muted-foreground">Välj tid som passar dig för att påbörja din hudresa</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">Välj tid som passar dig för att påbörja din hudresa</p>
                 </div>
               </div>
             </div>
