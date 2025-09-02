@@ -13,6 +13,7 @@ import Companies from "./pages/Companies";
 import Services from "./pages/Services";
 import ActivityLog from "./pages/ActivityLog";
 import Staff from "./pages/Staff";
+import UserProfile from "./pages/UserProfile";
 import Insights from "./pages/Insights";
 import Statistics from "./pages/Statistics";
 import Calendar from "./pages/Calendar";
@@ -43,7 +44,8 @@ const App = () => (
             <Route path="/problem-omraden" element={<ProblemsAndAreas />} />
             <Route path="/behandlingar" element={<Services />} />
             <Route path="/aktiviteter" element={<ActivityLog />} />
-            <Route path="/personal" element={<Staff />} />
+          <Route path="/personal" element={<Staff />} />
+          <Route path="/personal/:id" element={<UserProfile />} />
             <Route path="/insikter" element={<Insights />} />
             <Route path="/statistik" element={<Statistics />} />
             <Route path="/kalender" element={<Calendar />} />

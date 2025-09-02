@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,83 +8,167 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Search, Plus, User, Clock } from "lucide-react";
+import { Search, Plus, User, Clock, Star, MapPin } from "lucide-react";
+import { User as UserType, EmploymentType } from "@/types/user";
 
-// Mock staff data
-const mockStaff = [
+// Mock users data with new structure
+const mockUsers: UserType[] = [
   {
-    id: 1,
+    id: "1",
     name: "Lisa Svensson",
-    role: "Hudterapeut",
     email: "lisa@skinstory.se",
     phone: "+46 70 123 4567",
+    employmentType: "anställd",
+    profession: "hudterapeut",
     specialties: ["HydraFacial", "Chemical Peeling", "Konsultation"],
-    certifications: ["Hudterapeut", "HydraFacial Certified"],
-    workHours: "Måndag-Fredag 09:00-17:00",
-    commission: "40%",
-    totalBookings: 156,
-    rating: 4.9
+    connectedClinics: [
+      { id: "1", name: "SkinStory Stockholm", role: "Senior Hudterapeut", startDate: "2022-01-15" },
+      { id: "2", name: "SkinStory Göteborg", role: "Konsult", startDate: "2023-06-01" }
+    ],
+    rating: 4.9,
+    totalReviews: 156,
+    certifications: [],
+    education: [],
+    workHistory: [],
+    skills: ["HydraFacial", "Chemical Peeling"],
+    services: ["Ansiktsbehandling", "Anti-aging"],
+    statistics: {
+      problemsSolved: 342,
+      monthsWithSkinStory: 24,
+      totalBookings: 567,
+      completedTreatments: 523,
+      customerSatisfaction: 4.9
+    },
+    reviews: [],
+    isActive: true,
+    joinDate: "2022-01-15"
   },
   {
-    id: 2,
+    id: "2",
     name: "Maria Larsson",
-    role: "Senior Hudterapeut",
     email: "maria@skinstory.se",
     phone: "+46 70 234 5678",
+    employmentType: "egenföretagare",
+    profession: "laserterapeut",
     specialties: ["Microneedling", "Laser", "Anti-aging"],
-    certifications: ["Hudterapeut", "Laser Certified", "Microneedling Expert"],
-    workHours: "Tisdag-Lördag 10:00-18:00",
-    commission: "45%",
-    totalBookings: 203,
-    rating: 4.8
+    connectedClinics: [
+      { id: "1", name: "SkinStory Stockholm", role: "Specialist", startDate: "2021-03-10" }
+    ],
+    rating: 4.8,
+    totalReviews: 203,
+    certifications: [],
+    education: [],
+    workHistory: [],
+    skills: ["Laser", "Microneedling"],
+    services: ["Laser behandlingar", "Anti-aging"],
+    statistics: {
+      problemsSolved: 298,
+      monthsWithSkinStory: 36,
+      totalBookings: 432,
+      completedTreatments: 398,
+      customerSatisfaction: 4.8
+    },
+    reviews: [],
+    isActive: true,
+    joinDate: "2021-03-10"
   },
   {
-    id: 3,
+    id: "3",
     name: "Anna Nilsson",
-    role: "Hudterapeut",
     email: "anna@skinstory.se",
     phone: "+46 70 345 6789",
+    employmentType: "konsult",
+    profession: "hudterapeut",
     specialties: ["Ansiktsbehandling", "Aknebehandling", "Rosacea"],
-    certifications: ["Hudterapeut", "Akne Specialist"],
-    workHours: "Måndag-Torsdag 08:00-16:00",
-    commission: "40%",
-    totalBookings: 98,
-    rating: 4.7
+    connectedClinics: [
+      { id: "3", name: "SkinStory Malmö", role: "Konsult", startDate: "2023-01-15" },
+      { id: "4", name: "SkinStory Uppsala", role: "Konsult", startDate: "2023-08-01" },
+      { id: "5", name: "SkinStory Linköping", role: "Konsult", startDate: "2023-11-15" }
+    ],
+    rating: 4.7,
+    totalReviews: 98,
+    certifications: [],
+    education: [],
+    workHistory: [],
+    skills: ["Aknebehandling", "Rosacea"],
+    services: ["Problemhud", "Konsultation"],
+    statistics: {
+      problemsSolved: 156,
+      monthsWithSkinStory: 12,
+      totalBookings: 234,
+      completedTreatments: 198,
+      customerSatisfaction: 4.7
+    },
+    reviews: [],
+    isActive: true,
+    joinDate: "2023-01-15"
   },
   {
-    id: 4,
+    id: "4",
     name: "Erik Johansson",
-    role: "Receptionist",
     email: "erik@skinstory.se",
     phone: "+46 70 456 7890",
+    employmentType: "anställd",
+    profession: "receptionist",
     specialties: ["Kundservice", "Bokning", "Administration"],
-    certifications: ["Kundservice"],
-    workHours: "Måndag-Fredag 08:00-17:00",
-    commission: "0%",
-    totalBookings: 0,
-    rating: 4.6
+    connectedClinics: [],
+    rating: 4.6,
+    totalReviews: 45,
+    certifications: [],
+    education: [],
+    workHistory: [],
+    skills: ["Kundservice", "Administration"],
+    services: ["Bokning", "Kundservice"],
+    statistics: {
+      problemsSolved: 89,
+      monthsWithSkinStory: 18,
+      totalBookings: 0,
+      completedTreatments: 0,
+      customerSatisfaction: 4.6
+    },
+    reviews: [],
+    isActive: true,
+    joinDate: "2022-08-01"
   }
 ];
 
 const Staff = () => {
-  const [staff] = useState(mockStaff);
+  const navigate = useNavigate();
+  const [users] = useState<UserType[]>(mockUsers);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredStaff = staff.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.role.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.employmentType.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const therapists = staff.filter(member => member.role.includes("Hudterapeut"));
-  const averageRating = staff.reduce((sum, member) => sum + member.rating, 0) / staff.length;
-  const totalBookings = staff.reduce((sum, member) => sum + member.totalBookings, 0);
+  const therapists = users.filter(user => user.profession.includes("terapeut"));
+  const averageRating = users.reduce((sum, user) => sum + user.rating, 0) / users.length;
+  const totalBookings = users.reduce((sum, user) => sum + user.statistics.totalBookings, 0);
+
+  const getEmploymentTypeBadge = (type: EmploymentType) => {
+    const variants = {
+      'anställd': 'bg-green-100 text-green-800',
+      'egenföretagare': 'bg-blue-100 text-blue-800',
+      'konsult': 'bg-purple-100 text-purple-800'
+    };
+    return variants[type];
+  };
+
+  const getClinicCountColor = (count: number) => {
+    if (count === 0) return 'text-gray-500';
+    if (count === 1) return 'text-green-600';
+    if (count === 2) return 'text-blue-600';
+    return 'text-purple-600';
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Personal</h1>
-          <p className="text-gray-600 mt-2">Hantera anställda och deras kvalifikationer</p>
+          <h1 className="text-3xl font-bold text-gray-900">Användare</h1>
+          <p className="text-gray-600 mt-2">Hantera användare och deras kvalifikationer</p>
         </div>
         <Dialog>
           <DialogTrigger asChild>
@@ -114,23 +199,23 @@ const Staff = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total personal</CardTitle>
+            <CardTitle className="text-sm font-medium">Totala användare</CardTitle>
             <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{staff.length}</div>
-            <p className="text-xs text-muted-foreground">anställda</p>
+            <div className="text-2xl font-bold text-blue-600">{users.length}</div>
+            <p className="text-xs text-muted-foreground">användare</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Hudterapeuter</CardTitle>
+            <CardTitle className="text-sm font-medium">Terapeuter</CardTitle>
             <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{therapists.length}</div>
-            <p className="text-xs text-muted-foreground">certifierade</p>
+            <p className="text-xs text-muted-foreground">aktiva</p>
           </CardContent>
         </Card>
 
@@ -152,7 +237,7 @@ const Staff = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">{totalBookings}</div>
-            <p className="text-xs text-muted-foreground">denna månad</p>
+            <p className="text-xs text-muted-foreground">totalt</p>
           </CardContent>
         </Card>
       </div>
@@ -161,13 +246,13 @@ const Staff = () => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Personallista</CardTitle>
-              <CardDescription>Alla anställda och deras information</CardDescription>
+              <CardTitle>Användarlista</CardTitle>
+              <CardDescription>Alla användare och deras information</CardDescription>
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Sök personal..."
+                placeholder="Sök användare..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 w-64"
@@ -179,57 +264,92 @@ const Staff = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Personal</TableHead>
-                <TableHead>Roll</TableHead>
+                <TableHead>Användare</TableHead>
+                <TableHead>Anställning</TableHead>
+                <TableHead>Profession</TableHead>
+                <TableHead>Kliniker</TableHead>
                 <TableHead>Specialiteter</TableHead>
-                <TableHead>Arbetstider</TableHead>
-                <TableHead>Kommission</TableHead>
                 <TableHead>Rating</TableHead>
-                <TableHead>Bokningar</TableHead>
+                <TableHead>Problem lösta</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredStaff.map((member) => (
-                <TableRow key={member.id}>
+              {filteredUsers.map((user) => (
+                <TableRow 
+                  key={user.id}
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() => navigate(`/personal/${user.id}`)}
+                >
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar>
                         <AvatarFallback>
-                          {member.name.split(' ').map(n => n[0]).join('')}
+                          {user.name.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium">{member.name}</div>
-                        <div className="text-sm text-gray-500">{member.email}</div>
+                        <div className="font-medium">{user.name}</div>
+                        <div className="text-sm text-gray-500">{user.email}</div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{member.role}</Badge>
+                    <Badge className={getEmploymentTypeBadge(user.employmentType)}>
+                      {user.employmentType}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">{user.profession}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <span className={`font-medium ${getClinicCountColor(user.connectedClinics.length)}`}>
+                        {user.connectedClinics.length}
+                      </span>
+                      <span className="text-gray-500 text-sm">kliniker</span>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      {member.specialties.slice(0, 2).map((specialty, index) => (
+                      {user.specialties.slice(0, 2).map((specialty, index) => (
                         <Badge key={index} variant="secondary" className="text-xs">
                           {specialty}
                         </Badge>
                       ))}
-                      {member.specialties.length > 2 && (
+                      {user.specialties.length > 2 && (
                         <Badge variant="secondary" className="text-xs">
-                          +{member.specialties.length - 2}
+                          +{user.specialties.length - 2}
                         </Badge>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm">{member.workHours}</TableCell>
-                  <TableCell>{member.commission}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
-                      <span className="text-yellow-400">★</span>
-                      <span>{member.rating}</span>
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span className="font-medium">{user.rating}</span>
+                      <span className="text-gray-500 text-sm">({user.totalReviews})</span>
                     </div>
                   </TableCell>
-                  <TableCell>{member.totalBookings}</TableCell>
+                  <TableCell>
+                    <div className="text-center">
+                      <div className="font-medium text-green-600">{user.statistics.problemsSolved}</div>
+                      <div className="text-xs text-gray-500">problem</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/personal/${user.id}`);
+                      }}
+                    >
+                      Visa profil
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
