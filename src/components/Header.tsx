@@ -16,8 +16,6 @@ import {
 
 export function Header() {
   const [globalSearch, setGlobalSearch] = useState("");
-  const [currentPortal, setCurrentPortal] = useState("Admin Portal");
-  const navigate = useNavigate();
 
   const handleGlobalSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,68 +23,10 @@ export function Header() {
     console.log("Global search:", globalSearch);
   };
 
-  const handlePortalSwitch = (portal: string) => {
-    setCurrentPortal(portal);
-    switch (portal) {
-      case 'Admin Portal':
-        navigate('/');
-        break;
-      case 'User Portal':
-        navigate('/'); // Replace with user portal route when available
-        break;
-      case 'Customer Portal':
-        navigate('/portal');
-        break;
-      default:
-        break;
-    }
-  };
-
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {/* Portal Switcher Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2 h-10">
-                <span className="font-medium">{currentPortal}</span>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-white border shadow-lg">
-              <DropdownMenuLabel className="font-semibold">Växla Portal</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={() => handlePortalSwitch("Admin Portal")}
-                className={currentPortal === "Admin Portal" ? "bg-blue-50 text-blue-700" : ""}
-              >
-                <div className="flex flex-col">
-                  <span className="font-medium">Admin Portal</span>
-                  <span className="text-sm text-gray-500">Fullständig systemadministration</span>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => handlePortalSwitch("User Portal")}
-                className={currentPortal === "User Portal" ? "bg-blue-50 text-blue-700" : ""}
-              >
-                <div className="flex flex-col">
-                  <span className="font-medium">User Portal</span>
-                  <span className="text-sm text-gray-500">Personal- och behandlingshantering</span>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => handlePortalSwitch("Customer Portal")}
-                className={currentPortal === "Customer Portal" ? "bg-blue-50 text-blue-700" : ""}
-              >
-                <div className="flex flex-col">
-                  <span className="font-medium">Customer Portal</span>
-                  <span className="text-sm text-gray-500">Kundinloggning och bokningar</span>
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           {/* Global Search */}
           <div className="flex-1 max-w-2xl">
             <form onSubmit={handleGlobalSearch} className="relative w-full">
