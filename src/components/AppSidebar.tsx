@@ -63,6 +63,12 @@ const userTypes = [
     name: 'Konsult/Egenföretagare', 
     description: 'Egna kunder och behandlingar',
     permissions: ['own_customers', 'own_treatments', 'own_bookings']
+  },
+  { 
+    id: 'customer', 
+    name: 'Kund Portal', 
+    description: 'Kundinloggning och bokningar',
+    permissions: ['customer_portal']
   }
 ];
 
@@ -101,6 +107,12 @@ export function AppSidebar() {
         ),
         settings: []
       };
+    }
+    
+    if (currentUserType.id === 'customer') {
+      // Customer portal has completely different navigation - redirect to customer portal
+      window.location.href = '/portal';
+      return { main: [], settings: [] };
     }
     
     return { main: mainNavigation, settings: settingsNavigation };
