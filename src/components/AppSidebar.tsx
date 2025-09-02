@@ -25,7 +25,7 @@ const settingsNavigation = [
   { name: "Tjänster", href: "/tjanster", icon: Sparkles },
   { name: "Produkter", href: "/produkter", icon: Package },
   { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
-  { name: "Personal", href: "/personal", icon: User },
+  { name: "Användare", href: "/personal", icon: User },
   { name: "Företag", href: "/foretag", icon: Building },
   { name: "Inställningar", href: "/installningar", icon: Settings },
 ];
