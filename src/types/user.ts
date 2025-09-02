@@ -60,6 +60,8 @@ export interface ConnectedClinic {
   startDate: string;
 }
 
+export type ExperienceLevel = 'junior' | 'medior' | 'senior' | 'expert';
+
 export interface User {
   id: string;
   name: string;
@@ -69,6 +71,8 @@ export interface User {
   employmentType: EmploymentType;
   profession: ProfessionType;
   specialties: string[];
+  level: ExperienceLevel;
+  yearsOfExperience: number;
   connectedClinics: ConnectedClinic[];
   rating: number;
   totalReviews: number;

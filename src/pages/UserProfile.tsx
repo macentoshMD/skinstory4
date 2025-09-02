@@ -17,6 +17,8 @@ const mockUser: User = {
   employmentType: "anställd",
   profession: "hudterapeut",
   specialties: ["HydraFacial", "Chemical Peeling", "Konsultation", "Anti-aging"],
+  level: "senior",
+  yearsOfExperience: 8,
   connectedClinics: [
     { id: "1", name: "SkinStory Stockholm", role: "Senior Hudterapeut", startDate: "2022-01-15" },
     { id: "2", name: "SkinStory Göteborg", role: "Konsult", startDate: "2023-06-01" }

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Search, Plus, User, Clock, Star, MapPin } from "lucide-react";
-import { User as UserType, EmploymentType } from "@/types/user";
+import { User as UserType, EmploymentType, ExperienceLevel } from "@/types/user";
 
 // Mock users data with new structure
 const mockUsers: UserType[] = [
@@ -21,6 +21,8 @@ const mockUsers: UserType[] = [
     employmentType: "anställd",
     profession: "hudterapeut",
     specialties: ["HydraFacial", "Chemical Peeling", "Konsultation"],
+    level: "senior",
+    yearsOfExperience: 8,
     connectedClinics: [
       { id: "1", name: "SkinStory Stockholm", role: "Senior Hudterapeut", startDate: "2022-01-15" },
       { id: "2", name: "SkinStory Göteborg", role: "Konsult", startDate: "2023-06-01" }
@@ -51,6 +53,8 @@ const mockUsers: UserType[] = [
     employmentType: "egenföretagare",
     profession: "laserterapeut",
     specialties: ["Microneedling", "Laser", "Anti-aging"],
+    level: "expert",
+    yearsOfExperience: 12,
     connectedClinics: [
       { id: "1", name: "SkinStory Stockholm", role: "Specialist", startDate: "2021-03-10" }
     ],
@@ -80,6 +84,8 @@ const mockUsers: UserType[] = [
     employmentType: "konsult",
     profession: "hudterapeut",
     specialties: ["Ansiktsbehandling", "Aknebehandling", "Rosacea"],
+    level: "medior",
+    yearsOfExperience: 5,
     connectedClinics: [
       { id: "3", name: "SkinStory Malmö", role: "Konsult", startDate: "2023-01-15" },
       { id: "4", name: "SkinStory Uppsala", role: "Konsult", startDate: "2023-08-01" },
@@ -111,6 +117,8 @@ const mockUsers: UserType[] = [
     employmentType: "anställd",
     profession: "receptionist",
     specialties: ["Kundservice", "Bokning", "Administration"],
+    level: "medior",
+    yearsOfExperience: 3,
     connectedClinics: [],
     rating: 4.6,
     totalReviews: 45,
@@ -161,6 +169,26 @@ const Staff = () => {
     if (count === 1) return 'text-green-600';
     if (count === 2) return 'text-blue-600';
     return 'text-purple-600';
+  };
+
+  const getLevelBadge = (level: ExperienceLevel) => {
+    const variants = {
+      'junior': 'bg-orange-100 text-orange-800',
+      'medior': 'bg-blue-100 text-blue-800',
+      'senior': 'bg-green-100 text-green-800',
+      'expert': 'bg-purple-100 text-purple-800'
+    };
+    return variants[level];
+  };
+
+  const getLevelText = (level: ExperienceLevel) => {
+    const labels = {
+      'junior': 'Junior',
+      'medior': 'Medior',
+      'senior': 'Senior',
+      'expert': 'Expert'
+    };
+    return labels[level];
   };
 
   return (
@@ -268,7 +296,8 @@ const Staff = () => {
                 <TableHead>Anställning</TableHead>
                 <TableHead>Profession</TableHead>
                 <TableHead>Kliniker</TableHead>
-                <TableHead>Specialiteter</TableHead>
+                <TableHead>Nivå</TableHead>
+                <TableHead>År erfarenhet</TableHead>
                 <TableHead>Rating</TableHead>
                 <TableHead>Problem lösta</TableHead>
                 <TableHead></TableHead>
@@ -312,17 +341,14 @@ const Staff = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {user.specialties.slice(0, 2).map((specialty, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {specialty}
-                        </Badge>
-                      ))}
-                      {user.specialties.length > 2 && (
-                        <Badge variant="secondary" className="text-xs">
-                          +{user.specialties.length - 2}
-                        </Badge>
-                      )}
+                    <Badge className={getLevelBadge(user.level)}>
+                      {getLevelText(user.level)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-center">
+                      <div className="font-medium">{user.yearsOfExperience}</div>
+                      <div className="text-xs text-gray-500">år</div>
                     </div>
                   </TableCell>
                   <TableCell>
