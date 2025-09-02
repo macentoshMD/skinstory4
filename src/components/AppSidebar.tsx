@@ -75,11 +75,6 @@ const userTypes = [
 export function AppSidebar() {
   const [currentUserType, setCurrentUserType] = useState(userTypes[0]);
 
-  // Don't render sidebar for customer users
-  if (currentUserType.id === 'customer') {
-    return null;
-  }
-
   const getFilteredNavigation = () => {
     if (currentUserType.id === 'admin') {
       return { main: mainNavigation, settings: settingsNavigation };
