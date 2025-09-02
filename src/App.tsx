@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import Products from "./pages/Products";
 import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
 import CustomerProfile from "./pages/CustomerProfile";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/kunder/:customerId" element={<CustomerProfile />} />
             <Route path="/foretag" element={<Companies />} />
             <Route path="/tjanster" element={<Services />} />
+            <Route path="/produkter" element={<Products />} />
             <Route path="/problem-omraden" element={<ProblemsAndAreas />} />
             <Route path="/behandlingar" element={<Services />} />
             <Route path="/aktiviteter" element={<ActivityLog />} />
