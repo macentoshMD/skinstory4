@@ -40,6 +40,14 @@ const predefinedRanges = [
     }
   },
   {
+    value: 'yesterday',
+    label: 'Igår',
+    getRange: () => {
+      const yesterday = subDays(new Date(), 1);
+      return { from: yesterday, to: yesterday, label: 'Igår' };
+    }
+  },
+  {
     value: 'thisWeek',
     label: 'Denna vecka',
     getRange: () => {
@@ -96,6 +104,19 @@ const predefinedRanges = [
         from: subDays(today, 29), 
         to: today, 
         label: 'Senaste 30 dagarna' 
+      };
+    }
+  },
+  {
+    value: 'thisYear',
+    label: 'Detta år',
+    getRange: () => {
+      const today = new Date();
+      const startOfYear = new Date(today.getFullYear(), 0, 1);
+      return { 
+        from: startOfYear, 
+        to: today, 
+        label: 'Detta år' 
       };
     }
   }
