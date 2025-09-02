@@ -299,7 +299,6 @@ const Staff = () => {
                 <TableHead>Nivå</TableHead>
                 <TableHead>År erfarenhet</TableHead>
                 <TableHead>Rating</TableHead>
-                <TableHead>Problem lösta</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -356,12 +355,6 @@ const Staff = () => {
                       <Star className="h-4 w-4 text-yellow-400 fill-current" />
                       <span className="font-medium">{user.rating}</span>
                       <span className="text-gray-500 text-sm">({user.totalReviews})</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-center">
-                      <div className="font-medium text-green-600">{user.statistics.problemsSolved}</div>
-                      <div className="text-xs text-gray-500">problem</div>
                     </div>
                   </TableCell>
                   <TableCell>
