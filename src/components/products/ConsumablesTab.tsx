@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OrderModal } from "./OrderModal";
 
 interface Consumable {
   id: string;
@@ -94,6 +95,8 @@ export function ConsumablesTab({ searchTerm, setSearchTerm }: ConsumablesTabProp
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedSupplier, setSelectedSupplier] = useState<string>("all");
   const [showLowStock, setShowLowStock] = useState<boolean>(false);
+  const [orderModalOpen, setOrderModalOpen] = useState<boolean>(false);
+  const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
 
   const filteredConsumables = mockConsumables.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -106,6 +109,11 @@ export function ConsumablesTab({ searchTerm, setSearchTerm }: ConsumablesTabProp
   });
 
   const lowStockCount = mockConsumables.filter(item => item.currentStock <= item.minStock).length;
+
+  const handleOrderClick = (consumable: Consumable) => {
+    setSelectedConsumable(consumable);
+    setOrderModalOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -219,7 +227,12 @@ export function ConsumablesTab({ searchTerm, setSearchTerm }: ConsumablesTabProp
                   </div>
 
                   <div className="pt-2 flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => handleOrderClick(item)}
+                    >
                       Beställ mer
                     </Button>
                     <Button variant="outline" size="sm">
@@ -298,6 +311,12 @@ export function ConsumablesTab({ searchTerm, setSearchTerm }: ConsumablesTabProp
           </div>
         </TabsContent>
       </Tabs>
+
+      <OrderModal
+        open={orderModalOpen}
+        onOpenChange={setOrderModalOpen}
+        consumable={selectedConsumable}
+      />
     </div>
   );
 }
