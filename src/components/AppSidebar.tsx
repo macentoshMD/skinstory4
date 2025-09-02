@@ -12,17 +12,20 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const navigation = [
+const mainNavigation = [
   { name: "Dashboard", href: "/", icon: Home },
   { name: "Insikter", href: "/insikter", icon: BarChart3 },
   { name: "Loggar", href: "/aktiviteter", icon: Activity },
   { name: "Kunder", href: "/kunder", icon: Users },
+  { name: "Statistik", href: "/statistik", icon: BarChart3 },
+  { name: "Kalender", href: "/kalender", icon: Clock },
+];
+
+const settingsNavigation = [
   { name: "Tjänster", href: "/tjanster", icon: Sparkles },
   { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
   { name: "Personal", href: "/personal", icon: User },
   { name: "Företag", href: "/foretag", icon: Building },
-  { name: "Statistik", href: "/statistik", icon: BarChart3 },
-  { name: "Kalender", href: "/kalender", icon: Clock },
   { name: "Inställningar", href: "/installningar", icon: Settings },
 ];
 
@@ -41,7 +44,36 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigation.map((item) => (
+              {mainNavigation.map((item) => (
+                <SidebarMenuItem key={item.name}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.href}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          isActive
+                            ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                        }`
+                      }
+                    >
+                      <item.icon className="h-5 w-5" />
+                      {item.name}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium px-3 py-2">
+            Inställningar
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {settingsNavigation.map((item) => (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton asChild>
                     <NavLink
