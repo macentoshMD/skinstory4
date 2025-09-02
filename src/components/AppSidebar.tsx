@@ -1,5 +1,5 @@
 
-import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package } from "lucide-react";
+import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -27,6 +27,7 @@ const settingsNavigation = [
   { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
   { name: "Användare", href: "/personal", icon: User },
   { name: "Företag", href: "/foretag", icon: Building },
+  { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
   { name: "Inställningar", href: "/installningar", icon: Settings },
 ];
 

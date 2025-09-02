@@ -18,6 +18,7 @@ import Insights from "./pages/Insights";
 import Statistics from "./pages/Statistics";
 import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
+import Economy from "./pages/Economy";
 import ProblemsAndAreas from "./pages/ProblemsAndAreas";
 import CustomerPortalDashboard from "./pages/portal/CustomerPortalDashboard";
 
@@ -41,7 +42,8 @@ const App = () => (
             <Route path="/foretag" element={<Companies />} />
             <Route path="/tjanster" element={<Services />} />
             <Route path="/produkter" element={<Products />} />
-            <Route path="/problem-omraden" element={<ProblemsAndAreas />} />
+          <Route path="/ekonomi" element={<Economy />} />
+          <Route path="/problem-omraden" element={<ProblemsAndAreas />} />
             <Route path="/behandlingar" element={<Services />} />
             <Route path="/aktiviteter" element={<ActivityLog />} />
           <Route path="/personal" element={<Staff />} />
