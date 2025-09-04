@@ -24,6 +24,7 @@ import Economy from "./pages/Economy";
 import ProblemsAndAreas from "./pages/ProblemsAndAreas";
 import CustomerPortalDashboard from "./pages/portal/CustomerPortalDashboard";
 import WorkSchedule from "./pages/WorkSchedule";
+import StaffProfile from "./pages/StaffProfile";
 import StaffClinics from "./pages/StaffClinics";
 import ClinicDetail from "./pages/ClinicDetail";
 import DiscoverClinics from "./pages/DiscoverClinics";
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/personal" element={<Staff />} />
             <Route path="/personal/:id" element={<UserProfile />} />
             <Route path="/arbetstid" element={<WorkSchedule />} />
+        <Route path="/profil" element={<StaffProfile />} />
         <Route path="/kliniker" element={<StaffClinics />} />
         <Route path="/kliniker/upptack" element={<DiscoverClinics />} />
         <Route path="/kliniker/:clinicId" element={<ClinicDetail />} />

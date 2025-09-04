@@ -1,5 +1,5 @@
 
-import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign, ChevronDown, Wallet, TimerIcon } from "lucide-react";
+import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign, ChevronDown, Wallet, TimerIcon, UserCircle } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -68,6 +68,7 @@ const navigationConfigs = {
       { name: "Statistik", href: "/statistik", icon: BarChart3 },
     ],
     settings: [
+      { name: "Profil", href: "/profil", icon: UserCircle },
       { name: "Kliniker", href: "/kliniker", icon: Building },
       { name: "Arbetstid", href: "/arbetstid", icon: TimerIcon },
     ]
