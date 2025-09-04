@@ -1,6 +1,6 @@
 
 import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign, ChevronDown } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   Sidebar,
@@ -74,6 +74,14 @@ const userTypes = [
 
 export function AppSidebar() {
   const [currentUserType, setCurrentUserType] = useState(userTypes[0]);
+  const navigate = useNavigate();
+
+  const handleUserTypeChange = (userType: typeof userTypes[0]) => {
+    setCurrentUserType(userType);
+    if (userType.id === 'customer') {
+      navigate('/portal');
+    }
+  };
 
   const getFilteredNavigation = () => {
     if (currentUserType.id === 'admin') {
@@ -145,7 +153,7 @@ export function AppSidebar() {
               {userTypes.map((userType) => (
                 <DropdownMenuItem
                   key={userType.id}
-                  onClick={() => setCurrentUserType(userType)}
+                  onClick={() => handleUserTypeChange(userType)}
                   className="flex flex-col items-start p-3 hover:bg-gray-50 cursor-pointer"
                 >
                   <span className="font-medium text-gray-900">{userType.name}</span>
