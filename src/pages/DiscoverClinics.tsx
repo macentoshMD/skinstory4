@@ -109,10 +109,10 @@ export default function DiscoverClinics() {
       clinic.clinicName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       clinic.description.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesLocation = locationFilter === '' || 
+    const matchesLocation = locationFilter === '' || locationFilter === 'alla' || 
       clinic.address.toLowerCase().includes(locationFilter.toLowerCase());
     
-    const matchesSpecialty = specialtyFilter === '' || 
+    const matchesSpecialty = specialtyFilter === '' || specialtyFilter === 'alla' || 
       clinic.specialties.some(s => s.toLowerCase().includes(specialtyFilter.toLowerCase()));
 
     return matchesSearch && matchesLocation && matchesSpecialty;
@@ -164,7 +164,7 @@ export default function DiscoverClinics() {
                 <SelectValue placeholder="Välj område" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Alla områden</SelectItem>
+                <SelectItem value="alla">Alla områden</SelectItem>
                 <SelectItem value="östermalm">Östermalm</SelectItem>
                 <SelectItem value="södermalm">Södermalm</SelectItem>
                 <SelectItem value="vasastan">Vasastan</SelectItem>
@@ -177,7 +177,7 @@ export default function DiscoverClinics() {
                 <SelectValue placeholder="Specialitet" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Alla specialiteter</SelectItem>
+                <SelectItem value="alla">Alla specialiteter</SelectItem>
                 <SelectItem value="hudvård">Hudvård</SelectItem>
                 <SelectItem value="laser">Laser</SelectItem>
                 <SelectItem value="injektioner">Injektioner</SelectItem>
@@ -188,8 +188,8 @@ export default function DiscoverClinics() {
 
             <Button variant="outline" onClick={() => {
               setSearchTerm('');
-              setLocationFilter('');
-              setSpecialtyFilter('');
+              setLocationFilter('alla');
+              setSpecialtyFilter('alla');
             }}>
               Rensa filter
             </Button>
@@ -312,8 +312,8 @@ export default function DiscoverClinics() {
               className="mt-4"
               onClick={() => {
                 setSearchTerm('');
-                setLocationFilter('');
-                setSpecialtyFilter('');
+                setLocationFilter('alla');
+                setSpecialtyFilter('alla');
               }}
             >
               Visa alla kliniker
