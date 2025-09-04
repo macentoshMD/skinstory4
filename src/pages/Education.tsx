@@ -1468,10 +1468,10 @@ export default function Education() {
                     <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
                     Du rekommenderar produkter till kunder under konsultationer
                   </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
-                    Kunden köper produkterna via din unika kod
-                  </li>
+                   <li className="flex items-start gap-2">
+                     <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                     Kunden köper dina rekommendationer från sin profil
+                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
                     Du får 5-15% provision på varje köp (beror på varumärke)
