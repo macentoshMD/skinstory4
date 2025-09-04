@@ -4,46 +4,45 @@ import { format, eachDayOfInterval, startOfMonth, endOfMonth, isWeekend } from "
 import { sv } from "date-fns/locale";
 import { WorkScheduleEntry } from "@/pages/WorkSchedule";
 import { isRedDay, getRedDayInfo } from "@/utils/swedishHolidays";
-
 interface WorkScheduleStatsProps {
   scheduleEntries: Record<string, WorkScheduleEntry>;
   currentMonth: Date;
   calculateWorkHours: (startTime: string, endTime: string, breakDuration: number) => number;
 }
-
-export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWorkHours }: WorkScheduleStatsProps) => {
+export const WorkScheduleStats = ({
+  scheduleEntries,
+  currentMonth,
+  calculateWorkHours
+}: WorkScheduleStatsProps) => {
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
-  const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
-  
+  const monthDays = eachDayOfInterval({
+    start: monthStart,
+    end: monthEnd
+  });
+
   // Calculate working days in month (exclude weekends and red days)
   const workingDaysInMonth = monthDays.filter(day => !isRedDay(day)).length;
-  
+
   // Full-time hours (8 hours per working day)
   const fullTimeHours = workingDaysInMonth * 8;
-  
+
   // Calculate different types of work hours for the month
   const workHoursByType = monthDays.reduce((acc, day) => {
     const dateString = format(day, 'yyyy-MM-dd');
     const entry = scheduleEntries[dateString];
-    
     if (!entry?.isWorkDay) return acc;
-    
     const dayHours = calculateWorkHours(entry.startTime, entry.endTime, entry.breakDuration);
     const redDayInfo = getRedDayInfo(day);
-    
     if (redDayInfo.isRedDay) {
       acc.holidayHours += dayHours;
     } else {
       const regularHours = Math.min(dayHours, 8);
       const overtimeHours = Math.max(dayHours - 8, 0);
-      
       acc.regularHours += regularHours;
       acc.overtimeHours += overtimeHours;
     }
-    
     acc.totalHours += dayHours;
-    
     return acc;
   }, {
     totalHours: 0,
@@ -51,18 +50,16 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
     holidayHours: 0,
     overtimeHours: 0
   });
-  
+
   // Calculate scheduled working days
   const scheduledWorkDays = monthDays.filter(day => {
     const dateString = format(day, 'yyyy-MM-dd');
     return scheduleEntries[dateString]?.isWorkDay;
   }).length;
-  
-  // Calculate percentage of full-time
-  const workPercentage = fullTimeHours > 0 ? Math.round((workHoursByType.totalHours / fullTimeHours) * 100) : 0;
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+  // Calculate percentage of full-time
+  const workPercentage = fullTimeHours > 0 ? Math.round(workHoursByType.totalHours / fullTimeHours * 100) : 0;
+  return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
@@ -84,7 +81,7 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
               <CheckCircle className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Vanliga timmar</p>
+              <p className="text-sm text-muted-foreground">Vardag</p>
               <p className="text-xl font-semibold">{workHoursByType.regularHours.toFixed(1)}h</p>
             </div>
           </div>
@@ -98,7 +95,7 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
               <Sun className="h-5 w-5 text-red-600" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Helgtimmar</p>
+              <p className="text-sm text-muted-foreground">Helg</p>
               <p className="text-xl font-semibold">{workHoursByType.holidayHours.toFixed(1)}h</p>
             </div>
           </div>
@@ -146,6 +143,5 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
