@@ -42,6 +42,8 @@ export interface UserStatistics {
   totalBookings: number;
   completedTreatments: number;
   customerSatisfaction: number;
+  cancellationsCount: number;
+  cancellationRate: number; // percentage
 }
 
 export interface UserReview {

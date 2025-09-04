@@ -47,7 +47,9 @@ const mockUser: User = {
     monthsWithSkinStory: 24,
     totalBookings: 567,
     completedTreatments: 523,
-    customerSatisfaction: 4.9
+    customerSatisfaction: 4.9,
+    cancellationsCount: 22,
+    cancellationRate: 3.9
   },
   reviews: [
     { id: "1", customerName: "Anna K.", rating: 5, comment: "Fantastisk behandling! Lisa är mycket kunnig och professionell.", date: "2024-01-15", treatmentType: "HydraFacial" },
@@ -133,7 +135,7 @@ const UserProfile = () => {
       </Card>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
@@ -178,6 +180,18 @@ const UserProfile = () => {
                 <p className="text-2xl font-bold text-yellow-600">{user.statistics.customerSatisfaction}</p>
               </div>
               <Star className="h-8 w-8 text-yellow-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Avbokningar</p>
+                <p className="text-2xl font-bold text-red-600">{user.statistics.cancellationsCount} ({user.statistics.cancellationRate}%)</p>
+              </div>
+              <Calendar className="h-8 w-8 text-red-600" />
             </div>
           </CardContent>
         </Card>

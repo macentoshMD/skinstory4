@@ -39,7 +39,9 @@ const mockUsers: UserType[] = [
       monthsWithSkinStory: 24,
       totalBookings: 567,
       completedTreatments: 523,
-      customerSatisfaction: 4.9
+      customerSatisfaction: 4.9,
+      cancellationsCount: 22,
+      cancellationRate: 3.9
     },
     reviews: [],
     awards: [],
@@ -71,7 +73,9 @@ const mockUsers: UserType[] = [
       monthsWithSkinStory: 36,
       totalBookings: 432,
       completedTreatments: 398,
-      customerSatisfaction: 4.8
+      customerSatisfaction: 4.8,
+      cancellationsCount: 17,
+      cancellationRate: 3.9
     },
     reviews: [],
     awards: [],
@@ -105,7 +109,9 @@ const mockUsers: UserType[] = [
       monthsWithSkinStory: 12,
       totalBookings: 234,
       completedTreatments: 198,
-      customerSatisfaction: 4.7
+      customerSatisfaction: 4.7,
+      cancellationsCount: 12,
+      cancellationRate: 5.1
     },
     reviews: [],
     awards: [],
@@ -135,7 +141,9 @@ const mockUsers: UserType[] = [
       monthsWithSkinStory: 18,
       totalBookings: 0,
       completedTreatments: 0,
-      customerSatisfaction: 4.6
+      customerSatisfaction: 4.6,
+      cancellationsCount: 0,
+      cancellationRate: 0
     },
     reviews: [],
     awards: [],

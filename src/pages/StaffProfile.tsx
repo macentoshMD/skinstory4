@@ -215,8 +215,45 @@ const MOCK_USER_PROFILE = {
     monthsWithSkinStory: 18,
     totalBookings: 456,
     completedTreatments: 423,
-    customerSatisfaction: 98
-  }
+    customerSatisfaction: 98,
+    cancellationsCount: 23,
+    cancellationRate: 5.0
+  },
+  
+  reviews: [
+    {
+      id: 'rev-1',
+      customerName: 'Emma L.',
+      rating: 5,
+      comment: 'Fantastisk behandling! Anna är mycket professionell och kunnig. Resultatet blev över förväntan.',
+      date: '2024-02-15',
+      treatmentType: 'IPL Laser'
+    },
+    {
+      id: 'rev-2',
+      customerName: 'Sarah K.',
+      rating: 5,
+      comment: 'Bästa hudterapeuten jag träffat. Tar sig verkligen tid att förklara och ge råd.',
+      date: '2024-02-10',
+      treatmentType: 'Kemisk Peeling'
+    },
+    {
+      id: 'rev-3',
+      customerName: 'Maria S.',
+      rating: 4,
+      comment: 'Mycket nöjd med behandlingen. Kommer definitivt tillbaka.',
+      date: '2024-02-08',
+      treatmentType: 'Hudanalys'
+    },
+    {
+      id: 'rev-4',
+      customerName: 'Linda P.',
+      rating: 5,
+      comment: 'Anna hjälpte mig med mitt akne problem. Så tacksam för hennes expertis!',
+      date: '2024-02-05',
+      treatmentType: 'Aknebehandling'
+    }
+  ]
 };
 
 export default function StaffProfile() {
@@ -321,6 +358,13 @@ export default function StaffProfile() {
                 </div>
               </div>
               
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="flex items-center gap-2 text-sm">
+                  <Star className="h-4 w-4 text-muted-foreground" />
+                  <span>Visa recensioner ({profile.reviews.length})</span>
+                </div>
+              </div>
+              
               <div className="flex items-center gap-2 text-sm mb-4">
                 <Mail className="h-4 w-4 text-muted-foreground" />
                 <span>{profile.email}</span>
@@ -335,7 +379,7 @@ export default function StaffProfile() {
       </Card>
 
       {/* Statistics Cards */}
-      <div className="grid md:grid-cols-5 gap-4">
+      <div className="grid md:grid-cols-6 gap-4">
         <Card>
           <CardContent className="pt-6 text-center">
             <div className="text-2xl font-bold text-primary">{profile.statistics.problemsSolved}</div>
@@ -366,16 +410,23 @@ export default function StaffProfile() {
             <p className="text-sm text-muted-foreground">Kundnöjdhet</p>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent className="pt-6 text-center">
+            <div className="text-2xl font-bold text-primary">{profile.statistics.cancellationsCount}</div>
+            <p className="text-sm text-muted-foreground">Avbokningar ({profile.statistics.cancellationRate}%)</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Detailed Information Tabs */}
       <Tabs defaultValue="experience" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="experience">Erfarenhet</TabsTrigger>
           <TabsTrigger value="specialties">Specialiteter</TabsTrigger>
           <TabsTrigger value="services">Tjänster</TabsTrigger>
           <TabsTrigger value="brands">Varumärken</TabsTrigger>
           <TabsTrigger value="skinproblems">Hudproblem</TabsTrigger>
+          <TabsTrigger value="reviews">Recensioner</TabsTrigger>
         </TabsList>
 
         {/* Experience Tab - Combined */}
@@ -1060,6 +1111,57 @@ export default function StaffProfile() {
                         <Edit className="h-4 w-4" />
                       </Button>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Reviews Tab */}
+        <TabsContent value="reviews" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5" />
+                    Recensioner ({profile.reviews.length})
+                  </CardTitle>
+                  <CardDescription>
+                    Kundrecensioner och omdömen från behandlingar
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {profile.reviews.map((review) => (
+                  <div key={review.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium">{review.customerName}</span>
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-4 w-4 ${
+                                  i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {review.treatmentType}
+                        </Badge>
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(review.date).toLocaleDateString('sv-SE')}
+                      </span>
+                    </div>
+                    <p className="text-muted-foreground">{review.comment}</p>
                   </div>
                 ))}
               </div>
