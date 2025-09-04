@@ -1,164 +1,218 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { CalendarView, Booking, BookingFormData } from '@/types/booking';
+import { generateMockBookings } from '@/utils/calendar';
+import { CalendarHeader } from '@/components/calendar/CalendarHeader';
+import { DayView } from '@/components/calendar/DayView';
+import { WeekView } from '@/components/calendar/WeekView';
+import { BookingDetailsDrawer } from '@/components/calendar/BookingDetailsDrawer';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Clock, User, MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { CalendarIcon, Clock, Users, TrendingUp } from "lucide-react";
+import { getBookingsForDate, getBookingsForWeek, getStatusText } from '@/utils/calendar';
+import { startOfWeek } from 'date-fns';
 
 const Calendar = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [view, setView] = useState<CalendarView>('day');
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Mock appointments data
-  const appointments = [
-    {
-      id: 1,
-      time: "09:00",
-      duration: "60 min",
-      customer: "Anna Andersson",
-      treatment: "HydraFacial",
-      staff: "Lisa S.",
-      status: "Bekräftad"
-    },
-    {
-      id: 2,
-      time: "10:30",
-      duration: "45 min",
-      customer: "Erik Johansson",
-      treatment: "Ansiktsbehandling",
-      staff: "Anna N.",
-      status: "Bekräftad"
-    },
-    {
-      id: 3,
-      time: "13:00",
-      duration: "90 min",
-      customer: "Maria Larsson",
-      treatment: "Microneedling",
-      staff: "Lisa S.",
-      status: "Väntar"
-    },
-    {
-      id: 4,
-      time: "15:00",
-      duration: "30 min",
-      customer: "Johan Petersson",
-      treatment: "Konsultation",
-      staff: "Maria L.",
-      status: "Bekräftad"
-    }
-  ];
+  // Generate mock bookings for a 2-week period
+  const bookings = useMemo(() => {
+    return generateMockBookings(new Date(), 14);
+  }, []);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Bekräftad': return 'bg-green-100 text-green-800';
-      case 'Väntar': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const handleBookingClick = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsDrawerOpen(true);
   };
+
+  const handleNewBooking = () => {
+    // TODO: Implement new booking functionality
+    console.log('New booking clicked');
+  };
+
+  const handleSaveBooking = (bookingId: string, data: BookingFormData) => {
+    // TODO: Implement booking update functionality
+    console.log('Save booking:', bookingId, data);
+  };
+
+  const handleDeleteBooking = (bookingId: string) => {
+    // TODO: Implement booking deletion functionality
+    console.log('Delete booking:', bookingId);
+  };
+
+  // Get relevant bookings based on current view
+  const relevantBookings = useMemo(() => {
+    if (view === 'day') {
+      return getBookingsForDate(bookings, currentDate);
+    } else {
+      const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+      return getBookingsForWeek(bookings, weekStart);
+    }
+  }, [bookings, currentDate, view]);
+
+  // Calculate statistics
+  const stats = useMemo(() => {
+    const today = new Date();
+    const todayBookings = getBookingsForDate(bookings, today);
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+    const weekBookings = getBookingsForWeek(bookings, weekStart);
+
+    return {
+      today: {
+        total: todayBookings.length,
+        confirmed: todayBookings.filter(b => b.status === 'confirmed').length,
+        pending: todayBookings.filter(b => b.status === 'pending').length,
+        completed: todayBookings.filter(b => b.status === 'completed').length,
+      },
+      week: {
+        total: weekBookings.length,
+        revenue: weekBookings.reduce((sum, b) => sum + (b.price || 0), 0),
+        newCustomers: weekBookings.filter(b => b.isFirstVisit).length,
+      }
+    };
+  }, [bookings]);
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Kalender</h1>
-          <p className="text-gray-600 mt-2">Hantera bokningar och schema</p>
-        </div>
-        <Button>
-          <CalendarIcon className="h-4 w-4 mr-2" />
-          Ny bokning
-        </Button>
-      </div>
+      <CalendarHeader
+        currentDate={currentDate}
+        view={view}
+        onDateChange={setCurrentDate}
+        onViewChange={setView}
+        onNewBooking={handleNewBooking}
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Main calendar view */}
+        <div className="lg:col-span-3">
+          {view === 'day' ? (
+            <DayView
+              date={currentDate}
+              bookings={bookings}
+              onBookingClick={handleBookingClick}
+            />
+          ) : (
+            <WeekView
+              date={currentDate}
+              bookings={bookings}
+              onBookingClick={handleBookingClick}
+            />
+          )}
+        </div>
+
+        {/* Stats sidebar */}
+        <div className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5" />
-                Dagens schema - {selectedDate.toLocaleDateString('sv-SE')}
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <CalendarIcon className="h-4 w-4" />
+                Idag
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Totalt</span>
+                <Badge variant="secondary">{stats.today.total}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Bekräftade</span>
+                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                  {stats.today.confirmed}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Väntar</span>
+                <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+                  {stats.today.pending}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Genomförda</span>
+                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                  {stats.today.completed}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Denna vecka
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Bokningar</span>
+                <span className="font-semibold">{stats.week.total}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Intäkter</span>
+                <span className="font-semibold">{stats.week.revenue.toLocaleString()} kr</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Nya kunder</span>
+                <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100">
+                  {stats.week.newCustomers}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Kommande
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {appointments.map((appointment) => (
-                  <div key={appointment.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                    <div className="flex items-center gap-4">
-                      <div className="text-center">
-                        <div className="text-sm font-medium">{appointment.time}</div>
-                        <div className="text-xs text-gray-500">{appointment.duration}</div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium">{appointment.customer}</div>
-                        <div className="text-sm text-gray-600">{appointment.treatment}</div>
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                          <User className="h-3 w-3" />
-                          {appointment.staff}
-                        </div>
-                      </div>
+              <div className="space-y-2">
+                {relevantBookings.slice(0, 3).map((booking) => (
+                  <div
+                    key={booking.id}
+                    className="p-2 border rounded cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleBookingClick(booking)}
+                  >
+                    <div className="text-xs font-medium truncate">
+                      {booking.customerName}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(appointment.status)}`}>
-                        {appointment.status}
+                    <div className="text-xs text-muted-foreground">
+                      {booking.treatmentType}
+                    </div>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Clock className="h-3 w-3" />
+                      <span className="text-xs">
+                        {booking.startTime.toLocaleTimeString('sv-SE', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
                       </span>
                     </div>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Snabbstatistik</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Totala bokningar idag</span>
-                <span className="font-semibold">{appointments.length}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Bekräftade</span>
-                <span className="font-semibold text-green-600">
-                  {appointments.filter(a => a.status === 'Bekräftad').length}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Väntar bekräftelse</span>
-                <span className="font-semibold text-yellow-600">
-                  {appointments.filter(a => a.status === 'Väntar').length}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Kommande funktioner</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>Månadsvy</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Resursbokningar</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  <span>Återkommande bokningar</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span>SMS-påminnelser</span>
-                </div>
+                {relevantBookings.length === 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Inga bokningar att visa
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <BookingDetailsDrawer
+        booking={selectedBooking}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onSave={handleSaveBooking}
+        onDelete={handleDeleteBooking}
+      />
     </div>
   );
 };
