@@ -5,8 +5,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { UserRoleProvider } from "@/contexts/UserRoleContext";
 import Products from "./pages/Products";
 import Dashboard from "./pages/Dashboard";
+import RoleHome from "./pages/RoleHome";
 import Customers from "./pages/Customers";
 import CustomerProfile from "./pages/CustomerProfile";
 import Companies from "./pages/Companies";
@@ -32,12 +34,13 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
+      <UserRoleProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<RoleHome />} />
             <Route path="/kunder" element={<Customers />} />
             <Route path="/kunder/:customerId" element={<CustomerProfile />} />
             <Route path="/foretag" element={<Companies />} />
@@ -64,8 +67,9 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </Layout>
-      </BrowserRouter>
+          </Layout>
+        </BrowserRouter>
+      </UserRoleProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

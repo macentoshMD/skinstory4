@@ -1,7 +1,6 @@
 
 import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign, ChevronDown, Wallet, TimerIcon } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useUserRole } from '@/contexts/UserRoleContext';
+import { userTypes } from '@/state/userRole';
 
 // Navigation configurations per user type
 const navigationConfigs = {
@@ -86,45 +87,14 @@ const navigationConfigs = {
   }
 };
 
-const userTypes = [
-  { 
-    id: 'admin', 
-    name: 'Admin', 
-    description: 'Full tillgång till alla funktioner',
-    permissions: ['all']
-  },
-  { 
-    id: 'klinikagare', 
-    name: 'Klinikägare', 
-    description: 'Hantera klinik och personal',
-    permissions: ['clinic_management', 'staff_management', 'finances', 'reports']
-  },
-  { 
-    id: 'anstalld', 
-    name: 'Anställd', 
-    description: 'Behandlingar och kundhantering',
-    permissions: ['treatments', 'customers', 'bookings']
-  },
-  { 
-    id: 'konsult', 
-    name: 'Konsult/Egenföretagare', 
-    description: 'Egna kunder och behandlingar',
-    permissions: ['own_customers', 'own_treatments', 'own_bookings']
-  },
-  { 
-    id: 'customer', 
-    name: 'Kund Portal', 
-    description: 'Kundinloggning och bokningar',
-    permissions: ['customer_portal']
-  }
-];
+// User types are now defined in /state/userRole.ts
 
 export function AppSidebar() {
-  const [currentUserType, setCurrentUserType] = useState(userTypes[0]);
+  const { currentRole, setRole } = useUserRole();
   const navigate = useNavigate();
 
   const handleUserTypeChange = (userType: typeof userTypes[0]) => {
-    setCurrentUserType(userType);
+    setRole(userType.id);
     
     // Navigate to appropriate homepage for each user type
     switch (userType.id) {
@@ -149,7 +119,7 @@ export function AppSidebar() {
   };
 
   const getFilteredNavigation = () => {
-    return navigationConfigs[currentUserType.id as keyof typeof navigationConfigs] || navigationConfigs.admin;
+    return navigationConfigs[currentRole.id as keyof typeof navigationConfigs] || navigationConfigs.admin;
   };
 
   const { main: filteredMainNav, settings: filteredSettingsNav } = getFilteredNavigation();
@@ -169,7 +139,7 @@ export function AppSidebar() {
               >
                 <span className="flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  {currentUserType.name}
+                  {currentRole.name}
                 </span>
                 <ChevronDown className="h-4 w-4" />
               </Button>
@@ -193,7 +163,7 @@ export function AppSidebar() {
         </div>
       </div>
       
-      {currentUserType.id !== 'customer' && (
+      {currentRole.id !== 'customer' && (
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium px-3 py-2">

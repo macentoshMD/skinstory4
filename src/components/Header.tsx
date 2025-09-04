@@ -13,9 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUserRole } from '@/contexts/UserRoleContext';
 
 export function Header() {
   const [globalSearch, setGlobalSearch] = useState("");
+  const { currentRole } = useUserRole();
 
   const handleGlobalSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,8 +58,8 @@ export function Header() {
               </AvatarFallback>
             </Avatar>
             <div className="text-sm">
-              <div className="font-medium text-gray-900">Admin</div>
-              <div className="text-gray-500">Specialist</div>
+              <div className="font-medium text-gray-900">{currentRole.name}</div>
+              <div className="text-gray-500">{currentRole.description}</div>
             </div>
           </div>
         </div>
