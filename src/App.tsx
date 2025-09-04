@@ -28,6 +28,7 @@ import StaffProfile from "./pages/StaffProfile";
 import StaffClinics from "./pages/StaffClinics";
 import ClinicDetail from "./pages/ClinicDetail";
 import DiscoverClinics from "./pages/DiscoverClinics";
+import Education from "./pages/Education";
 
 import CustomerPortalProblems from "./pages/portal/CustomerPortalProblems";
 import CustomerPortalTreatmentPlan from "./pages/portal/CustomerPortalTreatmentPlan";
@@ -61,6 +62,7 @@ const App = () => (
         <Route path="/kliniker" element={<StaffClinics />} />
         <Route path="/kliniker/upptack" element={<DiscoverClinics />} />
         <Route path="/kliniker/:clinicId" element={<ClinicDetail />} />
+        <Route path="/utbildning" element={<Education />} />
             <Route path="/insikter" element={<Insights />} />
             <Route path="/statistik" element={<Statistics />} />
             <Route path="/kalender" element={<Calendar />} />
