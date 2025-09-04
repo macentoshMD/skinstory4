@@ -2,9 +2,11 @@ import { format, eachDayOfInterval, startOfMonth, endOfMonth, startOfWeek, endOf
 import { sv } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 import { TimeEntryForm } from "./TimeEntryForm";
 import { WorkScheduleEntry } from "@/pages/WorkSchedule";
-import { isRedDay } from "@/utils/swedishHolidays";
+import { getRedDayInfo } from "@/utils/swedishHolidays";
 
 interface WorkScheduleCalendarProps {
   currentMonth: Date;
@@ -45,7 +47,7 @@ export const WorkScheduleCalendar = ({
           const dateString = format(day, 'yyyy-MM-dd');
           const entry = scheduleEntries[dateString];
           const isCurrentMonth = isSameMonth(day, currentMonth);
-          const isRedDayToday = isRedDay(day);
+          const redDayInfo = getRedDayInfo(day);
           const workHours = entry ? calculateWorkHours(entry.startTime, entry.endTime, entry.breakDuration) : 0;
           
           return (
@@ -54,16 +56,30 @@ export const WorkScheduleCalendar = ({
                 <Button
                   variant="ghost"
                   className={`
-                    h-20 p-2 flex flex-col items-start justify-start border border-border
+                    h-20 p-2 flex flex-col items-start justify-start border border-border relative
                     ${!isCurrentMonth ? 'text-muted-foreground bg-muted/50' : ''}
                     ${isToday(day) ? 'border-primary bg-primary/5' : ''}
-                    ${isRedDayToday ? 'bg-red-50 text-red-700' : ''}
-                    ${entry?.isWorkDay && !isRedDayToday ? 'bg-green-50 hover:bg-green-100' : 'hover:bg-accent'}
+                    ${redDayInfo.isRedDay ? 'bg-red-50 text-red-700' : ''}
+                    ${entry?.isWorkDay && !redDayInfo.isRedDay ? 'bg-green-50 hover:bg-green-100' : 'hover:bg-accent'}
                   `}
                 >
-                  <span className={`text-sm font-medium ${isRedDayToday ? 'text-red-700' : ''}`}>
-                    {format(day, 'd')}
-                  </span>
+                  <div className="flex items-center justify-between w-full">
+                    <span className={`text-sm font-medium ${redDayInfo.isRedDay ? 'text-red-700' : ''}`}>
+                      {format(day, 'd')}
+                    </span>
+                    {redDayInfo.isRedDay && redDayInfo.name && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-3 w-3 text-red-600" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{redDayInfo.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
                   {entry?.isWorkDay && (
                     <div className="text-xs text-muted-foreground space-y-1">
                       <div>{entry.startTime} - {entry.endTime}</div>

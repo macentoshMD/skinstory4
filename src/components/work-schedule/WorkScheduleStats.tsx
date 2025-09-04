@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, Calendar, Percent, CheckCircle } from "lucide-react";
+import { Clock, Calendar, Percent, CheckCircle, Sun, AlertCircle } from "lucide-react";
 import { format, eachDayOfInterval, startOfMonth, endOfMonth, isWeekend } from "date-fns";
 import { sv } from "date-fns/locale";
 import { WorkScheduleEntry } from "@/pages/WorkSchedule";
-import { isRedDay } from "@/utils/swedishHolidays";
+import { isRedDay, getRedDayInfo } from "@/utils/swedishHolidays";
 
 interface WorkScheduleStatsProps {
   scheduleEntries: Record<string, WorkScheduleEntry>;
@@ -22,15 +22,35 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
   // Full-time hours (8 hours per working day)
   const fullTimeHours = workingDaysInMonth * 8;
   
-  // Calculate actual scheduled hours for the month
-  const scheduledHours = monthDays.reduce((total, day) => {
+  // Calculate different types of work hours for the month
+  const workHoursByType = monthDays.reduce((acc, day) => {
     const dateString = format(day, 'yyyy-MM-dd');
     const entry = scheduleEntries[dateString];
     
-    if (!entry?.isWorkDay) return total;
+    if (!entry?.isWorkDay) return acc;
     
-    return total + calculateWorkHours(entry.startTime, entry.endTime, entry.breakDuration);
-  }, 0);
+    const dayHours = calculateWorkHours(entry.startTime, entry.endTime, entry.breakDuration);
+    const redDayInfo = getRedDayInfo(day);
+    
+    if (redDayInfo.isRedDay) {
+      acc.holidayHours += dayHours;
+    } else {
+      const regularHours = Math.min(dayHours, 8);
+      const overtimeHours = Math.max(dayHours - 8, 0);
+      
+      acc.regularHours += regularHours;
+      acc.overtimeHours += overtimeHours;
+    }
+    
+    acc.totalHours += dayHours;
+    
+    return acc;
+  }, {
+    totalHours: 0,
+    regularHours: 0,
+    holidayHours: 0,
+    overtimeHours: 0
+  });
   
   // Calculate scheduled working days
   const scheduledWorkDays = monthDays.filter(day => {
@@ -39,10 +59,10 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
   }).length;
   
   // Calculate percentage of full-time
-  const workPercentage = fullTimeHours > 0 ? Math.round((scheduledHours / fullTimeHours) * 100) : 0;
+  const workPercentage = fullTimeHours > 0 ? Math.round((workHoursByType.totalHours / fullTimeHours) * 100) : 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
@@ -50,8 +70,8 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
               <Clock className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Schemalagda timmar</p>
-              <p className="text-xl font-semibold">{scheduledHours.toFixed(1)}h</p>
+              <p className="text-sm text-muted-foreground">Totala timmar</p>
+              <p className="text-xl font-semibold">{workHoursByType.totalHours.toFixed(1)}h</p>
             </div>
           </div>
         </CardContent>
@@ -64,8 +84,36 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
               <CheckCircle className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Arbetsdagar</p>
-              <p className="text-xl font-semibold">{scheduledWorkDays}/{workingDaysInMonth}</p>
+              <p className="text-sm text-muted-foreground">Vanliga timmar</p>
+              <p className="text-xl font-semibold">{workHoursByType.regularHours.toFixed(1)}h</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <Sun className="h-5 w-5 text-red-600" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Helgtimmar</p>
+              <p className="text-xl font-semibold">{workHoursByType.holidayHours.toFixed(1)}h</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-orange-600" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Övertid</p>
+              <p className="text-xl font-semibold">{workHoursByType.overtimeHours.toFixed(1)}h</p>
             </div>
           </div>
         </CardContent>
@@ -92,10 +140,8 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
               <Calendar className="h-5 w-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Aktuell månad</p>
-              <p className="text-xl font-semibold">
-                {format(currentMonth, 'MMM', { locale: sv })}
-              </p>
+              <p className="text-sm text-muted-foreground">Arbetsdagar</p>
+              <p className="text-xl font-semibold">{scheduledWorkDays}/{workingDaysInMonth}</p>
             </div>
           </div>
         </CardContent>
