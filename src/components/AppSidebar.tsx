@@ -125,8 +125,26 @@ export function AppSidebar() {
 
   const handleUserTypeChange = (userType: typeof userTypes[0]) => {
     setCurrentUserType(userType);
-    if (userType.id === 'customer') {
-      navigate('/portal');
+    
+    // Navigate to appropriate homepage for each user type
+    switch (userType.id) {
+      case 'customer':
+        navigate('/portal');
+        break;
+      case 'admin':
+        navigate('/');
+        break;
+      case 'klinikagare':
+        navigate('/');
+        break;
+      case 'anstalld':
+        navigate('/');
+        break;
+      case 'konsult':
+        navigate('/');
+        break;
+      default:
+        navigate('/');
     }
   };
 
