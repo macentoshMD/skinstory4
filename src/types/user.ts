@@ -53,6 +53,15 @@ export interface UserReview {
   treatmentType: string;
 }
 
+export interface UserAward {
+  id: string;
+  title: string;
+  organization: string;
+  date: string;
+  description?: string;
+  link?: string;
+}
+
 export interface ConnectedClinic {
   id: string;
   name: string;
@@ -90,6 +99,7 @@ export interface User {
   };
   statistics: UserStatistics;
   reviews: UserReview[];
+  awards: UserAward[];
   isActive: boolean;
   joinDate: string;
 }

@@ -54,6 +54,7 @@ const mockUser: User = {
     { id: "2", customerName: "Maria S.", rating: 5, comment: "Bästa hudterapeuten jag träffat. Resultatet blev över förväntan.", date: "2024-01-10", treatmentType: "Chemical Peeling" },
     { id: "3", customerName: "Emma L.", rating: 4, comment: "Mycket nöjd med behandlingen och resultatet.", date: "2024-01-08", treatmentType: "Konsultation" }
   ],
+  awards: [],
   isActive: true,
   joinDate: "2022-01-15"
 };

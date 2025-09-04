@@ -42,6 +42,7 @@ const mockUsers: UserType[] = [
       customerSatisfaction: 4.9
     },
     reviews: [],
+    awards: [],
     isActive: true,
     joinDate: "2022-01-15"
   },
@@ -73,6 +74,7 @@ const mockUsers: UserType[] = [
       customerSatisfaction: 4.8
     },
     reviews: [],
+    awards: [],
     isActive: true,
     joinDate: "2021-03-10"
   },
@@ -106,6 +108,7 @@ const mockUsers: UserType[] = [
       customerSatisfaction: 4.7
     },
     reviews: [],
+    awards: [],
     isActive: true,
     joinDate: "2023-01-15"
   },
@@ -135,6 +138,7 @@ const mockUsers: UserType[] = [
       customerSatisfaction: 4.6
     },
     reviews: [],
+    awards: [],
     isActive: true,
     joinDate: "2022-08-01"
   }

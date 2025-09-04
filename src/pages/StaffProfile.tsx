@@ -193,6 +193,23 @@ const MOCK_USER_PROFILE = {
     }
   ],
   
+  awards: [
+    {
+      id: 'award-1',
+      title: 'Årets Hudterapeut',
+      organization: 'Svenska Hudterapeutföreningen',
+      date: '2023-05-15',
+      description: 'Utmärkelse för enastående bidrag till hudvårdsbranschen och kundnöjdhet.'
+    },
+    {
+      id: 'award-2',
+      title: 'Excellence in Laser Treatment',
+      organization: 'Nordic Beauty Institute',
+      date: '2022-11-20',
+      description: 'Erkännande för avancerade laserbehandlingstekniker och patientresultat.'
+    }
+  ],
+  
   statistics: {
     problemsSolved: 340,
     monthsWithSkinStory: 18,
@@ -352,221 +369,308 @@ export default function StaffProfile() {
       </div>
 
       {/* Detailed Information Tabs */}
-      <Tabs defaultValue="education" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7">
-          <TabsTrigger value="education">Utbildning</TabsTrigger>
-          <TabsTrigger value="certifications">Certifieringar</TabsTrigger>
-          <TabsTrigger value="experience">Arbetslivserfarenhet</TabsTrigger>
+      <Tabs defaultValue="experience" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="experience">Erfarenhet</TabsTrigger>
           <TabsTrigger value="specialties">Specialiteter</TabsTrigger>
           <TabsTrigger value="services">Tjänster</TabsTrigger>
           <TabsTrigger value="brands">Varumärken</TabsTrigger>
           <TabsTrigger value="skinproblems">Hudproblem</TabsTrigger>
         </TabsList>
 
-        {/* Education Tab */}
-        <TabsContent value="education" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5" />
-                    Utbildning
-                  </CardTitle>
-                  <CardDescription>
-                    Dina utbildningar och akademiska kvalifikationer
-                  </CardDescription>
-                </div>
-                <Button size="sm" className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Lägg till
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {profile.education.map((edu) => (
-                  <div key={edu.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">{edu.degree}</h4>
-                        <p className="text-sm text-muted-foreground">{edu.institution}</p>
-                        <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                          <span>Examen: {edu.year}</span>
-                          <span>Längd: {edu.duration}</span>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
+        {/* Experience Tab - Combined */}
+        <TabsContent value="experience" className="space-y-4">
+          <div className="grid gap-6">
+            {/* Education Section */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <GraduationCap className="h-5 w-5" />
+                      Utbildning
+                    </CardTitle>
+                    <CardDescription>
+                      Dina utbildningar och akademiska kvalifikationer
+                    </CardDescription>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Certifications Tab */}
-        <TabsContent value="certifications" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Award className="h-5 w-5" />
-                    Certifieringar
-                  </CardTitle>
-                  <CardDescription>
-                    Dina professionella certifieringar och licenser
-                  </CardDescription>
+                  <Button size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Lägg till
+                  </Button>
                 </div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button size="sm" className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Lägg till
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Lägg till certifiering</DialogTitle>
-                      <DialogDescription>
-                        Lägg till en ny certifiering eller licens
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="cert-name">Certifieringsnamn</Label>
-                        <Input
-                          id="cert-name"
-                          value={newCertification.name}
-                          onChange={(e) => setNewCertification(prev => ({ ...prev, name: e.target.value }))}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="cert-issuer">Utfärdare</Label>
-                        <Input
-                          id="cert-issuer"
-                          value={newCertification.issuer}
-                          onChange={(e) => setNewCertification(prev => ({ ...prev, issuer: e.target.value }))}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {profile.education.map((edu) => (
+                    <div key={edu.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between">
                         <div>
-                          <Label htmlFor="cert-issued">Utfärdad</Label>
-                          <Input
-                            id="cert-issued"
-                            type="date"
-                            value={newCertification.dateIssued}
-                            onChange={(e) => setNewCertification(prev => ({ ...prev, dateIssued: e.target.value }))}
-                          />
+                          <h4 className="font-medium">{edu.degree}</h4>
+                          <p className="text-sm text-muted-foreground">{edu.institution}</p>
+                          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                            <span>Examen: {edu.year}</span>
+                            <span>Längd: {edu.duration}</span>
+                          </div>
                         </div>
-                        <div>
-                          <Label htmlFor="cert-expiry">Utgångsdatum (valfritt)</Label>
-                          <Input
-                            id="cert-expiry"
-                            type="date"
-                            value={newCertification.expiryDate}
-                            onChange={(e) => setNewCertification(prev => ({ ...prev, expiryDate: e.target.value }))}
-                          />
-                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                    <DialogFooter>
-                      <Button>Spara certifiering</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {profile.certifications.map((cert) => (
-                  <div key={cert.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium">{cert.name}</h4>
-                          {cert.verified && (
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
-                              Verifierad
-                            </Badge>
-                          )}
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Certifications Section */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Award className="h-5 w-5" />
+                      Certifieringar
+                    </CardTitle>
+                    <CardDescription>
+                      Dina professionella certifieringar och licenser
+                    </CardDescription>
+                  </div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Lägg till
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Lägg till certifiering</DialogTitle>
+                        <DialogDescription>
+                          Lägg till en ny certifiering eller licens
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="cert-name">Certifieringsnamn</Label>
+                          <Input
+                            id="cert-name"
+                            value={newCertification.name}
+                            onChange={(e) => setNewCertification(prev => ({ ...prev, name: e.target.value }))}
+                          />
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{cert.issuer}</p>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>Utfärdad: {new Date(cert.dateIssued).toLocaleDateString('sv-SE')}</span>
+                        <div>
+                          <Label htmlFor="cert-issuer">Utfärdare</Label>
+                          <Input
+                            id="cert-issuer"
+                            value={newCertification.issuer}
+                            onChange={(e) => setNewCertification(prev => ({ ...prev, issuer: e.target.value }))}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="cert-issued">Utfärdad</Label>
+                            <Input
+                              id="cert-issued"
+                              type="date"
+                              value={newCertification.dateIssued}
+                              onChange={(e) => setNewCertification(prev => ({ ...prev, dateIssued: e.target.value }))}
+                            />
                           </div>
-                          {cert.expiryDate && (
+                          <div>
+                            <Label htmlFor="cert-expiry">Utgångsdatum (valfritt)</Label>
+                            <Input
+                              id="cert-expiry"
+                              type="date"
+                              value={newCertification.expiryDate}
+                              onChange={(e) => setNewCertification(prev => ({ ...prev, expiryDate: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button>Spara certifiering</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {profile.certifications.map((cert) => (
+                    <div key={cert.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-medium">{cert.name}</h4>
+                            {cert.verified && (
+                              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                Verifierad
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">{cert.issuer}</p>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              <span>Gäller till: {new Date(cert.expiryDate).toLocaleDateString('sv-SE')}</span>
+                              <span>Utfärdad: {new Date(cert.dateIssued).toLocaleDateString('sv-SE')}</span>
                             </div>
+                            {cert.expiryDate && (
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                <span>Gäller till: {new Date(cert.expiryDate).toLocaleDateString('sv-SE')}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Work History Section */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Briefcase className="h-5 w-5" />
+                      Arbetslivserfarenhet
+                    </CardTitle>
+                    <CardDescription>
+                      Din professionella arbetshistorik
+                    </CardDescription>
+                  </div>
+                  <Button size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Lägg till
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {profile.workHistory.map((work) => (
+                    <div key={work.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h4 className="font-medium">{work.position}</h4>
+                          <p className="text-sm text-muted-foreground">{work.company}</p>
+                          <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>
+                              {new Date(work.startDate).toLocaleDateString('sv-SE')} - 
+                              {work.endDate ? new Date(work.endDate).toLocaleDateString('sv-SE') : 'Nuvarande'}
+                            </span>
+                          </div>
+                          {work.description && (
+                            <p className="text-sm mt-2">{work.description}</p>
                           )}
                         </div>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Experience Tab */}
-        <TabsContent value="experience" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5" />
-                    Arbetslivserfarenhet
-                  </CardTitle>
-                  <CardDescription>
-                    Din professionella arbetshistorik
-                  </CardDescription>
+                  ))}
                 </div>
-                <Button size="sm" className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Lägg till
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {profile.workHistory.map((work) => (
-                  <div key={work.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">{work.position}</h4>
-                        <p className="text-sm text-muted-foreground">{work.company}</p>
-                        <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>
-                            {new Date(work.startDate).toLocaleDateString('sv-SE')} - 
-                            {work.endDate ? new Date(work.endDate).toLocaleDateString('sv-SE') : 'Nuvarande'}
-                          </span>
-                        </div>
-                        {work.description && (
-                          <p className="text-sm mt-2">{work.description}</p>
-                        )}
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
+              </CardContent>
+            </Card>
+
+            {/* Awards Section */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Award className="h-5 w-5" />
+                      Utmärkelser & Erkännanden
+                    </CardTitle>
+                    <CardDescription>
+                      Utmärkelser och erkännanden du mottagit
+                    </CardDescription>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Lägg till
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Lägg till utmärkelse</DialogTitle>
+                        <DialogDescription>
+                          Lägg till en utmärkelse eller erkännande
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="award-title">Titel</Label>
+                          <Input
+                            id="award-title"
+                            placeholder="t.ex. Årets Hudterapeut"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="award-org">Organisation</Label>
+                          <Input
+                            id="award-org"
+                            placeholder="t.ex. Svenska Hudterapeutföreningen"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="award-date">Datum</Label>
+                          <Input
+                            id="award-date"
+                            type="date"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="award-desc">Beskrivning (valfritt)</Label>
+                          <Textarea
+                            id="award-desc"
+                            placeholder="Kort beskrivning av utmärkelsen..."
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button>Spara utmärkelse</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {profile.awards.map((award) => (
+                    <div key={award.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium mb-1">{award.title}</h4>
+                          <p className="text-sm text-muted-foreground mb-2">{award.organization}</p>
+                          <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>{new Date(award.date).toLocaleDateString('sv-SE')}</span>
+                          </div>
+                          {award.description && (
+                            <p className="text-sm">{award.description}</p>
+                          )}
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Specialties Tab */}
