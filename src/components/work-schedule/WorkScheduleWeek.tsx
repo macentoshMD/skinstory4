@@ -38,17 +38,17 @@ export const WorkScheduleWeek = ({
           <div 
             key={dateString}
             className={`flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 ${
-              redDayInfo.isRedDay ? 'border-red-200 bg-red-50/50' : ''
+              redDayInfo.type === 'holiday' ? 'border-red-200 bg-red-50/50' : ''
             }`}
           >
             <div className="flex items-center gap-4">
               <div className="text-center min-w-[100px]">
                 <div className="flex items-center gap-2 justify-center">
                   <div>
-                    <p className={`font-medium ${redDayInfo.isRedDay ? 'text-red-700' : ''}`}>
+                    <p className={`font-medium ${redDayInfo.type === 'holiday' ? 'text-red-700' : ''}`}>
                       {format(day, 'eeee', { locale: sv })}
                     </p>
-                    <p className={`text-sm ${redDayInfo.isRedDay ? 'text-red-600' : 'text-muted-foreground'}`}>
+                    <p className={`text-sm ${redDayInfo.type === 'holiday' ? 'text-red-600' : 'text-muted-foreground'}`}>
                       {format(day, 'd MMM', { locale: sv })}
                     </p>
                   </div>
@@ -89,8 +89,8 @@ export const WorkScheduleWeek = ({
                   </div>
                 </div>
               ) : (
-                <Badge variant={redDayInfo.isRedDay ? "destructive" : "secondary"}>
-                  {redDayInfo.isRedDay ? "Röd dag" : "Ledig dag"}
+                <Badge variant={redDayInfo.type === 'holiday' ? "destructive" : "secondary"}>
+                  {redDayInfo.type === 'holiday' ? "Helgdag" : "Ledig dag"}
                 </Badge>
               )}
             </div>
