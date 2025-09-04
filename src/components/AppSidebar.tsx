@@ -20,27 +20,71 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const mainNavigation = [
-  { name: "Dashboard", href: "/", icon: Home },
-  { name: "Insikter", href: "/insikter", icon: BarChart3 },
-  { name: "Loggar", href: "/aktiviteter", icon: Activity },
-  { name: "Kunder", href: "/kunder", icon: Users },
-  { name: "Statistik", href: "/statistik", icon: BarChart3 },
-  { name: "Kalender", href: "/kalender", icon: Clock },
-  { name: "Lön", href: "/lon", icon: Wallet },
-];
-
-const settingsNavigation = [
-  { name: "Tjänster", href: "/tjanster", icon: Sparkles },
-  { name: "Produkter", href: "/produkter", icon: Package },
-  { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
-  { name: "Användare", href: "/personal", icon: User },
-  { name: "Företag", href: "/foretag", icon: Building },
-  { name: "Kliniker", href: "/kliniker", icon: Building },
-  { name: "Arbetstid", href: "/arbetstid", icon: TimerIcon },
-  { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
-  { name: "Inställningar", href: "/installningar", icon: Settings },
-];
+// Navigation configurations per user type
+const navigationConfigs = {
+  admin: {
+    main: [
+      { name: "Dashboard", href: "/", icon: Home },
+      { name: "Insikter", href: "/insikter", icon: BarChart3 },
+      { name: "Loggar", href: "/aktiviteter", icon: Activity },
+      { name: "Kunder", href: "/kunder", icon: Users },
+      { name: "Statistik", href: "/statistik", icon: BarChart3 },
+      { name: "Kalender", href: "/kalender", icon: Clock },
+    ],
+    settings: [
+      { name: "Tjänster", href: "/tjanster", icon: Sparkles },
+      { name: "Produkter", href: "/produkter", icon: Package },
+      { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
+      { name: "Användare", href: "/personal", icon: User },
+      { name: "Företag", href: "/foretag", icon: Building },
+      { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
+      { name: "Inställningar", href: "/installningar", icon: Settings },
+    ]
+  },
+  klinikagare: {
+    main: [
+      { name: "Dashboard", href: "/", icon: Home },
+      { name: "Insikter", href: "/insikter", icon: BarChart3 },
+      { name: "Loggar", href: "/aktiviteter", icon: Activity },
+      { name: "Kunder", href: "/kunder", icon: Users },
+      { name: "Statistik", href: "/statistik", icon: BarChart3 },
+      { name: "Kalender", href: "/kalender", icon: Clock },
+    ],
+    settings: [
+      { name: "Produkter", href: "/produkter", icon: Package },
+      { name: "Användare", href: "/personal", icon: User },
+      { name: "Företag", href: "/foretag", icon: Building },
+      { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
+      { name: "Inställningar", href: "/installningar", icon: Settings },
+    ]
+  },
+  anstalld: {
+    main: [
+      { name: "Dashboard", href: "/", icon: Home },
+      { name: "Kunder", href: "/kunder", icon: Users },
+      { name: "Kalender", href: "/kalender", icon: Clock },
+      { name: "Lön", href: "/lon", icon: Wallet },
+      { name: "Statistik", href: "/statistik", icon: BarChart3 },
+    ],
+    settings: [
+      { name: "Kliniker", href: "/kliniker", icon: Building },
+      { name: "Arbetstid", href: "/arbetstid", icon: TimerIcon },
+    ]
+  },
+  konsult: {
+    main: [
+      { name: "Dashboard", href: "/", icon: Home },
+      { name: "Kunder", href: "/kunder", icon: Users },
+      { name: "Kalender", href: "/kalender", icon: Clock },
+      { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
+    ],
+    settings: []
+  },
+  customer: {
+    main: [],
+    settings: []
+  }
+};
 
 const userTypes = [
   { 
@@ -87,44 +131,7 @@ export function AppSidebar() {
   };
 
   const getFilteredNavigation = () => {
-    if (currentUserType.id === 'admin') {
-      return { main: mainNavigation, settings: settingsNavigation };
-    }
-    
-    if (currentUserType.id === 'klinikagare') {
-      return {
-        main: mainNavigation,
-        settings: settingsNavigation.filter(item => 
-          !['Problem & Områden', 'Tjänster'].includes(item.name)
-        )
-      };
-    }
-    
-    if (currentUserType.id === 'anstalld') {
-      return {
-        main: mainNavigation.filter(item => 
-          ['Dashboard', 'Kunder', 'Kalender', 'Lön', 'Statistik'].includes(item.name)
-        ),
-        settings: settingsNavigation.filter(item => 
-          ['Kliniker', 'Arbetstid'].includes(item.name)
-        )
-      };
-    }
-    
-    if (currentUserType.id === 'konsult') {
-      return {
-        main: mainNavigation.filter(item => 
-          ['Dashboard', 'Kunder', 'Kalender', 'Ekonomi'].includes(item.name)
-        ),
-        settings: []
-      };
-    }
-    
-    if (currentUserType.id === 'customer') {
-      return { main: [], settings: [] };
-    }
-    
-    return { main: mainNavigation, settings: settingsNavigation };
+    return navigationConfigs[currentUserType.id as keyof typeof navigationConfigs] || navigationConfigs.admin;
   };
 
   const { main: filteredMainNav, settings: filteredSettingsNav } = getFilteredNavigation();
