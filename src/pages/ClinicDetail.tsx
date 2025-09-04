@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   MapPin, 
   Phone, 
@@ -17,10 +18,54 @@ import {
   DollarSign, 
   ArrowLeft,
   Globe,
-  Calendar
+  Calendar,
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react';
 import { SERVICES } from '@/data/services';
 import { Service } from '@/types/service';
+import { User } from '@/types/user';
+
+// Mock user data with qualifications
+const MOCK_USER: User = {
+  id: 'user-1',
+  name: 'Emma Andersson',
+  email: 'emma@example.com',
+  phone: '+46 70 123 45 67',
+  employmentType: 'anställd',
+  profession: 'hudterapeut',
+  specialties: ['HydraFacial', 'Chemical Peeling', 'Microneedling'],
+  level: 'senior',
+  yearsOfExperience: 5,
+  connectedClinics: [],
+  rating: 4.8,
+  totalReviews: 156,
+  certifications: [
+    { id: '1', name: 'HydraFacial Certified', issuer: 'HydraFacial LLC', dateIssued: '2021-03-10', verified: true },
+    { id: '2', name: 'Chemical Peel Specialist', issuer: 'Advanced Skin Institute', dateIssued: '2022-08-20', verified: true },
+    { id: '3', name: 'DermaPen Certified', issuer: 'DermaPen World', dateIssued: '2023-01-15', verified: true },
+    { id: '4', name: 'Laser Hair Removal', issuer: 'Swedish Laser Academy', dateIssued: '2022-06-01', verified: true }
+  ],
+  education: [
+    { id: '1', institution: 'Stockholms Skönhetsakademi', degree: 'Hudterapeut', year: 2020, duration: '2 år' }
+  ],
+  workHistory: [],
+  skills: ['HydraFacial', 'Chemical Peeling', 'Microneedling', 'DermaPen', 'Laser Hair Removal', 'Aknebehandling'],
+  services: ['HydraFacial Classic', 'Kemisk Peeling Mild', 'Microneedling Ansikte', 'Hårborttagning Ansikte', 'Aknebehandling med Portömning'],
+  statistics: {
+    problemsSolved: 0,
+    monthsWithSkinStory: 0,
+    totalBookings: 0,
+    completedTreatments: 0,
+    customerSatisfaction: 0,
+    cancellationsCount: 0,
+    cancellationRate: 0
+  },
+  reviews: [],
+  awards: [],
+  isActive: true,
+  joinDate: '2020-01-15'
+};
 
 // Mock clinic data
 const MOCK_CLINICS = {
@@ -56,6 +101,62 @@ const MOCK_CLINICS = {
   }
 };
 
+// Function to check if user is qualified for a treatment
+const isUserQualified = (service: Service, user: User): { qualified: boolean; reason?: string } => {
+  // Check if user has specific certification for the treatment/equipment
+  const hasSpecificCertification = user.certifications.some(cert => {
+    const certName = cert.name.toLowerCase();
+    const serviceName = service.name.toLowerCase();
+    
+    // Check for direct matches
+    if (serviceName.includes('hydrafacial') && certName.includes('hydrafacial')) return true;
+    if (serviceName.includes('chemical peel') && certName.includes('chemical peel')) return true;
+    if (serviceName.includes('microneedling') && certName.includes('dermapen')) return true;
+    if (serviceName.includes('hårborttagning') && certName.includes('laser hair removal')) return true;
+    
+    return false;
+  });
+  
+  // Check if user has the service in their services list
+  const hasServiceExperience = user.services.some(userService => 
+    userService.toLowerCase().includes(service.name.toLowerCase().split(' ')[0]) ||
+    service.name.toLowerCase().includes(userService.toLowerCase().split(' ')[0])
+  );
+  
+  // Check if user has skills in the category
+  const hasRelevantSkills = user.skills.some(skill => {
+    const skillLower = skill.toLowerCase();
+    const categoryLower = service.categoryId.toLowerCase();
+    const serviceLower = service.name.toLowerCase();
+    
+    return skillLower.includes(categoryLower) || 
+           serviceLower.includes(skillLower) ||
+           categoryLower.includes(skillLower);
+  });
+  
+  // Check specialist level requirement
+  const levelHierarchy = { 'basic': 1, 'intermediate': 2, 'advanced': 3, 'expert': 4 };
+  const userLevelMap = { 'junior': 1, 'medior': 2, 'senior': 3, 'expert': 4 };
+  
+  const hasRequiredLevel = userLevelMap[user.level] >= levelHierarchy[service.requiredSpecialistLevel];
+  
+  if (!hasRequiredLevel) {
+    return { 
+      qualified: false, 
+      reason: `Kräver ${service.requiredSpecialistLevel} nivå, du har ${user.level} nivå` 
+    };
+  }
+  
+  if (hasSpecificCertification || hasServiceExperience || hasRelevantSkills) {
+    return { qualified: true };
+  }
+  
+  return { 
+    qualified: false, 
+    reason: 'Du har inte behörighet eller utbildning för den här behandlingen' 
+  };
+};
+
 export default function ClinicDetail() {
   const { clinicId } = useParams<{ clinicId: string }>();
   const navigate = useNavigate();
@@ -85,7 +186,9 @@ export default function ClinicDetail() {
     }
   };
 
-  const handleTreatmentToggle = (treatmentId: string) => {
+  const handleTreatmentToggle = (treatmentId: string, qualified: boolean) => {
+    if (!qualified) return; // Don't allow toggle for non-qualified treatments
+    
     const newSelections = new Set(selectedTreatments);
     if (newSelections.has(treatmentId)) {
       newSelections.delete(treatmentId);
@@ -296,38 +399,67 @@ export default function ClinicDetail() {
                   <div key={categoryId} className="space-y-3">
                     <h3 className="text-lg font-semibold capitalize">{categoryId}</h3>
                     <div className="grid gap-3">
-                      {services.map((service) => (
-                        <div
-                          key={service.id}
-                          className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50"
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h4 className="font-medium">{service.name}</h4>
-                              <Badge variant="outline" className="text-xs">
-                                {service.requiredSpecialistLevel}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {service.description}
-                            </p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {service.duration} min
+                      {services.map((service) => {
+                        const qualificationCheck = isUserQualified(service, MOCK_USER);
+                        const isQualified = qualificationCheck.qualified;
+                        
+                        return (
+                          <div
+                            key={service.id}
+                            className={`p-4 border rounded-lg transition-all ${
+                              isQualified 
+                                ? 'hover:bg-muted/50 border-border' 
+                                : 'bg-muted/30 border-muted-foreground/20'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h4 className={`font-medium ${!isQualified ? 'text-muted-foreground' : ''}`}>
+                                    {service.name}
+                                  </h4>
+                                  <Badge variant="outline" className="text-xs">
+                                    {service.requiredSpecialistLevel}
+                                  </Badge>
+                                  {isQualified ? (
+                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                  ) : (
+                                    <AlertCircle className="h-4 w-4 text-amber-500" />
+                                  )}
+                                </div>
+                                <p className={`text-sm mb-2 ${!isQualified ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
+                                  {service.description}
+                                </p>
+                                
+                                {!isQualified && (
+                                  <Alert className="mb-2 border-amber-200 bg-amber-50">
+                                    <AlertCircle className="h-4 w-4 text-amber-600" />
+                                    <AlertDescription className="text-sm text-amber-800">
+                                      {qualificationCheck.reason}
+                                    </AlertDescription>
+                                  </Alert>
+                                )}
+                                
+                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {service.duration} min
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <DollarSign className="h-3 w-3" />
+                                    {(service.price / 100).toLocaleString()} kr
+                                  </div>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-1">
-                                <DollarSign className="h-3 w-3" />
-                                {(service.price / 100).toLocaleString()} kr
-                              </div>
+                              <Switch
+                                checked={selectedTreatments.has(service.id)}
+                                disabled={!isQualified}
+                                onCheckedChange={() => handleTreatmentToggle(service.id, isQualified)}
+                              />
                             </div>
                           </div>
-                          <Switch
-                            checked={selectedTreatments.has(service.id)}
-                            onCheckedChange={() => handleTreatmentToggle(service.id)}
-                          />
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -336,9 +468,10 @@ export default function ClinicDetail() {
               <Separator />
               
               <div className="flex items-center justify-between pt-4">
-                <span className="text-sm text-muted-foreground">
-                  Aktiva behandlingar: {selectedTreatments.size} av {SERVICES.length}
-                </span>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <div>Aktiva behandlingar: {selectedTreatments.size} av {SERVICES.length}</div>
+                  <div>Kvalificerade behandlingar: {SERVICES.filter(service => isUserQualified(service, MOCK_USER).qualified).length} av {SERVICES.length}</div>
+                </div>
                 <Button variant="outline" size="sm">
                   Spara till profil
                 </Button>
