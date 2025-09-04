@@ -109,6 +109,41 @@ const MOCK_USER_PROFILE = {
   specialties: ['Aknebehandling', 'IPL Laser', 'Kemisk Peeling', 'Hudanalys', 'Anti-age'],
   treatments: ['Aknebehandling', 'Laser IPL', 'Kemisk peeling', 'HydraFacial', 'Microneedling'],
   
+  treatmentBrands: [
+    {
+      id: 'tb-1',
+      category: 'Microneedling',
+      brand: 'Dermapen',
+      model: 'Dermapen 4',
+      certificationLevel: 'Advanced',
+      yearsExperience: 2
+    },
+    {
+      id: 'tb-2',
+      category: 'Ansiktsbehandling',
+      brand: 'HydraFacial',
+      model: 'HydraFacial MD',
+      certificationLevel: 'Certified',
+      yearsExperience: 3
+    },
+    {
+      id: 'tb-3',
+      category: 'Laser',
+      brand: 'Candela',
+      model: 'GentleMax Pro',
+      certificationLevel: 'Expert',
+      yearsExperience: 4
+    },
+    {
+      id: 'tb-4',
+      category: 'Kemisk Peeling',
+      brand: 'SkinCeuticals',
+      model: 'Professional Peels',
+      certificationLevel: 'Advanced',
+      yearsExperience: 3
+    }
+  ],
+  
   statistics: {
     problemsSolved: 340,
     monthsWithSkinStory: 18,
@@ -269,11 +304,12 @@ export default function StaffProfile() {
 
       {/* Detailed Information Tabs */}
       <Tabs defaultValue="education" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="education">Utbildning</TabsTrigger>
           <TabsTrigger value="certifications">Certifieringar</TabsTrigger>
           <TabsTrigger value="experience">Arbetslivserfarenhet</TabsTrigger>
           <TabsTrigger value="specialties">Specialiteter</TabsTrigger>
+          <TabsTrigger value="treatments">Behandlingar</TabsTrigger>
         </TabsList>
 
         {/* Education Tab */}
@@ -509,9 +545,9 @@ export default function StaffProfile() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Behandlingar</CardTitle>
+                <CardTitle>Behandlingsområden</CardTitle>
                 <CardDescription>
-                  Behandlingar du är certifierad för
+                  Allmänna behandlingsområden du arbetar inom
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -524,11 +560,164 @@ export default function StaffProfile() {
                 </div>
                 <Button variant="outline" size="sm" className="gap-2">
                   <Plus className="h-4 w-4" />
-                  Lägg till behandling
+                  Lägg till behandlingsområde
                 </Button>
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Treatments & Brands Tab */}
+        <TabsContent value="treatments" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="h-5 w-5" />
+                    Behandlingar & Varumärken
+                  </CardTitle>
+                  <CardDescription>
+                    Specificera vilka varumärken och behandlingsmetoder du arbetar med
+                  </CardDescription>
+                </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Lägg till behandling
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Lägg till behandling & varumärke</DialogTitle>
+                      <DialogDescription>
+                        Specificera behandlingskategori, varumärke och din erfarenhet
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="treatment-category">Behandlingskategori</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Välj kategori" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="microneedling">Microneedling</SelectItem>
+                            <SelectItem value="ansiktsbehandling">Ansiktsbehandling</SelectItem>
+                            <SelectItem value="laser">Laser</SelectItem>
+                            <SelectItem value="kemisk-peeling">Kemisk Peeling</SelectItem>
+                            <SelectItem value="injektioner">Injektioner</SelectItem>
+                            <SelectItem value="kroppsbehandling">Kroppsbehandling</SelectItem>
+                            <SelectItem value="permanent-makeup">Permanent Makeup</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="brand">Varumärke</Label>
+                        <Input
+                          id="brand"
+                          placeholder="t.ex. Dermapen, HydraFacial, Candela"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="model">Modell/System (valfritt)</Label>
+                        <Input
+                          id="model"
+                          placeholder="t.ex. Dermapen 4, GentleMax Pro"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="cert-level">Certifieringsnivå</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Välj nivå" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="basic">Basic</SelectItem>
+                              <SelectItem value="certified">Certified</SelectItem>
+                              <SelectItem value="advanced">Advanced</SelectItem>
+                              <SelectItem value="expert">Expert</SelectItem>
+                              <SelectItem value="trainer">Trainer</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="years-exp">År av erfarenhet</Label>
+                          <Input
+                            id="years-exp"
+                            type="number"
+                            placeholder="0"
+                            min="0"
+                            max="50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button>Spara behandling</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {profile.treatmentBrands.map((treatment) => (
+                  <div key={treatment.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h4 className="font-medium">{treatment.category}</h4>
+                          <Badge 
+                            variant={
+                              treatment.certificationLevel === 'Expert' ? 'default' :
+                              treatment.certificationLevel === 'Advanced' ? 'secondary' :
+                              'outline'
+                            }
+                            className="text-xs"
+                          >
+                            {treatment.certificationLevel}
+                          </Badge>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <span className="font-medium text-muted-foreground">Varumärke:</span>
+                            <p className="mt-1">{treatment.brand}</p>
+                          </div>
+                          {treatment.model && (
+                            <div>
+                              <span className="font-medium text-muted-foreground">Modell:</span>
+                              <p className="mt-1">{treatment.model}</p>
+                            </div>
+                          )}
+                          <div>
+                            <span className="font-medium text-muted-foreground">Erfarenhet:</span>
+                            <p className="mt-1">{treatment.yearsExperience} år</p>
+                          </div>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <h5 className="font-medium mb-2">Tips för att fylla i behandlingar</h5>
+                <ul className="text-sm text-blue-900 dark:text-blue-100 space-y-1">
+                  <li>• Lägg till alla varumärken du är certifierad för</li>
+                  <li>• Specificera din certifieringsnivå för varje varumärke</li>
+                  <li>• Denna information visas för kunder som söker specialister</li>
+                  <li>• Håll informationen uppdaterad när du får nya certifieringar</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
