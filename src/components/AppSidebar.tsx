@@ -1,5 +1,5 @@
 
-import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign, ChevronDown } from "lucide-react";
+import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign, ChevronDown, Wallet } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
@@ -27,6 +27,7 @@ const mainNavigation = [
   { name: "Kunder", href: "/kunder", icon: Users },
   { name: "Statistik", href: "/statistik", icon: BarChart3 },
   { name: "Kalender", href: "/kalender", icon: Clock },
+  { name: "Lön", href: "/lon", icon: Wallet },
 ];
 
 const settingsNavigation = [
@@ -35,6 +36,7 @@ const settingsNavigation = [
   { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
   { name: "Användare", href: "/personal", icon: User },
   { name: "Företag", href: "/foretag", icon: Building },
+  { name: "Kliniker", href: "/kliniker", icon: Building },
   { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
   { name: "Inställningar", href: "/installningar", icon: Settings },
 ];
@@ -100,10 +102,10 @@ export function AppSidebar() {
     if (currentUserType.id === 'anstalld') {
       return {
         main: mainNavigation.filter(item => 
-          ['Dashboard', 'Kunder', 'Kalender'].includes(item.name)
+          ['Dashboard', 'Kunder', 'Kalender', 'Lön', 'Statistik'].includes(item.name)
         ),
         settings: settingsNavigation.filter(item => 
-          ['Användare'].includes(item.name)
+          ['Kliniker'].includes(item.name)
         )
       };
     }
