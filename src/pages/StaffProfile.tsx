@@ -107,40 +107,89 @@ const MOCK_USER_PROFILE = {
   ],
   
   specialties: ['Aknebehandling', 'IPL Laser', 'Kemisk Peeling', 'Hudanalys', 'Anti-age'],
-  treatments: ['Aknebehandling', 'Laser IPL', 'Kemisk peeling', 'HydraFacial', 'Microneedling'],
   
-  treatmentBrands: [
+  services: [
     {
-      id: 'tb-1',
-      category: 'Microneedling',
-      brand: 'Dermapen',
-      model: 'Dermapen 4',
+      id: 'svc-1',
+      name: 'Microneedling',
       certificationLevel: 'Advanced',
-      yearsExperience: 2
+      yearsExperience: 2,
+      connectedBrands: ['brand-1']
     },
     {
-      id: 'tb-2',
-      category: 'Ansiktsbehandling',
-      brand: 'HydraFacial',
-      model: 'HydraFacial MD',
+      id: 'svc-2',
+      name: 'Ansiktsbehandling',
       certificationLevel: 'Certified',
-      yearsExperience: 3
+      yearsExperience: 3,
+      connectedBrands: ['brand-2']
     },
     {
-      id: 'tb-3',
-      category: 'Laser',
-      brand: 'Candela',
-      model: 'GentleMax Pro',
+      id: 'svc-3',
+      name: 'Laserbehandling',
       certificationLevel: 'Expert',
+      yearsExperience: 4,
+      connectedBrands: ['brand-3']
+    },
+    {
+      id: 'svc-4',
+      name: 'Kemisk Peeling',
+      certificationLevel: 'Advanced',
+      yearsExperience: 3,
+      connectedBrands: ['brand-4']
+    }
+  ],
+  
+  brands: [
+    {
+      id: 'brand-1',
+      name: 'Dermapen',
+      model: 'Dermapen 4',
+      category: 'Microneedling Equipment'
+    },
+    {
+      id: 'brand-2',
+      name: 'HydraFacial',
+      model: 'HydraFacial MD',
+      category: 'Facial Equipment'
+    },
+    {
+      id: 'brand-3',
+      name: 'Candela',
+      model: 'GentleMax Pro',
+      category: 'Laser Equipment'
+    },
+    {
+      id: 'brand-4',
+      name: 'SkinCeuticals',
+      model: 'Professional Peels',
+      category: 'Chemical Peels'
+    }
+  ],
+  
+  skinProblems: [
+    {
+      id: 'prob-1',
+      name: 'Akne & Finnig hy',
+      experience: 'Expert',
+      yearsExperience: 5
+    },
+    {
+      id: 'prob-2',
+      name: 'Pigmentfläckar',
+      experience: 'Advanced',
       yearsExperience: 4
     },
     {
-      id: 'tb-4',
-      category: 'Kemisk Peeling',
-      brand: 'SkinCeuticals',
-      model: 'Professional Peels',
-      certificationLevel: 'Advanced',
+      id: 'prob-3',
+      name: 'Rynkor & Åldrande',
+      experience: 'Advanced',
       yearsExperience: 3
+    },
+    {
+      id: 'prob-4',
+      name: 'Rosacea',
+      experience: 'Intermediate',
+      yearsExperience: 2
     }
   ],
   
@@ -304,12 +353,14 @@ export default function StaffProfile() {
 
       {/* Detailed Information Tabs */}
       <Tabs defaultValue="education" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="education">Utbildning</TabsTrigger>
           <TabsTrigger value="certifications">Certifieringar</TabsTrigger>
           <TabsTrigger value="experience">Arbetslivserfarenhet</TabsTrigger>
           <TabsTrigger value="specialties">Specialiteter</TabsTrigger>
-          <TabsTrigger value="treatments">Behandlingar</TabsTrigger>
+          <TabsTrigger value="services">Tjänster</TabsTrigger>
+          <TabsTrigger value="brands">Varumärken</TabsTrigger>
+          <TabsTrigger value="skinproblems">Hudproblem</TabsTrigger>
         </TabsList>
 
         {/* Education Tab */}
@@ -552,9 +603,9 @@ export default function StaffProfile() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {profile.treatments.map((treatment) => (
-                    <Badge key={treatment} variant="outline">
-                      {treatment}
+                  {profile.services.map((service) => (
+                    <Badge key={service.id} variant="outline">
+                      {service.name}
                     </Badge>
                   ))}
                 </div>
@@ -567,65 +618,50 @@ export default function StaffProfile() {
           </div>
         </TabsContent>
 
-        {/* Treatments & Brands Tab */}
-        <TabsContent value="treatments" className="space-y-4">
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    <Award className="h-5 w-5" />
-                    Behandlingar & Varumärken
+                    <User className="h-5 w-5" />
+                    Tjänster
                   </CardTitle>
                   <CardDescription>
-                    Specificera vilka varumärken och behandlingsmetoder du arbetar med
+                    Tjänster du erbjuder med koppling till varumärken
                   </CardDescription>
                 </div>
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button size="sm" className="gap-2">
                       <Plus className="h-4 w-4" />
-                      Lägg till behandling
+                      Lägg till tjänst
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Lägg till behandling & varumärke</DialogTitle>
+                      <DialogTitle>Lägg till tjänst</DialogTitle>
                       <DialogDescription>
-                        Specificera behandlingskategori, varumärke och din erfarenhet
+                        Lägg till en tjänst och koppla till varumärken
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="treatment-category">Behandlingskategori</Label>
+                        <Label htmlFor="service-name">Tjänst</Label>
                         <Select>
                           <SelectTrigger>
-                            <SelectValue placeholder="Välj kategori" />
+                            <SelectValue placeholder="Välj tjänst" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="microneedling">Microneedling</SelectItem>
                             <SelectItem value="ansiktsbehandling">Ansiktsbehandling</SelectItem>
-                            <SelectItem value="laser">Laser</SelectItem>
+                            <SelectItem value="laserbehandling">Laserbehandling</SelectItem>
                             <SelectItem value="kemisk-peeling">Kemisk Peeling</SelectItem>
                             <SelectItem value="injektioner">Injektioner</SelectItem>
                             <SelectItem value="kroppsbehandling">Kroppsbehandling</SelectItem>
-                            <SelectItem value="permanent-makeup">Permanent Makeup</SelectItem>
                           </SelectContent>
                         </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="brand">Varumärke</Label>
-                        <Input
-                          id="brand"
-                          placeholder="t.ex. Dermapen, HydraFacial, Candela"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="model">Modell/System (valfritt)</Label>
-                        <Input
-                          id="model"
-                          placeholder="t.ex. Dermapen 4, GentleMax Pro"
-                        />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -635,11 +671,10 @@ export default function StaffProfile() {
                               <SelectValue placeholder="Välj nivå" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="basic">Basic</SelectItem>
-                              <SelectItem value="certified">Certified</SelectItem>
-                              <SelectItem value="advanced">Advanced</SelectItem>
-                              <SelectItem value="expert">Expert</SelectItem>
-                              <SelectItem value="trainer">Trainer</SelectItem>
+                              <SelectItem value="Basic">Basic</SelectItem>
+                              <SelectItem value="Intermediate">Intermediate</SelectItem>
+                              <SelectItem value="Advanced">Advanced</SelectItem>
+                              <SelectItem value="Expert">Expert</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -654,9 +689,16 @@ export default function StaffProfile() {
                           />
                         </div>
                       </div>
+                      <div>
+                        <Label>Kopplade varumärken</Label>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Välj vilka varumärken du använder för denna tjänst
+                        </p>
+                        {/* Multi-select for brands would go here */}
+                      </div>
                     </div>
                     <DialogFooter>
-                      <Button>Spara behandling</Button>
+                      <Button>Spara tjänst</Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
@@ -664,38 +706,41 @@ export default function StaffProfile() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {profile.treatmentBrands.map((treatment) => (
-                  <div key={treatment.id} className="border rounded-lg p-4">
+                {profile.services.map((service) => (
+                  <div key={service.id} className="border rounded-lg p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-medium">{treatment.category}</h4>
+                          <h4 className="font-medium">{service.name}</h4>
                           <Badge 
                             variant={
-                              treatment.certificationLevel === 'Expert' ? 'default' :
-                              treatment.certificationLevel === 'Advanced' ? 'secondary' :
+                              service.certificationLevel === 'Expert' ? 'default' :
+                              service.certificationLevel === 'Advanced' ? 'secondary' :
                               'outline'
                             }
                             className="text-xs"
                           >
-                            {treatment.certificationLevel}
+                            {service.certificationLevel}
                           </Badge>
                         </div>
                         
-                        <div className="grid md:grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <span className="font-medium text-muted-foreground">Varumärke:</span>
-                            <p className="mt-1">{treatment.brand}</p>
-                          </div>
-                          {treatment.model && (
-                            <div>
-                              <span className="font-medium text-muted-foreground">Modell:</span>
-                              <p className="mt-1">{treatment.model}</p>
-                            </div>
-                          )}
+                        <div className="grid md:grid-cols-2 gap-4 text-sm">
                           <div>
                             <span className="font-medium text-muted-foreground">Erfarenhet:</span>
-                            <p className="mt-1">{treatment.yearsExperience} år</p>
+                            <p className="mt-1">{service.yearsExperience} år</p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-muted-foreground">Kopplade varumärken:</span>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {service.connectedBrands.map((brandId) => {
+                                const brand = profile.brands.find(b => b.id === brandId);
+                                return brand ? (
+                                  <Badge key={brandId} variant="outline" className="text-xs">
+                                    {brand.name}
+                                  </Badge>
+                                ) : null;
+                              })}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -706,15 +751,213 @@ export default function StaffProfile() {
                   </div>
                 ))}
               </div>
-              
-              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                <h5 className="font-medium mb-2">Tips för att fylla i behandlingar</h5>
-                <ul className="text-sm text-blue-900 dark:text-blue-100 space-y-1">
-                  <li>• Lägg till alla varumärken du är certifierad för</li>
-                  <li>• Specificera din certifieringsnivå för varje varumärke</li>
-                  <li>• Denna information visas för kunder som söker specialister</li>
-                  <li>• Håll informationen uppdaterad när du får nya certifieringar</li>
-                </ul>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Brands Tab */}
+        <TabsContent value="brands" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="h-5 w-5" />
+                    Varumärken
+                  </CardTitle>
+                  <CardDescription>
+                    Varumärken och utrustning du arbetar med
+                  </CardDescription>
+                </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Lägg till varumärke
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Lägg till varumärke</DialogTitle>
+                      <DialogDescription>
+                        Specificera varumärke och utrustning du arbetar med
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="brand-name">Varumärke</Label>
+                        <Input
+                          id="brand-name"
+                          placeholder="t.ex. Dermapen, HydraFacial, Candela"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="brand-model">Modell/System</Label>
+                        <Input
+                          id="brand-model"
+                          placeholder="t.ex. Dermapen 4, GentleMax Pro"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="brand-category">Kategori</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Välj kategori" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Microneedling Equipment">Microneedling Equipment</SelectItem>
+                            <SelectItem value="Facial Equipment">Facial Equipment</SelectItem>
+                            <SelectItem value="Laser Equipment">Laser Equipment</SelectItem>
+                            <SelectItem value="Chemical Peels">Chemical Peels</SelectItem>
+                            <SelectItem value="Body Equipment">Body Equipment</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button>Spara varumärke</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {profile.brands.map((brand) => (
+                  <div key={brand.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium mb-1">{brand.name}</h4>
+                        <p className="text-sm text-muted-foreground mb-2">{brand.category}</p>
+                        <div className="text-sm">
+                          <span className="font-medium text-muted-foreground">Modell:</span>
+                          <span className="ml-2">{brand.model}</span>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Skin Problems Tab */}
+        <TabsContent value="skinproblems" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Hudproblem
+                  </CardTitle>
+                  <CardDescription>
+                    Hudproblem du specialiserar dig på att behandla
+                  </CardDescription>
+                </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Lägg till hudproblem
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Lägg till hudproblem</DialogTitle>
+                      <DialogDescription>
+                        Specificera hudproblem du specialiserar dig på
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="problem-name">Hudproblem</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Välj hudproblem" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Akne & Finnig hy">Akne & Finnig hy</SelectItem>
+                            <SelectItem value="Pigmentfläckar">Pigmentfläckar</SelectItem>
+                            <SelectItem value="Rynkor & Åldrande">Rynkor & Åldrande</SelectItem>
+                            <SelectItem value="Rosacea">Rosacea</SelectItem>
+                            <SelectItem value="Ärr">Ärr</SelectItem>
+                            <SelectItem value="Stora porer">Stora porer</SelectItem>
+                            <SelectItem value="Känslig hy">Känslig hy</SelectItem>
+                            <SelectItem value="Torr hy">Torr hy</SelectItem>
+                            <SelectItem value="Fet hy">Fet hy</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="problem-experience">Erfarenhetsnivå</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Välj nivå" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Beginner">Beginner</SelectItem>
+                              <SelectItem value="Intermediate">Intermediate</SelectItem>
+                              <SelectItem value="Advanced">Advanced</SelectItem>
+                              <SelectItem value="Expert">Expert</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="problem-years">År av erfarenhet</Label>
+                          <Input
+                            id="problem-years"
+                            type="number"
+                            placeholder="0"
+                            min="0"
+                            max="50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button>Spara hudproblem</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {profile.skinProblems.map((problem) => (
+                  <div key={problem.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h4 className="font-medium">{problem.name}</h4>
+                          <Badge 
+                            variant={
+                              problem.experience === 'Expert' ? 'default' :
+                              problem.experience === 'Advanced' ? 'secondary' :
+                              'outline'
+                            }
+                            className="text-xs"
+                          >
+                            {problem.experience}
+                          </Badge>
+                        </div>
+                        
+                        <div className="text-sm">
+                          <span className="font-medium text-muted-foreground">Erfarenhet:</span>
+                          <span className="ml-2">{problem.yearsExperience} år</span>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
