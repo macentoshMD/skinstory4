@@ -24,7 +24,8 @@ import {
   Phone,
   Mail,
   Eye,
-  EyeOff
+  EyeOff,
+  Camera
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
@@ -253,6 +254,31 @@ const MOCK_USER_PROFILE = {
       date: '2024-02-05',
       treatmentType: 'Aknebehandling'
     }
+  ],
+
+  beforeAfterResults: [
+    {
+      id: 'result-1',
+      title: 'Aknebehandling med IPL',
+      problemType: 'Akne',
+      treatmentMethod: 'IPL Laser + Kemisk peeling',
+      treatmentDuration: '4 månader, 8 behandlingar',
+      beforeImage: '/lovable-uploads/f90177a4-8fea-4b08-8d2e-de8b1dde2168.png',
+      afterImage: '/lovable-uploads/f90177a4-8fea-4b08-8d2e-de8b1dde2168.png',
+      description: 'Kraftig förbättring av akne efter systematisk behandling med IPL och kemisk peeling.',
+      date: '2024-01-15'
+    },
+    {
+      id: 'result-2',
+      title: 'Rynkreducering',
+      problemType: 'Rynkor',
+      treatmentMethod: 'Microneedling + Radiofrekvens',
+      treatmentDuration: '3 månader, 6 behandlingar',
+      beforeImage: '/lovable-uploads/f90177a4-8fea-4b08-8d2e-de8b1dde2168.png',
+      afterImage: '/lovable-uploads/f90177a4-8fea-4b08-8d2e-de8b1dde2168.png',
+      description: 'Synlig minskning av fina linjer och förbättrad hudstruktur.',
+      date: '2024-01-10'
+    }
   ]
 };
 
@@ -420,12 +446,13 @@ export default function StaffProfile() {
 
       {/* Detailed Information Tabs */}
       <Tabs defaultValue="experience" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="experience">Erfarenhet</TabsTrigger>
           <TabsTrigger value="specialties">Specialiteter</TabsTrigger>
           <TabsTrigger value="services">Tjänster</TabsTrigger>
           <TabsTrigger value="brands">Varumärken</TabsTrigger>
           <TabsTrigger value="skinproblems">Hudproblem</TabsTrigger>
+          <TabsTrigger value="results">Resultat</TabsTrigger>
           <TabsTrigger value="reviews">Recensioner</TabsTrigger>
         </TabsList>
 
@@ -1113,6 +1140,169 @@ export default function StaffProfile() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Results Tab */}
+        <TabsContent value="results" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Camera className="h-5 w-5" />
+                    Resultat ({profile.beforeAfterResults?.length || 0})
+                  </CardTitle>
+                  <CardDescription>
+                    Före- och efterbilder av lösta hudproblem
+                  </CardDescription>
+                </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Lägg till resultat
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Lägg till före- och efterbilder</DialogTitle>
+                      <DialogDescription>
+                        Ladda upp bilder som visar resultatet av behandlingen
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="result-title">Titel</Label>
+                        <Input
+                          id="result-title"
+                          placeholder="t.ex. Aknebehandling med IPL"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Före-bild</Label>
+                          <div className="border-2 border-dashed rounded-lg p-4 text-center">
+                            <Camera className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">Klicka för att ladda upp före-bild</p>
+                    <Camera className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Klicka för att ladda upp före-bild</p>
+                  </div>
+                </div>
+                <div>
+                  <Label>Efter-bild</Label>
+                  <div className="border-2 border-dashed rounded-lg p-4 text-center">
+                    <Camera className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">Klicka för att ladda upp efter-bild</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="problem-type">Hudproblem</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Välj hudproblem" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="acne">Akne</SelectItem>
+                            <SelectItem value="rosacea">Rosacea</SelectItem>
+                            <SelectItem value="pigmentation">Pigmentering</SelectItem>
+                            <SelectItem value="wrinkles">Rynkor</SelectItem>
+                            <SelectItem value="scars">Ärr</SelectItem>
+                            <SelectItem value="other">Övrigt</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="treatment-method">Behandlingsmetod</Label>
+                        <Input
+                          id="treatment-method"
+                          placeholder="t.ex. IPL Laser + Kemisk peeling"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="treatment-duration">Behandlingsperiod</Label>
+                        <Input
+                          id="treatment-duration"
+                          placeholder="t.ex. 3 månader, 6 behandlingar"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="result-description">Beskrivning</Label>
+                        <Textarea
+                          id="result-description"
+                          placeholder="Beskriv behandlingen och resultatet..."
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button>Spara resultat</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                {profile.beforeAfterResults?.map((result) => (
+                  <div key={result.id} className="border rounded-lg overflow-hidden">
+                    <div className="grid grid-cols-2">
+                      <div className="relative">
+                        <img
+                          src={result.beforeImage}
+                          alt="Före-bild"
+                          className="w-full h-40 object-cover"
+                        />
+                        <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 text-xs rounded">
+                          Före
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <img
+                          src={result.afterImage}
+                          alt="Efter-bild"
+                          className="w-full h-40 object-cover"
+                        />
+                        <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 text-xs rounded">
+                          Efter
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">{result.title}</h4>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{result.problemType}</Badge>
+                          <span className="text-muted-foreground">•</span>
+                          <span className="text-muted-foreground">{result.treatmentDuration}</span>
+                        </div>
+                        <p className="text-muted-foreground">
+                          <span className="font-medium">Behandling:</span> {result.treatmentMethod}
+                        </p>
+                        {result.description && (
+                          <p className="text-muted-foreground">{result.description}</p>
+                        )}
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(result.date).toLocaleDateString('sv-SE')}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )) || (
+                  <div className="col-span-2 text-center py-8 text-muted-foreground">
+                    <Camera className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Inga resultat har lagts till än</p>
+                    <p className="text-sm">Klicka på "Lägg till resultat" för att börja</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

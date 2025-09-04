@@ -56,6 +56,19 @@ const mockUser: User = {
     { id: "2", customerName: "Maria S.", rating: 5, comment: "Bästa hudterapeuten jag träffat. Resultatet blev över förväntan.", date: "2024-01-10", treatmentType: "Chemical Peeling" },
     { id: "3", customerName: "Emma L.", rating: 4, comment: "Mycket nöjd med behandlingen och resultatet.", date: "2024-01-08", treatmentType: "Konsultation" }
   ],
+  beforeAfterResults: [
+    {
+      id: 'result-1',
+      title: 'Aknebehandling med IPL',
+      problemType: 'Akne',
+      treatmentMethod: 'IPL Laser + Kemisk peeling',
+      treatmentDuration: '4 månader, 8 behandlingar',
+      beforeImage: '/lovable-uploads/f90177a4-8fea-4b08-8d2e-de8b1dde2168.png',
+      afterImage: '/lovable-uploads/f90177a4-8fea-4b08-8d2e-de8b1dde2168.png',
+      description: 'Kraftig förbättring av akne efter systematisk behandling med IPL och kemisk peeling.',
+      date: '2024-01-15'
+    }
+  ],
   awards: [],
   isActive: true,
   joinDate: "2022-01-15"
@@ -204,6 +217,7 @@ const UserProfile = () => {
           <TabsTrigger value="certifications">Certifieringar</TabsTrigger>
           <TabsTrigger value="education">Utbildning</TabsTrigger>
           <TabsTrigger value="work-history">Arbetserfarenhet</TabsTrigger>
+          <TabsTrigger value="results">Resultat</TabsTrigger>
           <TabsTrigger value="reviews">Recensioner</TabsTrigger>
         </TabsList>
 
@@ -333,6 +347,71 @@ const UserProfile = () => {
                     )}
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="results">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5" />
+                Resultat ({user.beforeAfterResults?.length || 0})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                {user.beforeAfterResults?.map((result) => (
+                  <div key={result.id} className="border rounded-lg overflow-hidden">
+                    <div className="grid grid-cols-2">
+                      <div className="relative">
+                        <img
+                          src={result.beforeImage}
+                          alt="Före-bild"
+                          className="w-full h-40 object-cover"
+                        />
+                        <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 text-xs rounded">
+                          Före
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <img
+                          src={result.afterImage}
+                          alt="Efter-bild"
+                          className="w-full h-40 object-cover"
+                        />
+                        <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 text-xs rounded">
+                          Efter
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h4 className="font-medium mb-2">{result.title}</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{result.problemType}</Badge>
+                          <span className="text-gray-500">•</span>
+                          <span className="text-gray-500">{result.treatmentDuration}</span>
+                        </div>
+                        <p className="text-gray-600">
+                          <span className="font-medium">Behandling:</span> {result.treatmentMethod}
+                        </p>
+                        {result.description && (
+                          <p className="text-gray-600">{result.description}</p>
+                        )}
+                        <div className="text-xs text-gray-500">
+                          {new Date(result.date).toLocaleDateString('sv-SE')}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )) || (
+                  <div className="col-span-2 text-center py-8 text-gray-500">
+                    <Award className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Inga resultat att visa</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

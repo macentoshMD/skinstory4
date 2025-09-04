@@ -55,6 +55,18 @@ export interface UserReview {
   treatmentType: string;
 }
 
+export interface BeforeAfterResult {
+  id: string;
+  title: string;
+  problemType: string;
+  treatmentMethod: string;
+  treatmentDuration: string;
+  beforeImage: string;
+  afterImage: string;
+  description: string;
+  date: string;
+}
+
 export interface UserAward {
   id: string;
   title: string;
@@ -99,8 +111,9 @@ export interface User {
     min: number;
     max: number;
   };
-  statistics: UserStatistics;
   reviews: UserReview[];
+  beforeAfterResults?: BeforeAfterResult[];
+  statistics: UserStatistics;
   awards: UserAward[];
   isActive: boolean;
   joinDate: string;
