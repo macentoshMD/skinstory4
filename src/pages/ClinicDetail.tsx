@@ -8,6 +8,9 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { 
   MapPin, 
   Phone, 
@@ -20,11 +23,19 @@ import {
   Globe,
   Calendar,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  ChevronDown,
+  Info
 } from 'lucide-react';
 import { SERVICES } from '@/data/services';
 import { Service } from '@/types/service';
 import { User } from '@/types/user';
+import { 
+  getClinicServices, 
+  getUserExtraServices, 
+  isUserQualified,
+  getServiceEquipmentBrands 
+} from '@/utils/serviceMatching';
 
 // Mock user data with qualifications
 const MOCK_USER: User = {
@@ -101,60 +112,9 @@ const MOCK_CLINICS = {
   }
 };
 
-// Function to check if user is qualified for a treatment
-const isUserQualified = (service: Service, user: User): { qualified: boolean; reason?: string } => {
-  // Check if user has specific certification for the treatment/equipment
-  const hasSpecificCertification = user.certifications.some(cert => {
-    const certName = cert.name.toLowerCase();
-    const serviceName = service.name.toLowerCase();
-    
-    // Check for direct matches
-    if (serviceName.includes('hydrafacial') && certName.includes('hydrafacial')) return true;
-    if (serviceName.includes('chemical peel') && certName.includes('chemical peel')) return true;
-    if (serviceName.includes('microneedling') && certName.includes('dermapen')) return true;
-    if (serviceName.includes('hårborttagning') && certName.includes('laser hair removal')) return true;
-    
-    return false;
-  });
-  
-  // Check if user has the service in their services list
-  const hasServiceExperience = user.services.some(userService => 
-    userService.toLowerCase().includes(service.name.toLowerCase().split(' ')[0]) ||
-    service.name.toLowerCase().includes(userService.toLowerCase().split(' ')[0])
-  );
-  
-  // Check if user has skills in the category
-  const hasRelevantSkills = user.skills.some(skill => {
-    const skillLower = skill.toLowerCase();
-    const categoryLower = service.categoryId.toLowerCase();
-    const serviceLower = service.name.toLowerCase();
-    
-    return skillLower.includes(categoryLower) || 
-           serviceLower.includes(skillLower) ||
-           categoryLower.includes(skillLower);
-  });
-  
-  // Check specialist level requirement
-  const levelHierarchy = { 'basic': 1, 'intermediate': 2, 'advanced': 3, 'expert': 4 };
-  const userLevelMap = { 'junior': 1, 'medior': 2, 'senior': 3, 'expert': 4 };
-  
-  const hasRequiredLevel = userLevelMap[user.level] >= levelHierarchy[service.requiredSpecialistLevel];
-  
-  if (!hasRequiredLevel) {
-    return { 
-      qualified: false, 
-      reason: `Kräver ${service.requiredSpecialistLevel} nivå, du har ${user.level} nivå` 
-    };
-  }
-  
-  if (hasSpecificCertification || hasServiceExperience || hasRelevantSkills) {
-    return { qualified: true };
-  }
-  
-  return { 
-    qualified: false, 
-    reason: 'Du har inte behörighet eller utbildning för den här behandlingen' 
-  };
+// Get filtered services based on clinic specialties
+const getFilteredServices = (clinic: any): Service[] => {
+  return getClinicServices(clinic.specialties, SERVICES);
 };
 
 export default function ClinicDetail() {
@@ -162,8 +122,13 @@ export default function ClinicDetail() {
   const navigate = useNavigate();
   const { currentRole } = useUserRole();
   const [selectedTreatments, setSelectedTreatments] = useState<Set<string>>(new Set());
+  const [showExtraServices, setShowExtraServices] = useState(false);
 
   const clinic = clinicId ? MOCK_CLINICS[clinicId as keyof typeof MOCK_CLINICS] : null;
+
+  // Get clinic services and user's extra services
+  const clinicServices = clinic ? getFilteredServices(clinic) : [];
+  const userExtraServices = clinic ? getUserExtraServices(MOCK_USER, clinicServices, SERVICES) : [];
 
   // Load saved selections from localStorage for this clinic
   useEffect(() => {
@@ -197,15 +162,6 @@ export default function ClinicDetail() {
     }
     saveSelections(newSelections);
   };
-
-  // Group services by category
-  const groupedServices = SERVICES.reduce((acc, service) => {
-    if (!acc[service.categoryId]) {
-      acc[service.categoryId] = [];
-    }
-    acc[service.categoryId].push(service);
-    return acc;
-  }, {} as Record<string, Service[]>);
 
   // Redirect if not staff member
   if (currentRole.id !== 'anstalld') {
@@ -252,10 +208,9 @@ export default function ClinicDetail() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="overview">Översikt</TabsTrigger>
-          <TabsTrigger value="clinic-treatments">Klinikens behandlingar</TabsTrigger>
-          <TabsTrigger value="my-treatments">Mina behandlingar</TabsTrigger>
+          <TabsTrigger value="treatments">Behandlingar</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -334,112 +289,149 @@ export default function ClinicDetail() {
           </Card>
         </TabsContent>
 
-        {/* Clinic Treatments Tab */}
-        <TabsContent value="clinic-treatments" className="space-y-6">
+        {/* Treatments Tab */}
+        <TabsContent value="treatments" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Klinikens behandlingsutbud</CardTitle>
+              <CardTitle>Behandlingar på {clinic.clinicName}</CardTitle>
               <CardDescription>
-                Alla behandlingar som erbjuds på {clinic.clinicName}
+                Välj vilka behandlingar du kan utföra på denna klinik baserat på dina certifieringar och kompetenser.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {Object.entries(groupedServices).map(([categoryId, services]) => (
-                  <div key={categoryId} className="space-y-3">
-                    <h3 className="text-lg font-semibold capitalize">{categoryId}</h3>
-                    <div className="grid gap-3">
-                      {services.map((service) => (
-                        <div
-                          key={service.id}
-                          className="p-4 border rounded-lg"
-                        >
-                          <div className="flex items-center gap-3 mb-2">
-                            <h4 className="font-medium">{service.name}</h4>
-                            <Badge variant="outline" className="text-xs">
-                              {service.requiredSpecialistLevel}
+              <TooltipProvider>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Behandling</TableHead>
+                      <TableHead>Kategori</TableHead>
+                      <TableHead>Utrustning</TableHead>
+                      <TableHead>Tid</TableHead>
+                      <TableHead>Pris</TableHead>
+                      <TableHead className="text-center">Behörighet</TableHead>
+                      <TableHead className="text-center">Bokningsbar</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {clinicServices.map((service) => {
+                      const qualificationCheck = isUserQualified(service, MOCK_USER);
+                      const isQualified = qualificationCheck.qualified;
+                      const equipmentBrands = getServiceEquipmentBrands(service);
+                      
+                      return (
+                        <TableRow key={service.id} className={!isQualified ? 'opacity-60' : ''}>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{service.name}</div>
+                              <div className="text-sm text-muted-foreground">{service.description}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="capitalize">
+                              {service.categoryId}
                             </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            {service.description}
-                          </p>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {service.duration} min
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <DollarSign className="h-3 w-3" />
-                              {(service.price / 100).toLocaleString()} kr
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* My Treatments Tab */}
-        <TabsContent value="my-treatments" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Mina behandlingar på {clinic.clinicName}</CardTitle>
-              <CardDescription>
-                Välj vilka behandlingar du utför på denna klinik. 
-                Dessa måste matcha dina certifieringar och kompetenser.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {Object.entries(groupedServices).map(([categoryId, services]) => (
-                  <div key={categoryId} className="space-y-3">
-                    <h3 className="text-lg font-semibold capitalize">{categoryId}</h3>
-                    <div className="grid gap-3">
-                      {services.map((service) => {
-                        const qualificationCheck = isUserQualified(service, MOCK_USER);
-                        const isQualified = qualificationCheck.qualified;
-                        
-                        return (
-                          <div
-                            key={service.id}
-                            className={`p-4 border rounded-lg transition-all ${
-                              isQualified 
-                                ? 'hover:bg-muted/50 border-border' 
-                                : 'bg-muted/30 border-muted-foreground/20'
-                            }`}
-                          >
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <h4 className={`font-medium ${!isQualified ? 'text-muted-foreground' : ''}`}>
-                                    {service.name}
-                                  </h4>
-                                  <Badge variant="outline" className="text-xs">
-                                    {service.requiredSpecialistLevel}
+                          </TableCell>
+                          <TableCell>
+                            {equipmentBrands.length > 0 ? (
+                              <div className="flex flex-wrap gap-1">
+                                {equipmentBrands.map((brand, index) => (
+                                  <Badge key={index} variant="secondary" className="text-xs">
+                                    {brand}
                                   </Badge>
-                                  {isQualified ? (
-                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                  ) : (
-                                    <AlertCircle className="h-4 w-4 text-amber-500" />
-                                  )}
-                                </div>
-                                <p className={`text-sm mb-2 ${!isQualified ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
-                                  {service.description}
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm">{service.duration} min</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <DollarSign className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm">{(service.price / 100).toLocaleString()} kr</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {isQualified ? (
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <CheckCircle2 className="h-4 w-4 text-green-600 mx-auto" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Du är kvalificerad för denna behandling</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <AlertCircle className="h-4 w-4 text-amber-500 mx-auto" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                  <p>{qualificationCheck.reason}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Switch
+                                  checked={selectedTreatments.has(service.id)}
+                                  onCheckedChange={() => handleTreatmentToggle(service.id, isQualified)}
+                                  disabled={!isQualified}
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>
+                                  {isQualified 
+                                    ? 'Aktivera för att bli bokningsbar för denna behandling'
+                                    : 'Du kan inte aktivera denna behandling - se behörighet'
+                                  }
                                 </p>
-                                
-                                {!isQualified && (
-                                  <Alert className="mb-2 border-amber-200 bg-amber-50">
-                                    <AlertCircle className="h-4 w-4 text-amber-600" />
-                                    <AlertDescription className="text-sm text-amber-800">
-                                      {qualificationCheck.reason}
-                                    </AlertDescription>
-                                  </Alert>
-                                )}
-                                
+                              </TooltipContent>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TooltipProvider>
+
+              {/* Extra services section */}
+              {userExtraServices.length > 0 && (
+                <div className="mt-8">
+                  <Collapsible open={showExtraServices} onOpenChange={setShowExtraServices}>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-4 h-auto border rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">
+                            Behandlingar du kan utföra som inte finns hos kliniken ({userExtraServices.length})
+                          </span>
+                        </div>
+                        <ChevronDown className={`h-4 w-4 transition-transform ${showExtraServices ? 'rotate-180' : ''}`} />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-4">
+                      <div className="grid gap-3">
+                        {userExtraServices.map((service) => (
+                          <div key={service.id} className="p-4 border rounded-lg bg-muted/30">
+                            <div className="flex items-start gap-3">
+                              <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-medium">{service.name}</h4>
+                                  <Badge variant="outline" className="text-xs capitalize">
+                                    {service.categoryId}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-2">{service.description}</p>
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                   <div className="flex items-center gap-1">
                                     <Clock className="h-3 w-3" />
@@ -451,34 +443,24 @@ export default function ClinicDetail() {
                                   </div>
                                 </div>
                               </div>
-                              <Switch
-                                checked={selectedTreatments.has(service.id)}
-                                disabled={!isQualified}
-                                onCheckedChange={() => handleTreatmentToggle(service.id, isQualified)}
-                              />
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <Separator />
-              
-              <div className="flex items-center justify-between pt-4">
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <div>Aktiva behandlingar: {selectedTreatments.size} av {SERVICES.length}</div>
-                  <div>Kvalificerade behandlingar: {SERVICES.filter(service => isUserQualified(service, MOCK_USER).qualified).length} av {SERVICES.length}</div>
+                        ))}
+                      </div>
+                      <Alert className="mt-4 border-blue-200 bg-blue-50">
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          Dessa behandlingar kan du föreslå att kliniken lägger till i sitt utbud.
+                        </AlertDescription>
+                      </Alert>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
-                <Button variant="outline" size="sm">
-                  Spara till profil
-                </Button>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
+
       </Tabs>
     </div>
   );
