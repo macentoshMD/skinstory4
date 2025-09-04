@@ -1,5 +1,5 @@
 
-import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign, ChevronDown, Wallet } from "lucide-react";
+import { Home, Users, Calendar, Building, User, BarChart3, Settings, Sparkles, Clock, Activity, Target, Package, DollarSign, ChevronDown, Wallet, TimerIcon } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
@@ -37,6 +37,7 @@ const settingsNavigation = [
   { name: "Användare", href: "/personal", icon: User },
   { name: "Företag", href: "/foretag", icon: Building },
   { name: "Kliniker", href: "/kliniker", icon: Building },
+  { name: "Arbetstid", href: "/arbetstid", icon: TimerIcon },
   { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
   { name: "Inställningar", href: "/installningar", icon: Settings },
 ];
@@ -105,7 +106,7 @@ export function AppSidebar() {
           ['Dashboard', 'Kunder', 'Kalender', 'Lön', 'Statistik'].includes(item.name)
         ),
         settings: settingsNavigation.filter(item => 
-          ['Kliniker'].includes(item.name)
+          ['Kliniker', 'Arbetstid'].includes(item.name)
         )
       };
     }
