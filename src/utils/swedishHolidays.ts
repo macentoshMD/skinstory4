@@ -148,19 +148,22 @@ export function isRedDay(date: Date): boolean {
 /**
  * Get red day info (name and type)
  */
-export function getRedDayInfo(date: Date): { isRedDay: boolean; name: string | null; type: 'weekend' | 'holiday' | null } {
+export function getRedDayInfo(date: Date): { isRedDay: boolean; name: string | null; type: 'weekend' | 'holiday' | null; showInfo: boolean } {
   const dayOfWeek = date.getDay();
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
   const holidayName = getSwedishHolidayName(date);
   
   if (holidayName) {
-    return { isRedDay: true, name: holidayName, type: 'holiday' };
+    // Show info icon for holidays on weekdays, or specific holidays on weekends
+    const showInfo = !isWeekend || holidayName !== 'Lördag' && holidayName !== 'Söndag';
+    return { isRedDay: true, name: holidayName, type: 'holiday', showInfo };
   }
   
   if (isWeekend) {
     const weekendName = dayOfWeek === 0 ? 'Söndag' : 'Lördag';
-    return { isRedDay: true, name: weekendName, type: 'weekend' };
+    // Don't show info for regular weekends
+    return { isRedDay: true, name: weekendName, type: 'weekend', showInfo: false };
   }
   
-  return { isRedDay: false, name: null, type: null };
+  return { isRedDay: false, name: null, type: null, showInfo: false };
 }

@@ -52,11 +52,13 @@ export const WorkScheduleWeek = ({
                       {format(day, 'd MMM', { locale: sv })}
                     </p>
                   </div>
-                  {redDayInfo.isRedDay && redDayInfo.name && (
+                  {redDayInfo.showInfo && redDayInfo.name && (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Info className="h-4 w-4 text-red-600" />
+                          <div className="cursor-help">
+                            <Info className="h-4 w-4 text-red-600" />
+                          </div>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>{redDayInfo.name}</p>

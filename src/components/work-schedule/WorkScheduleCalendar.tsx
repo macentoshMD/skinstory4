@@ -67,11 +67,13 @@ export const WorkScheduleCalendar = ({
                     <span className={`text-sm font-medium ${redDayInfo.isRedDay ? 'text-red-700' : ''}`}>
                       {format(day, 'd')}
                     </span>
-                    {redDayInfo.isRedDay && redDayInfo.name && (
+                    {redDayInfo.showInfo && redDayInfo.name && (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Info className="h-3 w-3 text-red-600" />
+                            <div className="cursor-help">
+                              <Info className="h-3 w-3 text-red-600" />
+                            </div>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>{redDayInfo.name}</p>
