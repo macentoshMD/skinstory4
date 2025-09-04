@@ -13,13 +13,19 @@ const customers = [
 const treatments = [
   'Portömning', 'Laser', 'HydraFacial', 'Microneedling', 'Chemical Peeling',
   'Konsultation', 'Aknebehandling', 'Rosacea-behandling', 'Anti-age behandling',
-  'IPL', 'Dermaplaning', 'Oxygen Facial', 'LED-behandling', 'Hårborttagning'
+  'IPL', 'Dermaplaning', 'Oxygen Facial', 'LED-behandling', 'Hårborttagning',
+  'Dermapen', 'Laser Carbon Peel', 'Photofacial'
 ];
 
 const products = [
   'Hudkräm', 'Serum', 'Rengöring', 'Peeling', 'Solskydd', 'Moisturizer',
   'Akne-kit', 'Rosacea-kit', 'Anti-age paket', 'Vitamin C Serum',
   'Hyaluronsyra', 'Retinol', 'Niacinamide', 'Cleanser'
+];
+
+const brands = [
+  'DAHL Skincare', 'AcneSpecialisten', 'SkinCeuticals', 'Environ', 
+  'Obagi', 'ZO Skin Health', 'Jan Marini', 'ISDIN'
 ];
 
 const problemCategories = [
@@ -151,7 +157,9 @@ export const generateExtendedMockActivities = (dateRange: DateRange): ExtendedAc
           amount_cents: (600 + Math.floor(Math.random() * 4400)) * 100,
           currency: 'SEK',
           payment_method: activityType.split('_')[1],
-          treatment_type: treatments[Math.floor(Math.random() * treatments.length)]
+          treatment_type: treatments[Math.floor(Math.random() * treatments.length)],
+          sale_channel: 'inhouse',
+          brand: brands[Math.floor(Math.random() * brands.length)]
         };
         break;
 
@@ -213,13 +221,24 @@ export const generateExtendedMockActivities = (dateRange: DateRange): ExtendedAc
             products[Math.floor(Math.random() * products.length)] :
             treatments[Math.floor(Math.random() * treatments.length)]
         };
+        const brand = brands[Math.floor(Math.random() * brands.length)];
+        const orderStatuses = ['Beställd', 'På väg', 'Mottagen'] as const;
         details = {
           problem_category: problemCategories[Math.floor(Math.random() * problemCategories.length)],
           skin_score_improvement: activityType === 'skin_score_improved' ? Math.floor(Math.random() * 35) + 10 : undefined,
           amount_cents: activityType === 'recommendation_purchased' ? (500 + Math.floor(Math.random() * 2000)) * 100 : undefined,
           currency: activityType === 'recommendation_purchased' ? 'SEK' : undefined,
           recommendation_type: activityType.includes('product') ? 'Produkt' : 'Behandling',
-          conversion_rate: Math.floor(Math.random() * 40) + 20
+          conversion_rate: Math.floor(Math.random() * 40) + 20,
+          // Sales tracking for purchased recommendations
+          sale_channel: activityType === 'recommendation_purchased' ? 'online' : undefined,
+          order_status: activityType === 'recommendation_purchased' ? orderStatuses[Math.floor(Math.random() * orderStatuses.length)] : undefined,
+          commission_rate: activityType === 'recommendation_purchased' ? Math.floor(Math.random() * 15) + 10 : undefined,
+          commission_cents: activityType === 'recommendation_purchased' ? Math.floor(((500 + Math.floor(Math.random() * 2000)) * 100) * (Math.floor(Math.random() * 15) + 10) / 100) : undefined,
+          has_before_after_photos: activityType === 'problem_solved' ? Math.random() > 0.3 : undefined,
+          brand: activityType === 'recommendation_purchased' ? brand : undefined,
+          order_id: activityType === 'recommendation_purchased' ? `B2C-${Math.floor(Math.random() * 9000) + 1000}` : undefined,
+          item_name: activityType === 'recommendation_purchased' ? products[Math.floor(Math.random() * products.length)] : undefined
         };
         break;
 

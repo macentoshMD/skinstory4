@@ -1,10 +1,11 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   BarChart3, TrendingUp, Users, Calendar, Star, Trophy, Award, 
-  Target, AlertTriangle, CheckCircle, Zap, Heart 
+  Target, AlertTriangle, CheckCircle, Zap, Heart, ShoppingCart, 
+  Package, Percent, UserCheck, Filter
 } from "lucide-react";
 import { generateExtendedMockActivities } from "@/utils/mockActivityGenerator";
 import { generateEmployeeStats } from "@/utils/employeeStatsGenerator";
@@ -12,22 +13,26 @@ import { StatCard } from "@/components/statistics/StatCard";
 import { AchievementCard } from "@/components/statistics/AchievementCard";
 import { MilestoneCard } from "@/components/statistics/MilestoneCard";
 import { TopListCard } from "@/components/statistics/TopListCard";
+import { OrdersTable } from "@/components/statistics/OrdersTable";
+import { DateRangeFilter } from "@/components/DateRangeFilter";
 
 const Statistics = () => {
-  const { activities, stats } = useMemo(() => {
+  const [selectedDateRange, setSelectedDateRange] = useState(() => {
     const now = new Date();
     const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
-    const dateRange = { 
+    return { 
       from: threeMonthsAgo, 
       to: now, 
       label: "Senaste 3 månaderna" 
     };
-    
-    const mockActivities = generateExtendedMockActivities(dateRange);
+  });
+
+  const { activities, stats } = useMemo(() => {
+    const mockActivities = generateExtendedMockActivities(selectedDateRange);
     const employeeStats = generateEmployeeStats(mockActivities);
     
     return { activities: mockActivities, stats: employeeStats };
-  }, []);
+  }, [selectedDateRange]);
 
   const treatmentItems = Object.entries(stats.treatmentsByType).map(([name, value]) => ({
     name,
@@ -49,14 +54,25 @@ const Statistics = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Min Statistik</h1>
-        <p className="text-muted-foreground mt-2">Din personliga prestation och framsteg</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Min Statistik</h1>
+          <p className="text-muted-foreground mt-2">Din personliga prestation och framsteg</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <DateRangeFilter 
+            onDateRangeChange={setSelectedDateRange}
+            currentRange={selectedDateRange}
+          />
+        </div>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6">
           <TabsTrigger value="overview">Översikt</TabsTrigger>
+          <TabsTrigger value="sales">Försäljning</TabsTrigger>
+          <TabsTrigger value="orders">Ordrar & Provision</TabsTrigger>
           <TabsTrigger value="achievements">Utmärkelser</TabsTrigger>
           <TabsTrigger value="breakdowns">Detaljerad analys</TabsTrigger>
           <TabsTrigger value="goals">Mål & Milstolpar</TabsTrigger>
@@ -80,9 +96,9 @@ const Statistics = () => {
               trend={{ value: 8, label: "från förra månaden", positive: true }}
             />
             <StatCard
-              title="Försäljning"
+              title="Total försäljning"
               value={`${Math.round(stats.totalRevenue).toLocaleString()} kr`}
-              subtitle="Total omsättning"
+              subtitle="Behandlingar + produkter"
               icon={TrendingUp}
               trend={{ value: 15, label: "från förra månaden", positive: true }}
             />
@@ -95,40 +111,73 @@ const Statistics = () => {
             />
           </div>
 
-          {/* This Month Performance */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Denna månad
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{stats.thisMonth.treatments}</div>
-                  <p className="text-sm text-muted-foreground">Behandlingar</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{stats.thisMonth.consultations}</div>
-                  <p className="text-sm text-muted-foreground">Konsultationer</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{stats.thisMonth.sales}</div>
-                  <p className="text-sm text-muted-foreground">Försäljningar</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {Math.round(stats.thisMonth.revenue).toLocaleString()} kr
+          {/* Period Performance */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Denna månad
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{stats.thisMonth.treatments}</div>
+                    <p className="text-sm text-muted-foreground">Behandlingar</p>
                   </div>
-                  <p className="text-sm text-muted-foreground">Intäkter</p>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{stats.thisMonth.consultations}</div>
+                    <p className="text-sm text-muted-foreground">Konsultationer</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{stats.thisMonth.sales}</div>
+                    <p className="text-sm text-muted-foreground">Försäljningar</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {Math.round(stats.thisMonth.revenue).toLocaleString()} kr
+                    </div>
+                    <p className="text-sm text-muted-foreground">Intäkter</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Detta år
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{stats.thisYear.treatments}</div>
+                    <p className="text-sm text-muted-foreground">Behandlingar</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{stats.thisYear.consultations}</div>
+                    <p className="text-sm text-muted-foreground">Konsultationer</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{stats.thisYear.sales}</div>
+                    <p className="text-sm text-muted-foreground">Försäljningar</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {Math.round(stats.thisYear.revenue).toLocaleString()} kr
+                    </div>
+                    <p className="text-sm text-muted-foreground">Intäkter</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Performance Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <StatCard
               title="Konverteringsgrad"
               value={`${stats.conversionRate.toFixed(1)}%`}
@@ -149,7 +198,135 @@ const Statistics = () => {
               icon={Star}
               badge={{ text: stats.customerSatisfaction > 4.5 ? "Utmärkt" : "Bra" }}
             />
+            <StatCard
+              title="Rank i försäljning"
+              value={`#${stats.ranking.position}`}
+              subtitle={`av ${stats.ranking.outOf} säljare`}
+              icon={Trophy}
+              badge={{ text: stats.ranking.position <= 5 ? "Topp 5" : "Bra", variant: stats.ranking.position <= 5 ? "default" : "secondary" }}
+            />
           </div>
+        </TabsContent>
+
+        <TabsContent value="sales" className="space-y-6">
+          {/* Sales KPI Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <StatCard
+              title="Total försäljning"
+              value={`${Math.round(stats.sales.total).toLocaleString()} kr`}
+              subtitle="Produkter totalt"
+              icon={TrendingUp}
+              trend={{ value: 18, label: "från förra perioden", positive: true }}
+            />
+            <StatCard
+              title="Produkter inhouse"
+              value={`${Math.round(stats.sales.inhouseProducts).toLocaleString()} kr`}
+              subtitle="Försäljning i klinik"
+              icon={Package}
+            />
+            <StatCard
+              title="Produkter online"
+              value={`${Math.round(stats.sales.onlineProducts).toLocaleString()} kr`}
+              subtitle="Online-försäljning"
+              icon={ShoppingCart}
+            />
+            <StatCard
+              title="Total provision"
+              value={`${Math.round(stats.commission.total).toLocaleString()} kr`}
+              subtitle={`${stats.commission.entries} provisionsinslag`}
+              icon={Percent}
+              badge={{ text: "Intjänad" }}
+            />
+            <StatCard
+              title="Rank i försäljning"
+              value={`#${stats.ranking.position}`}
+              subtitle={`av ${stats.ranking.outOf} säljare`}
+              icon={Trophy}
+              badge={{ text: stats.ranking.position <= 5 ? "Topp 5" : "Bra", variant: stats.ranking.position <= 5 ? "default" : "secondary" }}
+            />
+          </div>
+
+          {/* Sales Counters */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Försäljningsräknare</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">{stats.counts.consultations}</div>
+                  <p className="text-sm text-muted-foreground">Konsultationer</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">{stats.counts.recommendationsGiven}</div>
+                  <p className="text-sm text-muted-foreground">Rekommendationer givna</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{stats.counts.recommendationsPurchased}</div>
+                  <p className="text-sm text-muted-foreground">Rekommendationer köpta</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600">{stats.recommendationConversion.toFixed(1)}%</div>
+                  <p className="text-sm text-muted-foreground">Konvertering</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-indigo-600">{stats.counts.activePlanCustomers}</div>
+                  <p className="text-sm text-muted-foreground">Aktiva i plan</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-teal-600">{stats.counts.aftercareCustomers}</div>
+                  <p className="text-sm text-muted-foreground">I eftervård</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Top Lists for Sales */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <TopListCard
+              title="Mest sålda behandlingar"
+              items={treatmentItems.slice(0, 5)}
+              valueFormatter={(v) => `${v} st`}
+              showPercentage={true}
+            />
+            <TopListCard
+              title="Mest sålda varumärken"
+              items={brandItems.slice(0, 5)}
+              valueFormatter={(v) => `${v} produkter`}
+              showPercentage={true}
+            />
+            <Card>
+              <CardHeader>
+                <CardTitle>Problem lösta med bevis</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary">{stats.problemsSolvedWithProof}</div>
+                  <p className="text-sm text-muted-foreground">
+                    Problem med före/efter-bilder
+                  </p>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>No-shows</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{stats.counts.noShows}</span>
+                    <AlertTriangle className="h-4 w-4 text-orange-500" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>Online-ordrar</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{stats.counts.onlineOrders}</span>
+                    <ShoppingCart className="h-4 w-4 text-blue-500" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="orders" className="space-y-6">
+          <OrdersTable orders={stats.orders} />
         </TabsContent>
 
         <TabsContent value="achievements" className="space-y-6">

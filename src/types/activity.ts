@@ -26,6 +26,16 @@ export interface ActivityDetails {
   // Order specific
   order_type?: 'B2C' | 'B2B';
   product_category?: string;
+  // Sales tracking
+  sale_channel?: 'online' | 'inhouse';
+  order_status?: 'Beställd' | 'På väg' | 'Mottagen';
+  commission_rate?: number;
+  commission_cents?: number;
+  has_before_after_photos?: boolean;
+  brand?: string;
+  order_id?: string;
+  item_name?: string;
+  payment_method?: string;
   // Support specific
   channel?: 'chat' | 'email' | 'phone';
   case_type?: 'question' | 'complaint' | 'booking';
