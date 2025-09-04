@@ -110,8 +110,6 @@ export function AppSidebar() {
     }
     
     if (currentUserType.id === 'customer') {
-      // Customer portal has completely different navigation - redirect to customer portal
-      window.location.href = '/portal';
       return { main: [], settings: [] };
     }
     
@@ -159,44 +157,15 @@ export function AppSidebar() {
         </div>
       </div>
       
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium px-3 py-2">
-            Huvudmeny
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {filteredMainNav.map((item) => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.href}
-                      className={({ isActive }) =>
-                        `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          isActive
-                            ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
-                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                        }`
-                      }
-                    >
-                      <item.icon className="h-5 w-5" />
-                      {item.name}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {filteredSettingsNav.length > 0 && (
+      {currentUserType.id !== 'customer' && (
+        <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium px-3 py-2">
-              Inställningar
+              Huvudmeny
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {filteredSettingsNav.map((item) => (
+                {filteredMainNav.map((item) => (
                   <SidebarMenuItem key={item.name}>
                     <SidebarMenuButton asChild>
                       <NavLink
@@ -218,8 +187,39 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        )}
-      </SidebarContent>
+
+          {filteredSettingsNav.length > 0 && (
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium px-3 py-2">
+                Inställningar
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {filteredSettingsNav.map((item) => (
+                    <SidebarMenuItem key={item.name}>
+                      <SidebarMenuButton asChild>
+                        <NavLink
+                          to={item.href}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                              isActive
+                                ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
+                                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                            }`
+                          }
+                        >
+                          <item.icon className="h-5 w-5" />
+                          {item.name}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
+        </SidebarContent>
+      )}
     </Sidebar>
   );
 }
