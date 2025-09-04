@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { TimeEntryForm } from "./TimeEntryForm";
 import { WorkScheduleEntry } from "@/pages/WorkSchedule";
 import { Edit } from "lucide-react";
+import { isRedDay } from "@/utils/swedishHolidays";
 
 interface WorkScheduleWeekProps {
   currentWeek: Date;
@@ -29,17 +30,24 @@ export const WorkScheduleWeek = ({
       {days.map((day) => {
         const dateString = format(day, 'yyyy-MM-dd');
         const entry = scheduleEntries[dateString];
+        const isRedDayToday = isRedDay(day);
         const workHours = entry ? calculateWorkHours(entry.startTime, entry.endTime, entry.breakDuration) : 0;
         
         return (
           <div 
             key={dateString}
-            className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50"
+            className={`flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 ${
+              isRedDayToday ? 'border-red-200 bg-red-50/50' : ''
+            }`}
           >
             <div className="flex items-center gap-4">
               <div className="text-center min-w-[100px]">
-                <p className="font-medium">{format(day, 'eeee', { locale: sv })}</p>
-                <p className="text-sm text-muted-foreground">{format(day, 'd MMM', { locale: sv })}</p>
+                <p className={`font-medium ${isRedDayToday ? 'text-red-700' : ''}`}>
+                  {format(day, 'eeee', { locale: sv })}
+                </p>
+                <p className={`text-sm ${isRedDayToday ? 'text-red-600' : 'text-muted-foreground'}`}>
+                  {format(day, 'd MMM', { locale: sv })}
+                </p>
               </div>
               
               {entry?.isWorkDay ? (
@@ -58,11 +66,13 @@ export const WorkScheduleWeek = ({
                   </div>
                   <div>
                     <span className="text-muted-foreground">Arbetstid: </span>
-                    <span className="font-medium text-primary">{workHours}h</span>
+                    <span className="font-medium text-primary">{workHours.toFixed(1)}h</span>
                   </div>
                 </div>
               ) : (
-                <Badge variant="secondary">Ledig dag</Badge>
+                <Badge variant={isRedDayToday ? "destructive" : "secondary"}>
+                  {isRedDayToday ? "Röd dag" : "Ledig dag"}
+                </Badge>
               )}
             </div>
 

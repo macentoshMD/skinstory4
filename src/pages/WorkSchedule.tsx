@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, ChevronRight, Clock, Percent, Calendar as CalendarIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Percent, Calendar as CalendarIcon, Copy } from "lucide-react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, getWeeksInMonth, startOfWeek, endOfWeek, addWeeks } from "date-fns";
 import { sv } from "date-fns/locale";
 import { WorkScheduleCalendar } from "@/components/work-schedule/WorkScheduleCalendar";
 import { WorkScheduleWeek } from "@/components/work-schedule/WorkScheduleWeek";
 import { WeeklyTemplate } from "@/components/work-schedule/WeeklyTemplate";
 import { WorkScheduleStats } from "@/components/work-schedule/WorkScheduleStats";
+import { toast } from "sonner";
 
 export interface WorkScheduleEntry {
   date: string;
@@ -85,11 +86,56 @@ const WorkSchedule = () => {
     const [startHour, startMin] = startTime.split(':').map(Number);
     const [endHour, endMin] = endTime.split(':').map(Number);
     
-    const startMinutes = startHour * 60 + startMin;
-    const endMinutes = endHour * 60 + endMin;
+    let startMinutes = startHour * 60 + startMin;
+    let endMinutes = endHour * 60 + endMin;
+    
+    // Handle overnight shifts (e.g., 23:00 to 07:00)
+    if (endMinutes < startMinutes) {
+      endMinutes += 24 * 60; // Add 24 hours to end time
+    }
     
     const totalMinutes = endMinutes - startMinutes - breakDuration;
     return Math.max(0, totalMinutes / 60);
+  };
+
+  const copyFromPreviousMonth = () => {
+    const prevMonth = subMonths(currentMonth, 1);
+    const prevMonthStart = startOfMonth(prevMonth);
+    const prevMonthEnd = endOfMonth(prevMonth);
+    const prevMonthDays = eachDayOfInterval({ start: prevMonthStart, end: prevMonthEnd });
+    
+    const currentMonthStart = startOfMonth(currentMonth);
+    const currentMonthEnd = endOfMonth(currentMonth);
+    const currentMonthDays = eachDayOfInterval({ start: currentMonthStart, end: currentMonthEnd });
+    
+    const newEntries = { ...scheduleEntries };
+    
+    // Copy entries by matching day of week
+    currentMonthDays.forEach(currentDay => {
+      const dayOfWeek = currentDay.getDay();
+      const currentDateString = format(currentDay, 'yyyy-MM-dd');
+      
+      // Find corresponding day in previous month
+      const prevDayWithSameWeekday = prevMonthDays.find(prevDay => prevDay.getDay() === dayOfWeek);
+      
+      if (prevDayWithSameWeekday) {
+        const prevDateString = format(prevDayWithSameWeekday, 'yyyy-MM-dd');
+        const prevEntry = scheduleEntries[prevDateString];
+        
+        if (prevEntry) {
+          newEntries[currentDateString] = {
+            ...prevEntry,
+            date: currentDateString
+          };
+        } else {
+          // Remove entry if previous month had no entry for this day type
+          delete newEntries[currentDateString];
+        }
+      }
+    });
+    
+    setScheduleEntries(newEntries);
+    toast.success("Schema kopierat från föregående månad");
   };
 
   return (
@@ -99,9 +145,15 @@ const WorkSchedule = () => {
           <h1 className="text-3xl font-bold">Arbetstid</h1>
           <p className="text-muted-foreground mt-1">Hantera ditt arbetstidsschema</p>
         </div>
-        <Button onClick={applyWeeklyTemplate} variant="outline">
-          Använd veckomall
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={copyFromPreviousMonth} variant="outline" className="flex items-center gap-2">
+            <Copy className="h-4 w-4" />
+            Kopiera föregående månad
+          </Button>
+          <Button onClick={applyWeeklyTemplate} variant="outline">
+            Använd veckomall
+          </Button>
+        </div>
       </div>
 
       <WorkScheduleStats 

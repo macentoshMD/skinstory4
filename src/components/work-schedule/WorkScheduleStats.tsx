@@ -3,6 +3,7 @@ import { Clock, Calendar, Percent, CheckCircle } from "lucide-react";
 import { format, eachDayOfInterval, startOfMonth, endOfMonth, isWeekend } from "date-fns";
 import { sv } from "date-fns/locale";
 import { WorkScheduleEntry } from "@/pages/WorkSchedule";
+import { isRedDay } from "@/utils/swedishHolidays";
 
 interface WorkScheduleStatsProps {
   scheduleEntries: Record<string, WorkScheduleEntry>;
@@ -15,8 +16,8 @@ export const WorkScheduleStats = ({ scheduleEntries, currentMonth, calculateWork
   const monthEnd = endOfMonth(currentMonth);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
   
-  // Calculate working days in month (exclude weekends)
-  const workingDaysInMonth = monthDays.filter(day => !isWeekend(day)).length;
+  // Calculate working days in month (exclude weekends and red days)
+  const workingDaysInMonth = monthDays.filter(day => !isRedDay(day)).length;
   
   // Full-time hours (8 hours per working day)
   const fullTimeHours = workingDaysInMonth * 8;

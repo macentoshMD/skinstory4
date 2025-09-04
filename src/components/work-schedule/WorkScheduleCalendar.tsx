@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { TimeEntryForm } from "./TimeEntryForm";
 import { WorkScheduleEntry } from "@/pages/WorkSchedule";
+import { isRedDay } from "@/utils/swedishHolidays";
 
 interface WorkScheduleCalendarProps {
   currentMonth: Date;
@@ -44,6 +45,7 @@ export const WorkScheduleCalendar = ({
           const dateString = format(day, 'yyyy-MM-dd');
           const entry = scheduleEntries[dateString];
           const isCurrentMonth = isSameMonth(day, currentMonth);
+          const isRedDayToday = isRedDay(day);
           const workHours = entry ? calculateWorkHours(entry.startTime, entry.endTime, entry.breakDuration) : 0;
           
           return (
@@ -55,10 +57,11 @@ export const WorkScheduleCalendar = ({
                     h-20 p-2 flex flex-col items-start justify-start border border-border
                     ${!isCurrentMonth ? 'text-muted-foreground bg-muted/50' : ''}
                     ${isToday(day) ? 'border-primary bg-primary/5' : ''}
-                    ${entry?.isWorkDay ? 'bg-green-50 hover:bg-green-100' : 'hover:bg-accent'}
+                    ${isRedDayToday ? 'bg-red-50 text-red-700' : ''}
+                    ${entry?.isWorkDay && !isRedDayToday ? 'bg-green-50 hover:bg-green-100' : 'hover:bg-accent'}
                   `}
                 >
-                  <span className="text-sm font-medium">
+                  <span className={`text-sm font-medium ${isRedDayToday ? 'text-red-700' : ''}`}>
                     {format(day, 'd')}
                   </span>
                   {entry?.isWorkDay && (
