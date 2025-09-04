@@ -1,63 +1,44 @@
-import { useState, useEffect } from 'react';
 import { useUserRole } from '@/contexts/UserRoleContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { MapPin, Phone, Mail, Building2, Users, Clock, DollarSign } from 'lucide-react';
-import { SERVICES } from '@/data/services';
-import { Service } from '@/types/service';
+import { MapPin, Building2, Users, ChevronRight, Search, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
 
-// Mock data for connected clinic
-const MOCK_CLINIC_CONNECTION = {
-  companyName: 'Aknespecialisten',
-  clinicName: 'Aknespecialisten Östermalm',
-  address: 'Östermalmsvägen 12, 114 26 Stockholm',
-  phone: '08-123 45 67',
-  email: 'ostermalm@aknespecialisten.se',
-  website: 'www.aknespecialisten.se',
-  staffCount: 12,
-  establishedYear: 2015,
-  specialties: ['Aknebehandling', 'Hudvård', 'Laser', 'Anti-age']
-};
+// Mock data for connected clinics
+const MOCK_USER_CLINICS = [
+  {
+    id: 'akne-ostermalm',
+    companyName: 'Aknespecialisten',
+    clinicName: 'Aknespecialisten Östermalm',
+    address: 'Östermalmsvägen 12, 114 26 Stockholm',
+    phone: '08-123 45 67',
+    email: 'ostermalm@aknespecialisten.se',
+    staffCount: 12,
+    role: 'Hudterapeut',
+    startDate: '2023-01-15',
+    specialties: ['Aknebehandling', 'Hudvård', 'Laser'],
+    isActive: true
+  },
+  {
+    id: 'skincare-sodermalm',
+    companyName: 'SkinCare Solutions',
+    clinicName: 'SkinCare Södermalm',
+    address: 'Götgatan 45, 118 26 Stockholm',
+    phone: '08-987 65 43',
+    email: 'sodermalm@skincaresolutions.se',
+    staffCount: 8,
+    role: 'Konsult',
+    startDate: '2023-06-01',
+    specialties: ['Anti-age', 'Injektioner', 'Hudvård'],
+    isActive: true
+  }
+];
 
 export default function StaffClinics() {
   const { currentRole } = useUserRole();
-  const [selectedTreatments, setSelectedTreatments] = useState<Set<string>>(new Set());
-
-  // Load saved selections from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('staff-selected-treatments');
-    if (saved) {
-      setSelectedTreatments(new Set(JSON.parse(saved)));
-    }
-  }, []);
-
-  // Save selections to localStorage
-  const saveSelections = (newSelections: Set<string>) => {
-    setSelectedTreatments(newSelections);
-    localStorage.setItem('staff-selected-treatments', JSON.stringify(Array.from(newSelections)));
-  };
-
-  const handleTreatmentToggle = (treatmentId: string) => {
-    const newSelections = new Set(selectedTreatments);
-    if (newSelections.has(treatmentId)) {
-      newSelections.delete(treatmentId);
-    } else {
-      newSelections.add(treatmentId);
-    }
-    saveSelections(newSelections);
-  };
-
-  // Group services by category
-  const groupedServices = SERVICES.reduce((acc, service) => {
-    if (!acc[service.categoryId]) {
-      acc[service.categoryId] = [];
-    }
-    acc[service.categoryId].push(service);
-    return acc;
-  }, {} as Record<string, Service[]>);
+  const navigate = useNavigate();
 
   // Redirect if not staff member
   if (currentRole.id !== 'anstalld') {
@@ -74,144 +55,99 @@ export default function StaffClinics() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Mina Kliniker</h1>
-        <p className="text-muted-foreground">
-          Hantera dina klinikuppkopplingar och behandlingar
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Mina Kliniker</h1>
+          <p className="text-muted-foreground">
+            Hantera dina klinikuppkopplingar och behandlingar
+          </p>
+        </div>
+        <Button 
+          onClick={() => navigate('/kliniker/upptack')}
+          className="gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Upptäck fler kliniker
+        </Button>
       </div>
 
-      {/* Connected Clinic Information */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
-            <CardTitle>{MOCK_CLINIC_CONNECTION.companyName}</CardTitle>
-          </div>
-          <CardDescription>
-            Din huvudsakliga arbetsplats
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-3">{MOCK_CLINIC_CONNECTION.clinicName}</h3>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                  <span className="text-sm">{MOCK_CLINIC_CONNECTION.address}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{MOCK_CLINIC_CONNECTION.phone}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{MOCK_CLINIC_CONNECTION.email}</span>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{MOCK_CLINIC_CONNECTION.staffCount} anställda</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Etablerad {MOCK_CLINIC_CONNECTION.establishedYear}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input 
+          placeholder="Sök bland dina kliniker..." 
+          className="pl-10"
+        />
+      </div>
 
-          <Separator />
-
-          <div>
-            <h4 className="font-medium mb-2">Klinikens specialiteter</h4>
-            <div className="flex flex-wrap gap-2">
-              {MOCK_CLINIC_CONNECTION.specialties.map((specialty) => (
-                <Badge key={specialty} variant="secondary">
-                  {specialty}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
-            <p className="text-sm text-blue-900 dark:text-blue-100">
-              <strong>Din Skin Story-profil</strong> följer med dig mellan kliniker. 
-              Behandlingar och certifieringar du aktiverar här blir en del av din portabla yrkesprofil.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Treatment Selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Mina Behandlingar</CardTitle>
-          <CardDescription>
-            Välj vilka behandlingar du utför på denna klinik. 
-            Dessa måste matcha dina certifieringar och kompetenser.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {Object.entries(groupedServices).map(([categoryId, services]) => (
-              <div key={categoryId} className="space-y-3">
-                <h3 className="text-lg font-semibold capitalize">{categoryId}</h3>
-                <div className="grid gap-3">
-                  {services.map((service) => (
-                    <div
-                      key={service.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-medium">{service.name}</h4>
-                          <Badge variant="outline" className="text-xs">
-                            {service.requiredSpecialistLevel}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {service.description}
-                        </p>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {service.duration} min
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="h-3 w-3" />
-                            {(service.price / 100).toLocaleString()} kr
-                          </div>
-                        </div>
+      {/* Connected Clinics List */}
+      <div className="space-y-4">
+        {MOCK_USER_CLINICS.map((clinic) => (
+          <Card 
+            key={clinic.id} 
+            className="cursor-pointer hover:bg-muted/50 transition-colors"
+            onClick={() => navigate(`/kliniker/${clinic.id}`)}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Building2 className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">{clinic.companyName}</h3>
+                    <Badge variant="secondary">{clinic.role}</Badge>
+                    {clinic.isActive && (
+                      <Badge variant="default" className="bg-green-500">
+                        Aktiv
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <h4 className="font-medium text-muted-foreground mb-2">
+                    {clinic.clinicName}
+                  </h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-4 mb-3">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        <span>{clinic.address}</span>
                       </div>
-                      <Switch
-                        checked={selectedTreatments.has(service.id)}
-                        onCheckedChange={() => handleTreatmentToggle(service.id)}
-                      />
+                      <div className="flex items-center gap-2 text-sm">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span>{clinic.staffCount} anställda</span>
+                      </div>
                     </div>
-                  ))}
+                    
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        Anställd sedan: {new Date(clinic.startDate).toLocaleDateString('sv-SE')}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {clinic.specialties.map((specialty) => (
+                      <Badge key={specialty} variant="outline" className="text-xs">
+                        {specialty}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
+                
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-      {/* Summary */}
-      <Card>
+      {/* Info Box */}
+      <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
         <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">
-              Aktiva behandlingar: {selectedTreatments.size} av {SERVICES.length}
-            </span>
-            <Button variant="outline" size="sm">
-              Exportera till profil
-            </Button>
-          </div>
+          <p className="text-sm text-blue-900 dark:text-blue-100">
+            <strong>Din Skin Story-profil</strong> följer med dig mellan kliniker. 
+            Behandlingar och certifieringar du aktiverar synkroniseras automatiskt och blir en del av din portabla yrkesprofil.
+          </p>
         </CardContent>
       </Card>
     </div>

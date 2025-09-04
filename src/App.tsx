@@ -25,6 +25,8 @@ import ProblemsAndAreas from "./pages/ProblemsAndAreas";
 import CustomerPortalDashboard from "./pages/portal/CustomerPortalDashboard";
 import WorkSchedule from "./pages/WorkSchedule";
 import StaffClinics from "./pages/StaffClinics";
+import ClinicDetail from "./pages/ClinicDetail";
+import DiscoverClinics from "./pages/DiscoverClinics";
 
 import CustomerPortalProblems from "./pages/portal/CustomerPortalProblems";
 import CustomerPortalTreatmentPlan from "./pages/portal/CustomerPortalTreatmentPlan";
@@ -54,7 +56,9 @@ const App = () => (
           <Route path="/personal" element={<Staff />} />
             <Route path="/personal/:id" element={<UserProfile />} />
             <Route path="/arbetstid" element={<WorkSchedule />} />
-            <Route path="/kliniker" element={<StaffClinics />} />
+        <Route path="/kliniker" element={<StaffClinics />} />
+        <Route path="/kliniker/upptack" element={<DiscoverClinics />} />
+        <Route path="/kliniker/:clinicId" element={<ClinicDetail />} />
             <Route path="/insikter" element={<Insights />} />
             <Route path="/statistik" element={<Statistics />} />
             <Route path="/kalender" element={<Calendar />} />
