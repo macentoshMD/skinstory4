@@ -30,7 +30,7 @@ export interface BookingFormData {
   reminderSent: boolean;
 }
 
-export type CalendarView = 'day' | 'week';
+export type CalendarView = 'day' | 'week' | 'month';
 
 export interface CalendarEvent {
   booking: Booking;

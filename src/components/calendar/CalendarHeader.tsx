@@ -24,16 +24,26 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   const handlePrevious = () => {
     if (view === 'day') {
       onDateChange(subDays(currentDate, 1));
-    } else {
+    } else if (view === 'week') {
       onDateChange(subWeeks(currentDate, 1));
+    } else {
+      // month view
+      const newDate = new Date(currentDate);
+      newDate.setMonth(newDate.getMonth() - 1);
+      onDateChange(newDate);
     }
   };
 
   const handleNext = () => {
     if (view === 'day') {
       onDateChange(addDays(currentDate, 1));
-    } else {
+    } else if (view === 'week') {
       onDateChange(addWeeks(currentDate, 1));
+    } else {
+      // month view
+      const newDate = new Date(currentDate);
+      newDate.setMonth(newDate.getMonth() + 1);
+      onDateChange(newDate);
     }
   };
 
@@ -44,9 +54,12 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   const getDateText = () => {
     if (view === 'day') {
       return format(currentDate, 'EEEE d MMMM yyyy', { locale: sv });
-    } else {
+    } else if (view === 'week') {
       const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
       return `Vecka ${format(currentDate, 'w')} • ${formatWeekRange(weekStart)}`;
+    } else {
+      // month view
+      return format(currentDate, 'MMMM yyyy', { locale: sv });
     }
   };
 
@@ -90,6 +103,14 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
             className="px-4"
           >
             Vecka
+          </Button>
+          <Button
+            variant={view === 'month' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => onViewChange('month')}
+            className="px-4"
+          >
+            Månad
           </Button>
         </div>
         

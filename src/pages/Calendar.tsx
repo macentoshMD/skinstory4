@@ -6,6 +6,7 @@ import { getBookingsForDate, getBookingsForWeek } from '@/utils/calendarLayout';
 import { CalendarHeader } from '@/components/calendar/CalendarHeader';
 import { DayView } from '@/components/calendar/DayView';
 import { WeekView } from '@/components/calendar/WeekView';
+import { MonthView } from '@/components/calendar/MonthView';
 import { BookingDetailsDrawer } from '@/components/calendar/BookingDetailsDrawer';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -97,8 +98,16 @@ const Calendar = () => {
               onNewBooking={handleNewBooking}
               onUpdateBooking={handleUpdateBooking}
             />
-          ) : (
+          ) : view === 'week' ? (
             <WeekView
+              date={currentDate}
+              bookings={bookings}
+              onBookingClick={handleBookingClick}
+              onNewBooking={handleNewBooking}
+              onUpdateBooking={handleUpdateBooking}
+            />
+          ) : (
+            <MonthView
               date={currentDate}
               bookings={bookings}
               onBookingClick={handleBookingClick}

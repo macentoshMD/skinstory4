@@ -49,6 +49,9 @@ export const DayView: React.FC<DayViewProps> = ({ date }) => {
                 
                 {/* Boknings område */}
                 <td className="h-16 p-1 relative">
+                  {/* 10-minuters streck */}
+                  <div className="absolute top-1/3 left-0 right-0 h-px bg-muted/50"></div>
+                  <div className="absolute top-2/3 left-0 right-0 h-px bg-muted/50"></div>
                   {/* Tom för nu - här kommer bokningar senare */}
                 </td>
               </tr>
