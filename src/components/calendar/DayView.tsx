@@ -233,25 +233,27 @@ export const DayView: React.FC<DayViewProps> = ({
               ) : (
                 layouts.map((layout) => {
                   const isPast = layout.booking.endTime < new Date();
-                  const columnWidth = 100 / layout.columnCount;
+                  const columnWidth = Math.floor((100 - 2) / layout.columnCount); // Leave 2% margin
+                  const leftMargin = layout.column * columnWidth + 1; // 1% left margin
                   
                   return (
-                    <div key={layout.booking.id} className="absolute">
+                    <div key={layout.booking.id}>
                       {/* Main booking */}
                       <div
-                        className="relative"
+                        className="absolute"
                         style={{
                           top: `${layout.top}px`,
-                          left: `${layout.column * columnWidth}%`,
-                          width: `${columnWidth - 1}%`,
-                          height: `${layout.height}px`
+                          left: `${leftMargin}%`,
+                          width: `${columnWidth}%`,
+                          height: `${layout.height}px`,
+                          zIndex: 10
                         }}
                       >
                         <AppointmentCard
                           booking={layout.booking}
                           onClick={() => onBookingClick(layout.booking)}
-                          onMouseDown={(e, action) => handleMouseDown(e, layout.booking.id, action)}
-                          className={cn("h-full", isPast && "opacity-75")}
+                          onMouseDown={handleMouseDown ? (e, action) => handleMouseDown(e, layout.booking.id, action) : undefined}
+                          className="h-full"
                           isPast={isPast}
                         />
                       </div>
@@ -259,15 +261,16 @@ export const DayView: React.FC<DayViewProps> = ({
                       {/* Buffer time */}
                       {layout.booking.bufferTime && (
                         <div
-                          className="absolute bg-muted/50 border border-muted rounded text-xs text-muted-foreground flex items-center justify-center"
+                          className="absolute bg-muted/30 border border-muted-foreground/20 rounded-sm text-xs text-muted-foreground flex items-center justify-center"
                           style={{
                             top: `${layout.top + layout.height}px`,
-                            left: `${layout.column * columnWidth}%`,
-                            width: `${columnWidth - 1}%`,
-                            height: `${layout.bufferHeight}px`
+                            left: `${leftMargin}%`,
+                            width: `${columnWidth}%`,
+                            height: `${layout.bufferHeight}px`,
+                            zIndex: 5
                           }}
                         >
-                          Förberedelse ({layout.booking.bufferTime}min)
+                          Förberedelse
                         </div>
                       )}
                     </div>

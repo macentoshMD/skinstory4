@@ -2,7 +2,8 @@ import React from 'react';
 import { Booking } from '@/types/booking';
 import { getTreatmentColor, formatTimeRange, getStatusText } from '@/utils/calendar';
 import { Badge } from '@/components/ui/badge';
-import { Clock, User, MapPin, Phone } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Clock, User, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface AppointmentCardProps {
@@ -16,93 +17,110 @@ interface AppointmentCardProps {
 export const AppointmentCard: React.FC<AppointmentCardProps> = ({ 
   booking, 
   onClick, 
+  onMouseDown,
   className = "",
   isPast = false
 }) => {
   const treatmentColor = getTreatmentColor(booking.treatmentCategory);
-  const timeRange = formatTimeRange(booking.startTime, booking.endTime);
+  
+  // Calculate end time without buffer for display
+  const displayEndTime = new Date(booking.startTime.getTime() + booking.duration * 60000);
+  const timeRange = formatTimeRange(booking.startTime, displayEndTime);
   const statusText = getStatusText(booking.status);
 
   return (
-    <div className="relative">
-      <div
-        className={cn(
-          "p-3 rounded-lg border-l-4 cursor-pointer transition-all hover:shadow-md",
-          treatmentColor,
-          className
-        )}
-        onClick={onClick}
-      >
-        <div className="flex justify-between items-start mb-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm truncate">
-              {booking.treatmentType}
-            </h3>
-            <div className="flex items-center gap-1 text-xs mt-1">
-              <Clock className="h-3 w-3" />
-              <span>{timeRange}</span>
-              <span className="text-muted-foreground">({booking.duration} min)</span>
-            </div>
+    <div 
+      className={cn(
+        "relative p-2 rounded-md border cursor-pointer transition-all hover:shadow-sm bg-card text-card-foreground",
+        treatmentColor,
+        className
+      )}
+      onClick={onClick}
+      onMouseDown={onMouseDown ? (e) => onMouseDown(e, 'drag') : undefined}
+    >
+      {/* Header */}
+      <div className="flex justify-between items-start mb-1">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium text-sm truncate leading-tight">
+            {booking.treatmentType}
+          </h3>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+            <Clock className="h-3 w-3" />
+            <span>{timeRange}</span>
           </div>
-          <Badge variant="secondary" className="text-xs">
-            {statusText}
-          </Badge>
         </div>
+        <Badge 
+          variant="secondary" 
+          className="text-xs ml-1 shrink-0"
+        >
+          {statusText}
+        </Badge>
+      </div>
 
-        <div className="space-y-1">
-          <div className="flex items-center gap-1 text-xs">
-            <User className="h-3 w-3" />
-            <span className="font-medium">{booking.customerName}</span>
-            {booking.isFirstVisit && (
-              <Badge variant="outline" className="text-xs ml-1">Ny</Badge>
-            )}
-          </div>
-          
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <User className="h-3 w-3" />
-            <span>{booking.staffName}</span>
-          </div>
+      {/* Customer Info */}
+      <div className="space-y-0.5">
+        <div className="flex items-center gap-1 text-xs">
+          <User className="h-3 w-3" />
+          <span className="font-medium truncate">{booking.customerName}</span>
+          {booking.isFirstVisit && (
+            <Badge variant="outline" className="text-xs px-1 py-0">Ny</Badge>
+          )}
         </div>
         
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">{booking.staffName}</span>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>{booking.staffName}</span>
           {booking.room && (
-            <span className="text-gray-500">{booking.room}</span>
+            <div className="flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              <span>{booking.room}</span>
+            </div>
           )}
         </div>
         
-        <div className="flex items-center justify-between text-sm mt-1">
-          {booking.customerPhone && (
-            <span className="text-gray-500">{booking.customerPhone}</span>
-          )}
-          {booking.price && (
-            <span className="font-medium">{booking.price} kr</span>
-          )}
-        </div>
+        {booking.price && (
+          <div className="text-xs font-medium text-right">
+            {booking.price.toLocaleString()} kr
+          </div>
+        )}
       </div>
       
-      {/* Quick status update for past bookings */}
-      {isPast && booking.status !== 'completed' && booking.status !== 'no_show' && (
-        <div className="absolute top-2 right-2 flex gap-1">
-          <button
-            className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+      {/* Quick actions for past bookings that aren't completed */}
+      {isPast && booking.status === 'confirmed' && (
+        <div className="flex gap-1 mt-1">
+          <Button 
+            size="sm" 
+            variant="outline"
+            className="h-5 text-xs px-2 py-0 bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
             onClick={(e) => {
               e.stopPropagation();
-              // TODO: Update booking status to completed
+              // Will be handled by parent
             }}
           >
             Betald
-          </button>
-          <button
-            className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+          </Button>
+          <Button 
+            size="sm" 
+            variant="outline"
+            className="h-5 text-xs px-2 py-0 bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
             onClick={(e) => {
               e.stopPropagation();
-              // TODO: Update booking status to no_show
+              // Will be handled by parent
             }}
           >
             No show
-          </button>
+          </Button>
         </div>
+      )}
+      
+      {/* Resize handle */}
+      {onMouseDown && !isPast && (
+        <div
+          className="absolute bottom-0 left-0 right-0 h-1 cursor-ns-resize opacity-0 hover:opacity-100 transition-opacity bg-primary/20"
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            onMouseDown(e, 'resize');
+          }}
+        />
       )}
     </div>
   );

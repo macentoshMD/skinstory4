@@ -81,8 +81,9 @@ export function buildDayLayout(bookings: Booking[], date: Date): BookingLayout[]
   const sortedBookings = [...dayBookings].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
   
   const layouts: BookingLayout[] = [];
-  const columns: { endTime: number; bookings: Booking[] }[] = [];
+  const columns: Array<{ endTime: number; bookings: Booking[] }> = [];
   
+  // First pass: assign columns
   sortedBookings.forEach(booking => {
     const startMinutes = getMinutesFromDayStart(booking.startTime);
     const endMinutes = getMinutesFromDayStart(booking.endTime);
@@ -103,16 +104,17 @@ export function buildDayLayout(bookings: Booking[], date: Date): BookingLayout[]
     layouts.push({
       booking,
       column: columnIndex,
-      columnCount: columns.length,
+      columnCount: 1, // Will be updated in second pass
       top: minutesToPixels(startMinutes),
       height: minutesToPixels(booking.duration),
       bufferHeight: minutesToPixels(BUFFER_TIME)
     });
   });
   
-  // Update column counts for all layouts
+  // Second pass: update column counts
+  const totalColumns = columns.length;
   layouts.forEach(layout => {
-    layout.columnCount = columns.length;
+    layout.columnCount = totalColumns;
   });
   
   return layouts;
