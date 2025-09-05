@@ -10,8 +10,8 @@ export const mockBookings: Booking[] = [
     staffName: 'Dr. Emma Karlsson',
     treatmentType: 'Konsultation',
     treatmentCategory: 'consultation',
-    startTime: new Date(2024, 11, 5, 9, 30), // 09:30
-    endTime: new Date(2024, 11, 5, 10, 0), // 10:00
+    startTime: new Date(new Date().setHours(9, 30, 0, 0)), // 09:30 idag
+    endTime: new Date(new Date().setHours(10, 0, 0, 0)), // 10:00 idag
     duration: 30, // 20 min + 10 min paus
     price: 800,
     status: 'confirmed',
@@ -29,8 +29,8 @@ export const mockBookings: Booking[] = [
     staffName: 'Terapeut Lisa Berg',
     treatmentType: 'Aknebehandling',
     treatmentCategory: 'facial',
-    startTime: new Date(2024, 11, 5, 10, 30), // 10:30
-    endTime: new Date(2024, 11, 5, 11, 40), // 11:40
+    startTime: new Date(new Date().setHours(10, 30, 0, 0)), // 10:30 idag
+    endTime: new Date(new Date().setHours(11, 40, 0, 0)), // 11:40 idag
     duration: 70, // 60 min + 10 min paus
     price: 1200,
     status: 'confirmed',
@@ -48,8 +48,8 @@ export const mockBookings: Booking[] = [
     staffName: 'Terapeut Anna Lindgren',
     treatmentType: 'Laserbehandling',
     treatmentCategory: 'laser',
-    startTime: new Date(2024, 11, 5, 13, 0), // 13:00
-    endTime: new Date(2024, 11, 5, 14, 40), // 14:40
+    startTime: new Date(new Date().setHours(13, 0, 0, 0)), // 13:00 idag
+    endTime: new Date(new Date().setHours(14, 40, 0, 0)), // 14:40 idag
     duration: 100, // 90 min + 10 min paus
     price: 2500,
     status: 'confirmed',
@@ -58,7 +58,7 @@ export const mockBookings: Booking[] = [
     updatedAt: new Date()
   },
   
-  // Konsultation nästa dag
+  // Konsultation imorgon
   {
     id: '4',
     customerId: 'cust-4',
@@ -67,8 +67,8 @@ export const mockBookings: Booking[] = [
     staffName: 'Dr. Emma Karlsson',
     treatmentType: 'Konsultation',
     treatmentCategory: 'consultation',
-    startTime: new Date(2024, 11, 6, 14, 20), // 14:20
-    endTime: new Date(2024, 11, 6, 14, 50), // 14:50
+    startTime: new Date(new Date().getTime() + 24 * 60 * 60 * 1000 + new Date().setHours(14, 20, 0, 0) - new Date().setHours(0, 0, 0, 0)), // 14:20 imorgon
+    endTime: new Date(new Date().getTime() + 24 * 60 * 60 * 1000 + new Date().setHours(14, 50, 0, 0) - new Date().setHours(0, 0, 0, 0)), // 14:50 imorgon
     duration: 30,
     price: 800,
     status: 'confirmed',
