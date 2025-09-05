@@ -1,6 +1,6 @@
 import React from 'react';
 import { Booking } from '@/types/booking';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { sv } from 'date-fns/locale';
 import { AppointmentCard } from './AppointmentCard';
 
@@ -35,11 +35,9 @@ export const DayView: React.FC<DayViewProps> = ({ date, bookings, onNewBooking, 
 
   // Filtrera bokningar för denna dag
   const dayBookings = bookings.filter(booking => {
-    const bookingDate = format(booking.startTime, 'yyyy-MM-dd');
-    const currentDate = format(date, 'yyyy-MM-dd');
-    console.log('Debug - Booking:', booking.treatmentType, 'Booking date:', bookingDate, 'Current date:', currentDate, 'Match:', bookingDate === currentDate);
-    console.log('Debug - Booking startTime:', booking.startTime);
-    return bookingDate === currentDate;
+    const match = isSameDay(booking.startTime, date);
+    console.log('Debug - Booking:', booking.treatmentType, 'Date match:', match);
+    return match;
   });
 
   console.log('Debug - Total bookings:', bookings.length, 'Day bookings:', dayBookings.length);
