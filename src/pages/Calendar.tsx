@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { CalendarView, Booking, BookingFormData } from '@/types/booking';
-import { generateMockBookings } from '@/utils/calendar';
+import { mockBookings } from '@/data/mockBookings';
 import { getBookingsForDate, getBookingsForWeek } from '@/utils/calendarLayout';
 import { CalendarHeader } from '@/components/calendar/CalendarHeader';
 import { DayView } from '@/components/calendar/DayView';
@@ -16,7 +16,7 @@ import { startOfWeek } from 'date-fns';
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>('day');
-  const [bookings, setBookings] = useState(() => generateMockBookings(new Date(), 14));
+  const [bookings, setBookings] = useState(mockBookings);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 

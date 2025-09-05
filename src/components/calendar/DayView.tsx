@@ -2,6 +2,7 @@ import React from 'react';
 import { Booking } from '@/types/booking';
 import { format } from 'date-fns';
 import { sv } from 'date-fns/locale';
+import { AppointmentCard } from './AppointmentCard';
 
 interface DayViewProps {
   date: Date;
@@ -11,7 +12,7 @@ interface DayViewProps {
   onUpdateBooking: (bookingId: string, updates: Partial<Booking>) => void;
 }
 
-export const DayView: React.FC<DayViewProps> = ({ date, onNewBooking }) => {
+export const DayView: React.FC<DayViewProps> = ({ date, bookings, onNewBooking, onBookingClick }) => {
   // Arbetstider 9-19 (10 timmar)
   const hours = Array.from({ length: 10 }, (_, i) => i + 9);
   
@@ -31,6 +32,27 @@ export const DayView: React.FC<DayViewProps> = ({ date, onNewBooking }) => {
       };
     })
   );
+
+  // Filtrera bokningar för denna dag
+  const dayBookings = bookings.filter(booking => {
+    const bookingDate = format(booking.startTime, 'yyyy-MM-dd');
+    const currentDate = format(date, 'yyyy-MM-dd');
+    return bookingDate === currentDate;
+  });
+
+  // Funktion för att hitta bokningar för en specifik slot
+  const getBookingForSlot = (slot: typeof timeSlots[0]) => {
+    return dayBookings.find(booking => {
+      const bookingHour = booking.startTime.getHours();
+      const bookingMinute = booking.startTime.getMinutes();
+      return bookingHour === slot.hour && bookingMinute === slot.minute;
+    });
+  };
+
+  // Funktion för att beräkna hur många slots en bokning ska spanna
+  const getBookingHeight = (booking: Booking) => {
+    return Math.ceil(booking.duration / 10); // Antal 10-minuters slots
+  };
 
   const handleSlotClick = (slot: typeof timeSlots[0]) => {
     const slotDateTime = new Date(date);
@@ -66,7 +88,27 @@ export const DayView: React.FC<DayViewProps> = ({ date, onNewBooking }) => {
                 
                 {/* Boknings område */}
                 <td className="h-4 p-1 relative">
-                  {/* Tom för nu - här kommer bokningar senare */}
+                  {(() => {
+                    const booking = getBookingForSlot(slot);
+                    if (booking) {
+                      const height = getBookingHeight(booking);
+                      return (
+                        <div 
+                          className="absolute inset-0 z-10"
+                          style={{ 
+                            height: `${height * 16 + (height - 1) * 1}px` // 16px höjd per slot + border
+                          }}
+                        >
+                          <AppointmentCard
+                            booking={booking}
+                            onClick={() => onBookingClick?.(booking)}
+                            className="h-full"
+                          />
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                 </td>
               </tr>
             ))}
