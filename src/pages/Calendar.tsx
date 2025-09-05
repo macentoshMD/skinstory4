@@ -20,15 +20,6 @@ const Calendar = () => {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Temporary debug log for bookings
-  React.useEffect(() => {
-    console.log('Loaded bookings:', bookings.map(b => ({ 
-      id: b.id, 
-      treatment: b.treatmentType, 
-      startTime: b.startTime.toISOString() 
-    })));
-  }, [bookings]);
-
   const handleBookingClick = (booking: Booking) => {
     setSelectedBooking(booking);
     setIsDrawerOpen(true);

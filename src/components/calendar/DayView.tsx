@@ -34,15 +34,7 @@ export const DayView: React.FC<DayViewProps> = ({ date, bookings, onNewBooking, 
   );
 
   // Filtrera bokningar för denna dag
-  const dayBookings = bookings.filter(booking => {
-    const match = isSameDay(booking.startTime, date);
-    console.log('Debug - Booking:', booking.treatmentType, 'Date match:', match);
-    return match;
-  });
-
-  console.log('Debug - Total bookings:', bookings.length, 'Day bookings:', dayBookings.length);
-  console.log('Debug - Current date object:', date);
-  console.log('Debug - Day bookings:', dayBookings);
+  const dayBookings = bookings.filter(booking => isSameDay(booking.startTime, date));
 
   // Funktion för att hitta bokningar för en specifik slot
   const getBookingForSlot = (slot: typeof timeSlots[0]) => {
@@ -64,28 +56,41 @@ export const DayView: React.FC<DayViewProps> = ({ date, bookings, onNewBooking, 
     onNewBooking?.(slotDateTime);
   };
 
+  // Beräkna nuvarande tid för att visa röd linje
+  const getCurrentTimePosition = () => {
+    const now = new Date();
+    if (!isSameDay(now, date)) return null;
+    
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    // Kontrollera om tiden är inom arbetstid (9-19)
+    if (currentHour < 9 || currentHour >= 19) return null;
+    
+    // Beräkna position baserat på slots
+    const totalMinutesFromStart = (currentHour - 9) * 60 + currentMinute;
+    const slotIndex = Math.floor(totalMinutesFromStart / 10);
+    const offsetInSlot = (totalMinutesFromStart % 10) / 10;
+    
+    return {
+      slotIndex,
+      offsetPercent: offsetInSlot * 100
+    };
+  };
+
+  const currentTimePos = getCurrentTimePosition();
+
   return (
     <div className="h-full flex flex-col">
-      {/* Debug information */}
-      <div className="bg-yellow-100 p-2 text-xs">
-        Debug: Totalt {bookings.length} bokningar, {dayBookings.length} för denna dag
-      </div>
-      
-      {/* Header */}
-      <div className="border-b border-border p-4">
-        <h2 className="text-lg font-semibold">
-          {format(date, 'EEEE d MMMM yyyy', { locale: sv })}
-        </h2>
-      </div>
 
       {/* Kalendertabell */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto relative">
         <table className="w-full">
           <tbody>
             {timeSlots.map((slot, index) => (
               <tr 
                 key={`${slot.hour}-${slot.minute}`}
-                className="border-b border-muted hover:bg-muted/30 cursor-pointer"
+                className="border-b border-muted hover:bg-muted/30 cursor-pointer relative"
                 onClick={() => handleSlotClick(slot)}
               >
                 {/* Tid kolumn */}
@@ -96,16 +101,28 @@ export const DayView: React.FC<DayViewProps> = ({ date, bookings, onNewBooking, 
                 </td>
                 
                 {/* Boknings område */}
-                <td className="h-4 p-1 relative">
+                <td className="h-4 p-0 relative">
+                  {/* Nuvarande tid indikator */}
+                  {currentTimePos && currentTimePos.slotIndex === index && (
+                    <div 
+                      className="absolute left-0 right-0 h-0.5 bg-red-500 z-20"
+                      style={{ 
+                        top: `${currentTimePos.offsetPercent}%`,
+                      }}
+                    >
+                      <div className="absolute -left-1 -top-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                    </div>
+                  )}
+                  
                   {(() => {
                     const booking = getBookingForSlot(slot);
                     if (booking) {
                       const height = getBookingHeight(booking);
                       return (
                         <div 
-                          className="absolute inset-0 z-10"
+                          className="absolute inset-0 z-10 m-0.5"
                           style={{ 
-                            height: `${height * 16 + (height - 1) * 1}px` // 16px höjd per slot + border
+                            height: `${height * 16 + (height - 1) * 1 - 4}px` // Justerat för margin
                           }}
                         >
                           <AppointmentCard
