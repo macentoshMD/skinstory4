@@ -11,21 +11,35 @@ interface WeekViewProps {
   onUpdateBooking: (bookingId: string, updates: Partial<Booking>) => void;
 }
 
-export const WeekView: React.FC<WeekViewProps> = ({ date }) => {
+export const WeekView: React.FC<WeekViewProps> = ({ date, onNewBooking }) => {
   const weekStart = startOfWeek(date, { weekStartsOn: 1 }); // Måndag
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   
   // Arbetstider 9-19 (10 timmar)  
   const hours = Array.from({ length: 10 }, (_, i) => i + 9);
   
-  // Skapa 30-minuters slots för varje timme (2 per timme)
+  // Skapa 10-minuters slots för varje timme (6 per timme)
   const timeSlots = hours.flatMap(hour => 
-    Array.from({ length: 2 }, (_, i) => ({
-      hour,
-      minute: i * 30,
-      time: `${hour.toString().padStart(2, '0')}:${(i * 30).toString().padStart(2, '0')}`
-    }))
+    Array.from({ length: 6 }, (_, i) => {
+      const minute = i * 10;
+      const isHourStart = minute === 0;
+      return {
+        hour,
+        minute,
+        time: isHourStart 
+          ? `${hour.toString().padStart(2, '0')}:00`
+          : minute.toString().padStart(2, '0'),
+        isHourStart,
+        fullTime: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+      };
+    })
   );
+
+  const handleSlotClick = (slot: typeof timeSlots[0], day: Date) => {
+    const slotDateTime = new Date(day);
+    slotDateTime.setHours(slot.hour, slot.minute, 0, 0);
+    onNewBooking?.(slotDateTime);
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -64,22 +78,22 @@ export const WeekView: React.FC<WeekViewProps> = ({ date }) => {
             {timeSlots.map((slot) => (
               <tr 
                 key={`${slot.hour}-${slot.minute}`}
-                className="border-b border-muted hover:bg-muted/30"
+                className="border-b border-muted"
               >
                 {/* Tid kolumn */}
-                <td className="w-20 p-3 text-sm text-muted-foreground border-r border-border align-top">
-                  <span className="font-medium">{slot.time}</span>
+                <td className="w-20 p-2 text-sm text-muted-foreground border-r border-border align-top">
+                  <span className={`font-medium ${slot.isHourStart ? 'text-foreground' : ''}`}>
+                    {slot.time}
+                  </span>
                 </td>
                 
                 {/* Dag kolumner */}
                 {days.map(day => (
                   <td 
                     key={day.toISOString()} 
-                    className="h-16 p-1 border-r border-border last:border-r-0 relative"
+                    className="h-12 p-1 border-r border-border last:border-r-0 relative cursor-pointer hover:bg-muted/30"
+                    onClick={() => handleSlotClick(slot, day)}
                   >
-                    {/* 10-minuters streck */}
-                    <div className="absolute top-1/3 left-0 right-0 h-px bg-muted/50"></div>
-                    <div className="absolute top-2/3 left-0 right-0 h-px bg-muted/50"></div>
                     {/* Tom för nu - här kommer bokningar senare */}
                   </td>
                 ))}
