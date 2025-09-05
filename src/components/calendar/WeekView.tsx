@@ -91,7 +91,7 @@ export const WeekView: React.FC<WeekViewProps> = ({ date, onNewBooking }) => {
                 {days.map(day => (
                   <td 
                     key={day.toISOString()} 
-                    className="h-12 p-1 border-r border-border last:border-r-0 relative cursor-pointer hover:bg-muted/30"
+                    className="h-6 p-1 border-r border-border last:border-r-0 relative cursor-pointer hover:bg-muted/30"
                     onClick={() => handleSlotClick(slot, day)}
                   >
                     {/* Tom för nu - här kommer bokningar senare */}

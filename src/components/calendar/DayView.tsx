@@ -65,7 +65,7 @@ export const DayView: React.FC<DayViewProps> = ({ date, onNewBooking }) => {
                 </td>
                 
                 {/* Boknings område */}
-                <td className="h-12 p-1 relative">
+                <td className="h-6 p-1 relative">
                   {/* Tom för nu - här kommer bokningar senare */}
                 </td>
               </tr>
