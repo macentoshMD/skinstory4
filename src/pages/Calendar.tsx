@@ -12,6 +12,7 @@ import { CalendarIcon, Clock, Users, TrendingUp } from "lucide-react";
 import { getBookingsForDate, getBookingsForWeek, getStatusText } from '@/utils/calendar';
 import { startOfWeek } from 'date-fns';
 
+const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>('day');
   const [bookings, setBookings] = useState(() => generateMockBookings(new Date(), 14));
