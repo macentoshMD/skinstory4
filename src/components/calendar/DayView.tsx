@@ -37,11 +37,13 @@ export const DayView: React.FC<DayViewProps> = ({ date, bookings, onNewBooking, 
   const dayBookings = bookings.filter(booking => {
     const bookingDate = format(booking.startTime, 'yyyy-MM-dd');
     const currentDate = format(date, 'yyyy-MM-dd');
-    console.log('Debug - Booking date:', bookingDate, 'Current date:', currentDate, 'Match:', bookingDate === currentDate);
+    console.log('Debug - Booking:', booking.treatmentType, 'Booking date:', bookingDate, 'Current date:', currentDate, 'Match:', bookingDate === currentDate);
+    console.log('Debug - Booking startTime:', booking.startTime);
     return bookingDate === currentDate;
   });
 
   console.log('Debug - Total bookings:', bookings.length, 'Day bookings:', dayBookings.length);
+  console.log('Debug - Current date object:', date);
   console.log('Debug - Day bookings:', dayBookings);
 
   // Funktion för att hitta bokningar för en specifik slot
