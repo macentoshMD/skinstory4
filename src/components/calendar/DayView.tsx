@@ -45,12 +45,31 @@ export const DayView: React.FC<DayViewProps> = ({ date, bookings, onNewBooking, 
     });
   };
 
+  // Funktion för att kontrollera om en slot är täckt av en bokning
+  const isSlotCoveredByBooking = (slot: typeof timeSlots[0]) => {
+    return dayBookings.some(booking => {
+      const bookingStart = booking.startTime;
+      const bookingEnd = booking.endTime;
+      
+      const slotTime = new Date(date);
+      slotTime.setHours(slot.hour, slot.minute, 0, 0);
+      
+      return slotTime >= bookingStart && slotTime < bookingEnd;
+    });
+  };
+
   // Funktion för att beräkna hur många slots en bokning ska spanna
   const getBookingHeight = (booking: Booking) => {
-    return Math.ceil(booking.duration / 10); // Antal 10-minuters slots
+    const startTime = booking.startTime;
+    const endTime = booking.endTime;
+    const durationInMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
+    return Math.ceil(durationInMinutes / 10); // Antal 10-minuters slots
   };
 
   const handleSlotClick = (slot: typeof timeSlots[0]) => {
+    // Kontrollera om sloten redan är upptagen
+    if (isSlotCoveredByBooking(slot)) return;
+    
     const slotDateTime = new Date(date);
     slotDateTime.setHours(slot.hour, slot.minute, 0, 0);
     onNewBooking?.(slotDateTime);
@@ -87,57 +106,58 @@ export const DayView: React.FC<DayViewProps> = ({ date, bookings, onNewBooking, 
       <div className="flex-1 overflow-auto relative">
         <table className="w-full">
           <tbody>
-            {timeSlots.map((slot, index) => (
-              <tr 
-                key={`${slot.hour}-${slot.minute}`}
-                className="border-b border-muted hover:bg-muted/30 cursor-pointer relative"
-                onClick={() => handleSlotClick(slot)}
-              >
-                {/* Tid kolumn */}
-                <td className="w-20 p-1 text-xs text-muted-foreground border-r border-border align-top">
-                  <span className={`font-medium ${slot.isHourStart ? 'text-foreground' : ''}`}>
-                    {slot.time}
-                  </span>
-                </td>
-                
-                {/* Boknings område */}
-                <td className="h-4 p-0 relative">
-                  {/* Nuvarande tid indikator */}
-                  {currentTimePos && currentTimePos.slotIndex === index && (
-                    <div 
-                      className="absolute left-0 right-0 h-0.5 bg-red-500 z-20"
-                      style={{ 
-                        top: `${currentTimePos.offsetPercent}%`,
-                      }}
-                    >
-                      <div className="absolute -left-1 -top-1 w-2 h-2 bg-red-500 rounded-full"></div>
-                    </div>
-                  )}
+            {timeSlots.map((slot, index) => {
+              const booking = getBookingForSlot(slot);
+              const isCovered = isSlotCoveredByBooking(slot);
+              
+              return (
+                <tr 
+                  key={`${slot.hour}-${slot.minute}`}
+                  className={`border-b border-muted relative ${
+                    isCovered ? 'cursor-default' : 'hover:bg-muted/30 cursor-pointer'
+                  }`}
+                  onClick={() => handleSlotClick(slot)}
+                >
+                  {/* Tid kolumn */}
+                  <td className="w-20 p-1 text-xs text-muted-foreground border-r border-border align-top">
+                    <span className={`font-medium ${slot.isHourStart ? 'text-foreground' : ''}`}>
+                      {slot.time}
+                    </span>
+                  </td>
                   
-                  {(() => {
-                    const booking = getBookingForSlot(slot);
-                    if (booking) {
-                      const height = getBookingHeight(booking);
-                      return (
-                        <div 
-                          className="absolute inset-0 z-10 m-0.5"
-                          style={{ 
-                            height: `${height * 16 + (height - 1) * 1 - 4}px` // Justerat för margin
-                          }}
-                        >
-                          <AppointmentCard
-                            booking={booking}
-                            onClick={() => onBookingClick?.(booking)}
-                            className="h-full"
-                          />
-                        </div>
-                      );
-                    }
-                    return null;
-                  })()}
-                </td>
-              </tr>
-            ))}
+                  {/* Boknings område */}
+                  <td className="h-4 p-0 relative">
+                    {/* Nuvarande tid indikator */}
+                    {currentTimePos && currentTimePos.slotIndex === index && (
+                      <div 
+                        className="absolute left-0 right-0 h-0.5 bg-red-500 z-20"
+                        style={{ 
+                          top: `${currentTimePos.offsetPercent}%`,
+                        }}
+                      >
+                        <div className="absolute -left-1 -top-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                      </div>
+                    )}
+                    
+                    {/* Boknings kort - bara på första sloten */}
+                    {booking && (
+                      <div 
+                        className="absolute inset-0 z-10 m-0.5"
+                        style={{ 
+                          height: `${getBookingHeight(booking) * 17 - 4}px` // 17px per slot inkl border
+                        }}
+                      >
+                        <AppointmentCard
+                          booking={booking}
+                          onClick={() => onBookingClick?.(booking)}
+                          className="h-full"
+                        />
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
