@@ -58,14 +58,14 @@ export const DayView: React.FC<DayViewProps> = ({ date, onNewBooking }) => {
                 onClick={() => handleSlotClick(slot)}
               >
                 {/* Tid kolumn */}
-                <td className="w-20 p-2 text-sm text-muted-foreground border-r border-border align-top">
+                <td className="w-20 p-1 text-xs text-muted-foreground border-r border-border align-top">
                   <span className={`font-medium ${slot.isHourStart ? 'text-foreground' : ''}`}>
                     {slot.time}
                   </span>
                 </td>
                 
                 {/* Boknings område */}
-                <td className="h-6 p-1 relative">
+                <td className="h-4 p-1 relative">
                   {/* Tom för nu - här kommer bokningar senare */}
                 </td>
               </tr>
