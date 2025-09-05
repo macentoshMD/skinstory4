@@ -11,6 +11,7 @@ export interface Booking {
   startTime: Date;
   endTime: Date;
   duration: number; // minutes
+  bufferTime?: number; // minutes
   status: 'confirmed' | 'pending' | 'completed' | 'cancelled' | 'no_show';
   notes?: string;
   price?: number;

@@ -5,12 +5,12 @@ import { sv } from 'date-fns/locale';
 export const generateMockBookings = (startDate: Date, days: number = 7): Booking[] => {
   const bookings: Booking[] = [];
   const treatments = [
-    { name: 'HydraFacial', category: 'facial' as const, duration: 60, price: 1200 },
-    { name: 'Ansiktsbehandling', category: 'facial' as const, duration: 45, price: 800 },
-    { name: 'Microneedling', category: 'microneedling' as const, duration: 90, price: 1800 },
-    { name: 'Konsultation', category: 'consultation' as const, duration: 30, price: 500 },
-    { name: 'Laser Hair Removal', category: 'laser' as const, duration: 45, price: 1500 },
-    { name: 'IPL Behandling', category: 'laser' as const, duration: 60, price: 1400 }
+    { name: 'Konsultation', category: 'consultation' as const, duration: 20, bufferTime: 10, price: 500 },
+    { name: 'HydraFacial', category: 'facial' as const, duration: 60, bufferTime: 10, price: 1200 },
+    { name: 'Ansiktsbehandling', category: 'facial' as const, duration: 50, bufferTime: 10, price: 800 },
+    { name: 'Microneedling', category: 'microneedling' as const, duration: 90, bufferTime: 10, price: 1800 },
+    { name: 'Laser Hair Removal', category: 'laser' as const, duration: 90, bufferTime: 10, price: 1500 },
+    { name: 'IPL Behandling', category: 'laser' as const, duration: 90, bufferTime: 10, price: 1400 }
   ];
 
   const customers = [
@@ -47,7 +47,7 @@ export const generateMockBookings = (startDate: Date, days: number = 7): Booking
       const startTime = new Date(currentDate);
       startTime.setHours(startHour, startMinute, 0, 0);
       
-      const endTime = new Date(startTime.getTime() + treatment.duration * 60000);
+      const endTime = new Date(startTime.getTime() + (treatment.duration + treatment.bufferTime) * 60000);
       
       const booking: Booking = {
         id: `booking-${dayOffset}-${i}`,
@@ -62,6 +62,7 @@ export const generateMockBookings = (startDate: Date, days: number = 7): Booking
         startTime,
         endTime,
         duration: treatment.duration,
+        bufferTime: treatment.bufferTime,
         status: statuses[Math.floor(Math.random() * statuses.length)],
         notes: Math.random() > 0.7 ? 'Speciella instruktioner för behandlingen' : undefined,
         price: treatment.price,
@@ -132,7 +133,7 @@ export const formatWeekRange = (weekStart: Date): string => {
   return `${format(weekStart, 'd MMM', { locale: sv })} - ${format(weekEnd, 'd MMM yyyy', { locale: sv })}`;
 };
 
-export const calculateEventPosition = (booking: Booking, dayStart: Date): { top: number; height: number } => {
+export const calculateEventPosition = (booking: Booking, dayStart: Date): { top: number; height: number; bufferHeight: number } => {
   const startOfDayTime = startOfDay(dayStart).getTime();
   const bookingStartTime = booking.startTime.getTime();
   const minutesFromStart = Math.max(0, (bookingStartTime - startOfDayTime) / (1000 * 60));
@@ -140,6 +141,22 @@ export const calculateEventPosition = (booking: Booking, dayStart: Date): { top:
   // Each hour is 60px, so each minute is 1px
   const top = (minutesFromStart - 9 * 60); // Start from 9 AM
   const height = booking.duration;
+  const bufferHeight = booking.bufferTime || 10;
   
-  return { top: Math.max(0, top), height };
+  return { top: Math.max(0, top), height, bufferHeight };
+};
+
+export const getCurrentTimePosition = (): { top: number; isVisible: boolean } => {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  
+  // Only show during business hours (9 AM - 7 PM)
+  const isVisible = currentHour >= 9 && currentHour < 19;
+  
+  // Calculate position relative to 9 AM start
+  const minutesFromNineAM = (currentHour - 9) * 60 + currentMinute;
+  const top = minutesFromNineAM; // 1px per minute
+  
+  return { top, isVisible };
 };

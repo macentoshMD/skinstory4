@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Booking } from '@/types/booking';
 import { AppointmentCard } from './AppointmentCard';
-import { getBookingsForDate } from '@/utils/calendar';
+import { getBookingsForDate, calculateEventPosition, getCurrentTimePosition } from '@/utils/calendar';
 import { format } from 'date-fns';
 import { sv } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 interface DayViewProps {
   date: Date;
@@ -11,66 +12,108 @@ interface DayViewProps {
   onBookingClick: (booking: Booking) => void;
 }
 
-export const DayView: React.FC<DayViewProps> = ({
-  date,
-  bookings,
-  onBookingClick
-}) => {
+export const DayView: React.FC<DayViewProps> = ({ date, bookings, onBookingClick }) => {
   const dayBookings = getBookingsForDate(bookings, date);
-  const hours = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 7 PM
+  const [currentTime, setCurrentTime] = useState(getCurrentTimePosition());
+  
+  const hours = Array.from({ length: 10 }, (_, i) => i + 9); // 9 AM to 6 PM
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(getCurrentTimePosition());
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="bg-background border rounded-lg overflow-hidden">
-      <div className="p-4 bg-muted/50 border-b">
-        <h2 className="font-semibold text-lg">
-          Schema för {format(date, 'EEEE d MMMM', { locale: sv })}
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          {dayBookings.length} bokningar
-        </p>
+    <div className="flex h-full">
+      {/* Time column */}
+      <div className="w-20 border-r border-gray-200">
+        <div className="h-16"></div> {/* Header space */}
+        {hours.map((hour) => (
+          <div key={hour} className="h-16 border-b border-gray-100 flex items-start justify-end pr-2 pt-1">
+            <span className="text-sm text-gray-500">
+              {format(new Date().setHours(hour, 0), 'HH:mm')}
+            </span>
+          </div>
+        ))}
       </div>
 
-      <div className="flex">
-        {/* Time column */}
-        <div className="w-20 border-r bg-muted/20">
-          {hours.map((hour) => (
-            <div key={hour} className="h-16 border-b border-border/50 flex items-start justify-center pt-2">
-              <span className="text-xs text-muted-foreground">
-                {String(hour).padStart(2, '0')}:00
-              </span>
-            </div>
-          ))}
+      {/* Appointments column */}
+      <div className="flex-1 relative">
+        <div className="h-16 border-b border-gray-200 flex items-center px-4">
+          <h3 className="font-medium">
+            {format(date, 'EEEE d MMMM', { locale: sv })}
+          </h3>
         </div>
-
-        {/* Appointments column */}
-        <div className="flex-1 relative">
+        
+        <div className="relative" style={{ height: '600px' }}> {/* 10 hours * 60px */}
+          {/* Hour grid lines */}
           {hours.map((hour) => (
-            <div key={hour} className="h-16 border-b border-border/50" />
+            <div
+              key={hour}
+              className="absolute w-full h-16 border-b border-gray-100"
+              style={{ top: `${(hour - 9) * 60}px` }}
+            />
           ))}
           
-          {/* Appointments positioned absolutely */}
-          <div className="absolute inset-0 p-2">
-            <div className="space-y-2">
-              {dayBookings.map((booking) => (
-                <AppointmentCard
-                  key={booking.id}
-                  booking={booking}
-                  onClick={() => onBookingClick(booking)}
-                  className="w-full"
-                />
-              ))}
-            </div>
-          </div>
-
-          {dayBookings.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-muted-foreground">Inga bokningar idag</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Klicka på "Ny bokning" för att lägga till en
-                </p>
+          {/* Current time line */}
+          {currentTime.isVisible && (
+            <div
+              className="absolute w-full z-20 pointer-events-none"
+              style={{ top: `${currentTime.top}px` }}
+            >
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-red-500 rounded-full -ml-1.5"></div>
+                <div className="flex-1 h-0.5 bg-red-500"></div>
               </div>
             </div>
+          )}
+          
+          {/* Appointments */}
+          {dayBookings.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500">Inga bokningar för denna dag</p>
+            </div>
+          ) : (
+            dayBookings.map((booking) => {
+              const position = calculateEventPosition(booking, date);
+              const isPast = booking.endTime < new Date();
+              
+              return (
+                <div key={booking.id} className="absolute left-2 right-2">
+                  {/* Main booking */}
+                  <div
+                    className="relative"
+                    style={{
+                      top: `${position.top}px`,
+                      height: `${position.height}px`
+                    }}
+                  >
+                    <AppointmentCard
+                      booking={booking}
+                      onClick={() => onBookingClick(booking)}
+                      className={cn("h-full", isPast && "opacity-75")}
+                      isPast={isPast}
+                    />
+                  </div>
+                  
+                  {/* Buffer time */}
+                  {booking.bufferTime && (
+                    <div
+                      className="bg-gray-100 border border-gray-200 rounded p-1 text-xs text-gray-500 flex items-center justify-center"
+                      style={{
+                        top: `${position.top + position.height}px`,
+                        height: `${position.bufferHeight}px`
+                      }}
+                    >
+                      Förberedelse ({booking.bufferTime}min)
+                    </div>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
       </div>
