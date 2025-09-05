@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { CalendarView, Booking, BookingFormData } from '@/types/booking';
 import { generateMockBookings } from '@/utils/calendar';
+import { getBookingsForDate, getBookingsForWeek } from '@/utils/calendarLayout';
 import { CalendarHeader } from '@/components/calendar/CalendarHeader';
 import { DayView } from '@/components/calendar/DayView';
 import { WeekView } from '@/components/calendar/WeekView';
@@ -9,7 +10,6 @@ import { BookingDetailsDrawer } from '@/components/calendar/BookingDetailsDrawer
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, Clock, Users, TrendingUp } from "lucide-react";
-import { getBookingsForDate, getBookingsForWeek, getStatusText } from '@/utils/calendar';
 import { startOfWeek } from 'date-fns';
 
 const Calendar = () => {
