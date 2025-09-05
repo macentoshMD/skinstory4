@@ -81,37 +81,44 @@ export function buildDayLayout(bookings: Booking[], date: Date): BookingLayout[]
   const sortedBookings = [...dayBookings].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
   
   const layouts: BookingLayout[] = [];
-  const columns: Array<{ endTime: number; bookings: Booking[] }> = [];
+  const columns: Array<{ endTimeWithBuffer: number; bookings: Booking[] }> = [];
   
-  // First pass: assign columns
+  // Process each booking
   sortedBookings.forEach(booking => {
     const startMinutes = getMinutesFromDayStart(booking.startTime);
     const endMinutes = getMinutesFromDayStart(booking.endTime);
+    const endMinutesWithBuffer = endMinutes; // endTime already includes buffer
     
-    // Find available column (no overlap including buffer time)
-    let columnIndex = columns.findIndex(column => column.endTime <= startMinutes);
+    // Find first available column where this booking doesn't conflict
+    let columnIndex = -1;
+    for (let i = 0; i < columns.length; i++) {
+      if (columns[i].endTimeWithBuffer <= startMinutes) {
+        columnIndex = i;
+        break;
+      }
+    }
     
     if (columnIndex === -1) {
       // Create new column
       columnIndex = columns.length;
-      columns.push({ endTime: endMinutes, bookings: [booking] });
+      columns.push({ endTimeWithBuffer: endMinutesWithBuffer, bookings: [booking] });
     } else {
-      // Use existing column
-      columns[columnIndex].endTime = endMinutes;
+      // Use existing column and update its end time
+      columns[columnIndex].endTimeWithBuffer = endMinutesWithBuffer;
       columns[columnIndex].bookings.push(booking);
     }
     
     layouts.push({
       booking,
       column: columnIndex,
-      columnCount: 1, // Will be updated in second pass
+      columnCount: 1, // Will be updated after processing all bookings
       top: minutesToPixels(startMinutes),
       height: minutesToPixels(booking.duration),
-      bufferHeight: minutesToPixels(BUFFER_TIME)
+      bufferHeight: minutesToPixels(booking.bufferTime || BUFFER_TIME)
     });
   });
   
-  // Second pass: update column counts
+  // Update column counts for all layouts
   const totalColumns = columns.length;
   layouts.forEach(layout => {
     layout.columnCount = totalColumns;

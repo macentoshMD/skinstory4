@@ -226,15 +226,15 @@ export const DayView: React.FC<DayViewProps> = ({
               )}
               
               {/* Appointments */}
-              {layouts.length === 0 ? (
+                {layouts.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
                   <p className="text-muted-foreground">Inga bokningar för denna dag</p>
                 </div>
               ) : (
                 layouts.map((layout) => {
                   const isPast = layout.booking.endTime < new Date();
-                  const columnWidth = Math.floor((100 - 2) / layout.columnCount); // Leave 2% margin
-                  const leftMargin = layout.column * columnWidth + 1; // 1% left margin
+                  const columnWidth = Math.floor((100 - 4) / layout.columnCount); // Leave 4% total margin
+                  const leftMargin = layout.column * columnWidth + 2; // 2% left margin
                   
                   return (
                     <div key={layout.booking.id}>
