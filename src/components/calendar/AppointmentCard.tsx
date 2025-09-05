@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 interface AppointmentCardProps {
   booking: Booking;
   onClick: () => void;
+  onMouseDown?: (e: React.MouseEvent, action: 'drag' | 'resize') => void;
   className?: string;
   isPast?: boolean;
 }

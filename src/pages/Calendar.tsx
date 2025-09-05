@@ -12,25 +12,25 @@ import { CalendarIcon, Clock, Users, TrendingUp } from "lucide-react";
 import { getBookingsForDate, getBookingsForWeek, getStatusText } from '@/utils/calendar';
 import { startOfWeek } from 'date-fns';
 
-const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>('day');
+  const [bookings, setBookings] = useState(() => generateMockBookings(new Date(), 14));
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  // Generate mock bookings for a 2-week period
-  const bookings = useMemo(() => {
-    return generateMockBookings(new Date(), 14);
-  }, []);
 
   const handleBookingClick = (booking: Booking) => {
     setSelectedBooking(booking);
     setIsDrawerOpen(true);
   };
 
-  const handleNewBooking = () => {
-    // TODO: Implement new booking functionality
-    console.log('New booking clicked');
+  const handleNewBooking = (startTime?: Date) => {
+    console.log('New booking for:', startTime);
+  };
+
+  const handleUpdateBooking = (bookingId: string, updates: Partial<Booking>) => {
+    setBookings(prev => 
+      prev.map(b => b.id === bookingId ? { ...b, ...updates } : b)
+    );
   };
 
   const handleSaveBooking = (bookingId: string, data: BookingFormData) => {
@@ -93,12 +93,16 @@ const Calendar = () => {
               date={currentDate}
               bookings={bookings}
               onBookingClick={handleBookingClick}
+              onNewBooking={handleNewBooking}
+              onUpdateBooking={handleUpdateBooking}
             />
           ) : (
             <WeekView
               date={currentDate}
               bookings={bookings}
               onBookingClick={handleBookingClick}
+              onNewBooking={handleNewBooking}
+              onUpdateBooking={handleUpdateBooking}
             />
           )}
         </div>

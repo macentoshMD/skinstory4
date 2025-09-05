@@ -10,9 +10,17 @@ interface WeekViewProps {
   date: Date;
   bookings: Booking[];
   onBookingClick: (booking: Booking) => void;
+  onNewBooking: (startTime: Date) => void;
+  onUpdateBooking: (bookingId: string, updates: Partial<Booking>) => void;
 }
 
-export const WeekView: React.FC<WeekViewProps> = ({ date, bookings, onBookingClick }) => {
+export const WeekView: React.FC<WeekViewProps> = ({ 
+  date, 
+  bookings, 
+  onBookingClick, 
+  onNewBooking, 
+  onUpdateBooking 
+}) => {
   const weekStart = startOfWeek(date, { weekStartsOn: 1 }); // Monday
   const weekBookings = getBookingsForWeek(bookings, weekStart);
   const [currentTime, setCurrentTime] = useState(getCurrentTimePosition());
