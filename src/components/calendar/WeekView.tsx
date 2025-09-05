@@ -18,12 +18,12 @@ export const WeekView: React.FC<WeekViewProps> = ({ date }) => {
   // Arbetstider 9-19 (10 timmar)  
   const hours = Array.from({ length: 10 }, (_, i) => i + 9);
   
-  // Skapa 10-minuters slots för varje timme
+  // Skapa 30-minuters slots för varje timme (2 per timme)
   const timeSlots = hours.flatMap(hour => 
-    Array.from({ length: 6 }, (_, i) => ({
+    Array.from({ length: 2 }, (_, i) => ({
       hour,
-      minute: i * 10,
-      time: `${hour.toString().padStart(2, '0')}:${(i * 10).toString().padStart(2, '0')}`
+      minute: i * 30,
+      time: `${hour.toString().padStart(2, '0')}:${(i * 30).toString().padStart(2, '0')}`
     }))
   );
 
@@ -67,17 +67,15 @@ export const WeekView: React.FC<WeekViewProps> = ({ date }) => {
                 className="border-b border-muted hover:bg-muted/30"
               >
                 {/* Tid kolumn */}
-                <td className="w-20 p-2 text-sm text-muted-foreground border-r border-border">
-                  {slot.minute === 0 && (
-                    <span className="font-medium">{slot.time}</span>
-                  )}
+                <td className="w-20 p-3 text-sm text-muted-foreground border-r border-border align-top">
+                  <span className="font-medium">{slot.time}</span>
                 </td>
                 
                 {/* Dag kolumner */}
                 {days.map(day => (
                   <td 
                     key={day.toISOString()} 
-                    className="h-12 p-1 border-r border-border last:border-r-0 relative"
+                    className="h-16 p-1 border-r border-border last:border-r-0 relative"
                   >
                     {/* Tom för nu - här kommer bokningar senare */}
                   </td>
