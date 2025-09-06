@@ -36,6 +36,8 @@ const Economy = () => {
     ...filters.dateRange,
     label: filters.dateRange.label || "Vald period"
   };
+
+  const handleDateRangeChange = (range: { from: Date; to: Date; label: string }) => {
     setFilters(prev => ({
       ...prev,
       dateRange: { from: range.from, to: range.to, label: range.label }
