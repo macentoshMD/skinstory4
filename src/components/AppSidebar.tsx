@@ -31,10 +31,10 @@ const navigationConfigs = {
       { name: "Kunder", href: "/kunder", icon: Users },
       { name: "Statistik", href: "/statistik", icon: BarChart3 },
       { name: "Kalender", href: "/kalender", icon: Clock },
+      { name: "Lager", href: "/produkter", icon: Package },
     ],
     settings: [
       { name: "Tjänster", href: "/tjanster", icon: Sparkles },
-      { name: "Lager", href: "/produkter", icon: Package },
       { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
       { name: "Användare", href: "/personal", icon: User },
       { name: "Företag", href: "/foretag", icon: Building },
@@ -50,9 +50,9 @@ const navigationConfigs = {
       { name: "Kunder", href: "/kunder", icon: Users },
       { name: "Statistik", href: "/statistik", icon: BarChart3 },
       { name: "Kalender", href: "/kalender", icon: Clock },
+      { name: "Lager", href: "/produkter", icon: Package },
     ],
     settings: [
-      { name: "Lager", href: "/produkter", icon: Package },
       { name: "Användare", href: "/personal", icon: User },
       { name: "Företag", href: "/foretag", icon: Building },
       { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
