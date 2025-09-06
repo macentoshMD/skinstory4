@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   GraduationCap, 
@@ -19,18 +17,16 @@ import {
   Trophy,
   BookOpen,
   Target,
-  ChevronDown,
-  ChevronRight,
-  TrendingUp,
-  DollarSign,
-  Calendar,
   Zap,
   Heart,
   Shield,
   Settings,
   X,
   ExternalLink,
-  Info
+  Info,
+  TrendingUp,
+  DollarSign,
+  Calendar
 } from 'lucide-react';
 
 type EducationLevel = 'grundkurs' | 'avancerad' | 'expert' | 'specialist';
@@ -1025,183 +1021,102 @@ export default function Education() {
             </div>
           </div>
 
-          {/* Courses Table */}
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12"></TableHead>
-                    <TableHead>Kurs</TableHead>
-                    <TableHead>Kategori</TableHead>
-                    <TableHead>Nivå</TableHead>
-                    <TableHead>Framsteg</TableHead>
-                    <TableHead>Betyg</TableHead>
-                    <TableHead>Pris</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-32">Åtgärder</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredCourses.map((course) => {
-                    const IconComponent = categoryIcons[course.category];
-                    const priceMultiplier = PRICE_MULTIPLIERS[course.level];
-                    
-                    return (
-                      <Collapsible key={course.id} asChild>
-                        <>
-                          <CollapsibleTrigger asChild>
-                            <TableRow className="cursor-pointer hover:bg-muted/50">
-                              <TableCell>
-                                <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <IconComponent className="h-4 w-4 text-blue-600" />
-                                  <div>
-                                    <p className="font-medium">{course.title}</p>
-                                    <p className="text-sm text-muted-foreground">{course.instructor}</p>
-                                  </div>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant="outline" className="capitalize">
-                                  {course.category === 'brands' ? 'Varumärken' :
-                                   course.category === 'products' ? 'Produkter' :
-                                   course.category === 'skinTypes' ? 'Hudtyper' :
-                                   course.category === 'problems' ? 'Hudproblem' :
-                                   'Maskiner'}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <Badge className={levelColors[course.level]}>
-                                  {levelLabels[course.level]}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <Progress value={course.progress} className="h-2 w-16" />
-                                  <span className="text-sm text-muted-foreground">{course.progress}%</span>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-1">
-                                  <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                                  <span className="text-sm">{course.rating}</span>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <div>
-                                  <p className="font-medium">{course.price} kr</p>
-                                  {priceMultiplier > 1.0 && (
-                                    <p className="text-xs text-green-600">{priceMultiplier}x bonus</p>
-                                  )}
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                {course.completed ? (
-                                  <Badge variant="default" className="bg-green-600">
-                                    <CheckCircle className="h-3 w-3 mr-1" />
-                                    Slutförd
-                                  </Badge>
-                                ) : course.progress > 0 ? (
-                                  <Badge variant="secondary">
-                                    <PlayCircle className="h-3 w-3 mr-1" />
-                                    Pågår
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="outline">
-                                    Tillgänglig
-                                  </Badge>
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex gap-2">
-                                  <Button 
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSelectedCourse(course);
-                                    }}
-                                  >
-                                    Info
-                                  </Button>
-                                  <Button 
-                                    variant={course.completed ? "outline" : "default"}
-                                    size="sm"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    {course.completed ? "Visa" : course.progress > 0 ? "Fortsätt" : "Starta"}
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent asChild>
-                            <TableRow>
-                              <TableCell colSpan={9} className="bg-muted/30">
-                                <div className="p-4 space-y-4">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                      <h4 className="font-medium text-sm text-muted-foreground mb-2">Beskrivning</h4>
-                                      <p className="text-sm">{course.description}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="font-medium text-sm text-muted-foreground mb-2">Kursinformation</h4>
-                                      <div className="space-y-1 text-sm">
-                                        <div className="flex items-center gap-2">
-                                          <Clock className="h-4 w-4" />
-                                          <span>Längd: {course.duration}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          <Users className="h-4 w-4" />
-                                          <span>Antal elever: {course.students}</span>
-                                        </div>
-                                        {course.practicalRequired && (
-                                          <div className="flex items-center gap-2">
-                                            <Trophy className="h-4 w-4 text-amber-600" />
-                                            <span className="text-amber-600">Praktiskt prov krävs</span>
-                                          </div>
-                                        )}
-                                        {course.hasCommission && (
-                                          <div className="flex items-center gap-2">
-                                            <DollarSign className="h-4 w-4 text-green-600" />
-                                            <span className="text-green-600">Provision vid rekommendation</span>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Lärandemål</h4>
-                                    <ul className="text-sm space-y-1">
-                                      {course.learningOutcomes.slice(0, 3).map((outcome, index) => (
-                                        <li key={index} className="flex items-start gap-2">
-                                          <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                          <span>{outcome}</span>
-                                        </li>
-                                      ))}
-                                      {course.learningOutcomes.length > 3 && (
-                                        <li className="text-muted-foreground">
-                                          +{course.learningOutcomes.length - 3} fler mål...
-                                        </li>
-                                      )}
-                                    </ul>
-                                  </div>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          </CollapsibleContent>
-                        </>
-                      </Collapsible>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          {/* Courses Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredCourses.map((course) => {
+              const IconComponent = categoryIcons[course.category];
+              const priceMultiplier = PRICE_MULTIPLIERS[course.level];
+              return (
+                <Card key={course.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <IconComponent className="h-5 w-5 text-blue-600" />
+                        <Badge className={levelColors[course.level]}>
+                          {levelLabels[course.level]}
+                        </Badge>
+                        {priceMultiplier > 1.0 && (
+                          <Badge variant="outline" className="text-green-600 border-green-600">
+                            <DollarSign className="h-3 w-3 mr-1" />
+                            {priceMultiplier}x
+                          </Badge>
+                        )}
+                      </div>
+                      {course.completed && (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      )}
+                    </div>
+                    <CardTitle className="text-lg">{course.title}</CardTitle>
+                    <CardDescription>{course.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {course.duration}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        {course.students}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                      <span className="text-sm font-medium">{course.rating}</span>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>Framsteg</span>
+                        <span>{course.progress}%</span>
+                      </div>
+                      <Progress value={course.progress} className="h-2" />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-lg font-bold">{course.price} kr</p>
+                        {course.practicalRequired && (
+                          <p className="text-xs text-amber-600">+ Praktiskt prov krävs</p>
+                        )}
+                        {course.hasCommission && (
+                          <p className="text-xs text-green-600">+ Provision vid rekommendation</p>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedCourse(course)}
+                        >
+                          Läs mer
+                        </Button>
+                        <Button 
+                          variant={course.completed ? "outline" : "default"}
+                          size="sm"
+                        >
+                          {course.completed ? (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Slutförd
+                            </>
+                          ) : course.progress > 0 ? (
+                            <>
+                              <PlayCircle className="h-4 w-4 mr-2" />
+                              Fortsätt
+                            </>
+                          ) : (
+                            "Starta kurs"
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </TabsContent>
 
         <TabsContent value="progress" className="space-y-6">
