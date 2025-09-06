@@ -26,8 +26,12 @@ export function AllProductsView({ items, category, treatmentType = 'all' }: AllP
   // Filter items by category first
   const categoryItems = items.filter(item => item.category === category);
 
-  // Get unique brands from the filtered items
-  const brands = [...new Set(categoryItems.map(item => item.brand))];
+  // Get filter options - brands for sales/treatment, categories for consumables
+  const filterOptions = [...new Set(
+    categoryItems.map(item => 
+      category === 'consumables' ? (item.categoryType || 'Okategoriserad') : item.brand
+    )
+  )].sort();
 
   const filteredItems = categoryItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,7 +41,10 @@ export function AllProductsView({ items, category, treatmentType = 'all' }: AllP
         variant.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     
-    const matchesBrand = selectedBrand === "all" || item.brand === selectedBrand;
+    const matchesBrand = selectedBrand === "all" || 
+      (category === 'consumables' ? 
+        (item.categoryType || 'Okategoriserad') === selectedBrand : 
+        item.brand === selectedBrand);
     
     // Filter by treatment type if category is treatment
     const matchesTreatmentType = category !== 'treatment' || 
@@ -142,13 +149,15 @@ export function AllProductsView({ items, category, treatmentType = 'all' }: AllP
 
         <Select value={selectedBrand} onValueChange={setSelectedBrand}>
           <SelectTrigger className="w-48">
-            <SelectValue placeholder="Alla varumärken" />
+            <SelectValue placeholder={category === 'consumables' ? "Alla kategorier" : "Alla varumärken"} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Alla varumärken</SelectItem>
-            {brands.map(brand => (
-              <SelectItem key={brand} value={brand}>
-                {brand}
+            <SelectItem value="all">
+              {category === 'consumables' ? "Alla kategorier" : "Alla varumärken"}
+            </SelectItem>
+            {filterOptions.map(option => (
+              <SelectItem key={option} value={option}>
+                {option.charAt(0).toUpperCase() + option.slice(1)}
               </SelectItem>
             ))}
           </SelectContent>

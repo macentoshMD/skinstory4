@@ -24,6 +24,7 @@ export interface InventoryItem {
   brand: string;
   category: 'sales' | 'treatment' | 'consumables';
   treatmentType?: 'injections' | 'apparatus' | 'preparations' | 'other';
+  categoryType?: string; // For consumables: rengöring, hygien, vårdmaterial, etc.
   image?: string;
   shortDescription: string;
   variants: ProductVariant[];

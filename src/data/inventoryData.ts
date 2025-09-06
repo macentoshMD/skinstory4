@@ -378,6 +378,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Engångssprutor',
     brand: 'BD',
     category: 'consumables',
+    categoryType: 'vårdmaterial',
     image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop',
     shortDescription: 'Sterila engångssprutor för injektioner',
     variants: [
@@ -397,6 +398,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Kanyler',
     brand: 'Terumo',
     category: 'consumables',
+    categoryType: 'vårdmaterial',
     image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop',
     shortDescription: 'Engångskanyler i olika storlekar',
     variants: [
@@ -425,6 +427,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Handskar',
     brand: 'Ansell',
     category: 'consumables',
+    categoryType: 'hygien',
     image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop',
     shortDescription: 'Nitrilhandskar puderfria',
     variants: [
@@ -462,6 +465,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Desinfektionsmedel',
     brand: 'Dax',
     category: 'consumables',
+    categoryType: 'rengöring',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
     shortDescription: 'Alkoholbaserat desinfektionsmedel',
     variants: [
@@ -481,6 +485,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Engångshandukar',
     brand: 'Tork',
     category: 'consumables',
+    categoryType: 'hygien',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
     shortDescription: 'Mjuka engångshandukar för kliniken',
     variants: [
@@ -500,6 +505,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Stretchtejp',
     brand: '3M',
     category: 'consumables',
+    categoryType: 'vårdmaterial',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
     shortDescription: 'Elastisk tejp för fixering',
     variants: [
@@ -519,6 +525,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Kompressen',
     brand: 'Hartmann',
     category: 'consumables',
+    categoryType: 'vårdmaterial',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
     shortDescription: 'Sterila kompressen för sårvård',
     variants: [
@@ -538,6 +545,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Lokalbedövning',
     brand: 'Lidocain',
     category: 'consumables',
+    categoryType: 'vårdmaterial',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
     shortDescription: 'Lidokain 2% för lokalbedövning',
     variants: [
@@ -557,6 +565,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Undersökningspapper',
     brand: 'MediQo-line',
     category: 'consumables',
+    categoryType: 'hygien',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
     shortDescription: 'Engångspapper för behandlingsbänk',
     variants: [
@@ -576,6 +585,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Skyddsglasögon',
     brand: 'Uvex',
     category: 'consumables',
+    categoryType: 'skyddsutrustning',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
     shortDescription: 'Skyddsglasögon för laserbehandlingar',
     variants: [
@@ -587,6 +597,46 @@ export const mockInventoryData: InventoryItem[] = [
         packSize: 1,
         unit: 'st',
         supplier: 'Uvex Safety'
+      }
+    ]
+  },
+  {
+    id: 'consumables-11',
+    name: 'Rengöringsduk Antibakteriell',
+    brand: 'Dax',
+    category: 'consumables',
+    categoryType: 'rengöring',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Antibakteriella rengöringsdukar',
+    variants: [
+      {
+        id: 'consumables-11-pack',
+        name: 'Förpackning 80st',
+        description: 'Stora antibakteriella rengöringsdukar',
+        pricePerUnit: 125,
+        packSize: 1,
+        unit: 'förpackning',
+        supplier: 'Dax Hygien'
+      }
+    ]
+  },
+  {
+    id: 'consumables-12',
+    name: 'Engångsslabbrock',
+    brand: 'Medicom',
+    category: 'consumables',
+    categoryType: 'skyddsutrustning',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Engångsslabbrockar för behandlingar',
+    variants: [
+      {
+        id: 'consumables-12-universal',
+        name: 'Universal storlek',
+        description: 'Vattenavvisande engångsslabbrock',
+        pricePerUnit: 15,
+        packSize: 50,
+        unit: 'st',
+        supplier: 'Medicom Nordic'
       }
     ]
   }
