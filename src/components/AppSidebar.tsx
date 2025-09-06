@@ -34,7 +34,7 @@ const navigationConfigs = {
     ],
     settings: [
       { name: "Tjänster", href: "/tjanster", icon: Sparkles },
-      { name: "Produkter", href: "/produkter", icon: Package },
+      { name: "Lager", href: "/produkter", icon: Package },
       { name: "Problem & Områden", href: "/problem-omraden", icon: Target },
       { name: "Användare", href: "/personal", icon: User },
       { name: "Företag", href: "/foretag", icon: Building },
@@ -52,7 +52,7 @@ const navigationConfigs = {
       { name: "Kalender", href: "/kalender", icon: Clock },
     ],
     settings: [
-      { name: "Produkter", href: "/produkter", icon: Package },
+      { name: "Lager", href: "/produkter", icon: Package },
       { name: "Användare", href: "/personal", icon: User },
       { name: "Företag", href: "/foretag", icon: Building },
       { name: "Ekonomi", href: "/ekonomi", icon: DollarSign },
