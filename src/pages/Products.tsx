@@ -11,7 +11,7 @@ import { mockInventoryData } from "@/data/inventoryData";
 export default function Products() {
   const [viewType, setViewType] = useState<"favorites" | "all">("favorites");
   const [activeCategory, setActiveCategory] = useState<"sales" | "treatment" | "consumables">("sales");
-  const [treatmentType, setTreatmentType] = useState<"all" | "injections" | "machines" | "hydrafacial" | "other">("all");
+  const [treatmentType, setTreatmentType] = useState<'all' | 'injections' | 'apparatus' | 'preparations' | 'other'>('all');
   const [cartOpen, setCartOpen] = useState(false);
 
   return (
@@ -55,8 +55,8 @@ export default function Products() {
                       <TabsList className="h-8">
                         <TabsTrigger value="all" className="h-6 px-3 text-xs">Alla</TabsTrigger>
                         <TabsTrigger value="injections" className="h-6 px-3 text-xs">Injektioner</TabsTrigger>
-                        <TabsTrigger value="machines" className="h-6 px-3 text-xs">Maskiner</TabsTrigger>
-                        <TabsTrigger value="hydrafacial" className="h-6 px-3 text-xs">HydraFacial</TabsTrigger>
+                        <TabsTrigger value="apparatus" className="h-6 px-3 text-xs">Apparatur</TabsTrigger>
+                        <TabsTrigger value="preparations" className="h-6 px-3 text-xs">Preparat</TabsTrigger>
                         <TabsTrigger value="other" className="h-6 px-3 text-xs">Övrigt</TabsTrigger>
                       </TabsList>
                     </Tabs>
@@ -94,8 +94,8 @@ export default function Products() {
                       <TabsList className="h-8">
                         <TabsTrigger value="all" className="h-6 px-3 text-xs">Alla</TabsTrigger>
                         <TabsTrigger value="injections" className="h-6 px-3 text-xs">Injektioner</TabsTrigger>
-                        <TabsTrigger value="machines" className="h-6 px-3 text-xs">Maskiner</TabsTrigger>
-                        <TabsTrigger value="hydrafacial" className="h-6 px-3 text-xs">HydraFacial</TabsTrigger>
+                        <TabsTrigger value="apparatus" className="h-6 px-3 text-xs">Apparatur</TabsTrigger>
+                        <TabsTrigger value="preparations" className="h-6 px-3 text-xs">Preparat</TabsTrigger>
                         <TabsTrigger value="other" className="h-6 px-3 text-xs">Övrigt</TabsTrigger>
                       </TabsList>
                     </Tabs>

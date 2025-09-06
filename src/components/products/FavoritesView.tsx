@@ -11,7 +11,7 @@ import { InventoryItem } from './ProductInventoryTable';
 interface FavoritesViewProps {
   items: InventoryItem[];
   category: 'sales' | 'treatment' | 'consumables';
-  treatmentType?: 'all' | 'injections' | 'machines' | 'hydrafacial' | 'other';
+  treatmentType?: 'all' | 'injections' | 'apparatus' | 'preparations' | 'other';
 }
 
 export function FavoritesView({ items, category, treatmentType = 'all' }: FavoritesViewProps) {
@@ -161,7 +161,34 @@ export function FavoritesView({ items, category, treatmentType = 'all' }: Favori
                   <TableRow key={`${item.id}-${variant.id}`}>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{item.name} - {variant.name}</div>
+                        <div className="font-medium">
+                          <span 
+                            className="hover:underline cursor-help"
+                            onMouseEnter={(e) => {
+                              if (item.image) {
+                                const tooltip = document.createElement('div');
+                                tooltip.className = 'fixed z-50 p-2 bg-popover border rounded-md shadow-lg pointer-events-none';
+                                tooltip.innerHTML = `<img src="${item.image}" alt="${item.name}" class="w-48 h-32 object-cover rounded" />`;
+                                document.body.appendChild(tooltip);
+                                
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                tooltip.style.left = `${rect.right + 10}px`;
+                                tooltip.style.top = `${rect.top}px`;
+                                
+                                e.currentTarget.setAttribute('data-tooltip', 'true');
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (e.currentTarget.getAttribute('data-tooltip')) {
+                                const tooltips = document.querySelectorAll('.fixed.z-50.p-2.bg-popover');
+                                tooltips.forEach(tooltip => tooltip.remove());
+                                e.currentTarget.removeAttribute('data-tooltip');
+                              }
+                            }}
+                          >
+                            {item.name} - {variant.name}
+                          </span>
+                        </div>
                         <div className="text-sm text-muted-foreground">{item.brand}</div>
                         <div className="text-xs text-muted-foreground mt-1">
                           {variant.description}

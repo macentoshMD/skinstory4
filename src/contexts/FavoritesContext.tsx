@@ -32,8 +32,11 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     { productId: 'consumables-1', variantId: 'consumables-1-standard' },
     { productId: 'consumables-2', variantId: 'consumables-2-round' },
     { productId: 'consumables-3', variantId: 'consumables-3-m' },
+    { productId: 'consumables-8', variantId: 'consumables-8-50ml' },
     { productId: 'treatment-1', variantId: 'treatment-1-30' },
+    { productId: 'treatment-6', variantId: 'treatment-6-1ml' },
     { productId: 'sales-1', variantId: 'sales-1-150ml' },
+    { productId: 'sales-6', variantId: 'sales-6-200ml' },
   ]);
 
   const addToFavorites = (productId: string, variantId: string) => {

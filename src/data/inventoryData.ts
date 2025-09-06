@@ -7,6 +7,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Gentle Cleansing Foam',
     brand: 'Dermalogica',
     category: 'sales',
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=300&fit=crop',
     shortDescription: 'Mild rengöring för känslig hud',
     variants: [
       {
@@ -34,6 +35,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Vitamin C Serum',
     brand: 'SkinCeuticals',
     category: 'sales',
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=300&fit=crop',
     shortDescription: 'Antioxidantserum för ljusare hud',
     variants: [
       {
@@ -49,318 +51,542 @@ export const mockInventoryData: InventoryItem[] = [
   },
   {
     id: 'sales-3',
-    name: 'Retinol Complex',
-    brand: 'Obagi',
+    name: 'Hyaluronic Acid Moisturizer',
+    brand: 'Neutrogena',
     category: 'sales',
-    shortDescription: 'Retinol för anti-aging',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+    shortDescription: 'Intensiv fuktgivare med hyaluronsyra',
     variants: [
       {
-        id: 'sales-3-0.25',
-        name: '0.25% Retinol',
-        description: 'Mild retinol för nybörjare, 28g',
-        pricePerUnit: 650,
+        id: 'sales-3-50ml',
+        name: '50ml',
+        description: 'Intensiv fuktgivare med hyaluronsyra',
+        pricePerUnit: 295,
         packSize: 1,
         unit: 'st',
-        supplier: 'Obagi Medical'
-      },
+        supplier: 'Johnson & Johnson'
+      }
+    ]
+  },
+  {
+    id: 'sales-4',
+    name: 'Retinol Night Cream',
+    brand: 'Olay',
+    category: 'sales',
+    image: 'https://images.unsplash.com/photo-1556228949-f609b5d31f05?w=400&h=300&fit=crop',
+    shortDescription: 'Antioåldringskräm med retinol',
+    variants: [
       {
-        id: 'sales-3-0.5',
-        name: '0.5% Retinol',
-        description: 'Medium styrka retinol, 28g',
-        pricePerUnit: 890,
+        id: 'sales-4-50ml',
+        name: '50ml',
+        description: 'Antioåldringskräm med retinol för nattvård',
+        pricePerUnit: 425,
         packSize: 1,
         unit: 'st',
-        supplier: 'Obagi Medical'
-      },
+        supplier: 'Procter & Gamble'
+      }
+    ]
+  },
+  {
+    id: 'sales-5',
+    name: 'Sunscreen SPF 50',
+    brand: 'La Roche-Posay',
+    category: 'sales',
+    image: 'https://images.unsplash.com/photo-1556228578-dd6c8c2d9cea?w=400&h=300&fit=crop',
+    shortDescription: 'Högt skydd mot UV-strålning',
+    variants: [
       {
-        id: 'sales-3-1.0',
-        name: '1.0% Retinol',
-        description: 'Stark retinol för erfarna användare, 28g',
-        pricePerUnit: 1150,
+        id: 'sales-5-50ml',
+        name: '50ml',
+        description: 'Bred spektrum solskydd SPF 50',
+        pricePerUnit: 195,
         packSize: 1,
         unit: 'st',
-        supplier: 'Obagi Medical'
+        supplier: 'L\'Oréal Nordic'
+      }
+    ]
+  },
+  {
+    id: 'sales-6',
+    name: 'Exfoliating Toner',
+    brand: 'Paula\'s Choice',
+    category: 'sales',
+    image: 'https://images.unsplash.com/photo-1556228720-da4e85b51eb4?w=400&h=300&fit=crop',
+    shortDescription: 'BHA-toner för pormaskar och orenheter',
+    variants: [
+      {
+        id: 'sales-6-200ml',
+        name: '200ml',
+        description: '2% salicylsyra för att rensa porer',
+        pricePerUnit: 325,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'Paula\'s Choice Europe'
       }
     ]
   },
 
-  // Behandlingsprodukter
+  // Behandlingsprodukter - Injektioner
   {
     id: 'treatment-1',
-    name: 'Glycolic Acid Peel',
-    brand: 'Obagi',
+    name: 'FillerPro Advance',
+    brand: 'Restylane',
     category: 'treatment',
-    treatmentType: 'other',
-    shortDescription: 'Professionell kemisk peeling',
+    treatmentType: 'injections',
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop',
+    shortDescription: 'Premium hyaluronsyrafiller för volymgivning',
     variants: [
       {
-        id: 'treatment-1-20',
-        name: '20% Glykolsyra',
-        description: 'Mild professionell glykolsyrapeeling, 50ml',
-        pricePerUnit: 95,
-        packSize: 50,
-        unit: 'ml',
-        supplier: 'Obagi Medical'
-      },
-      {
         id: 'treatment-1-30',
-        name: '30% Glykolsyra',
-        description: 'Medium professionell glykolsyrapeeling, 50ml',
-        pricePerUnit: 125,
-        packSize: 50,
-        unit: 'ml',
-        supplier: 'Obagi Medical'
-      },
-      {
-        id: 'treatment-1-50',
-        name: '50% Glykolsyra',
-        description: 'Stark professionell glykolsyrapeeling, 50ml',
-        pricePerUnit: 185,
-        packSize: 50,
-        unit: 'ml',
-        supplier: 'Obagi Medical'
+        name: '1ml spruta',
+        description: 'Hyaluronsyrafiller för läppar och mindre ansiktsområden',
+        pricePerUnit: 3500,
+        packSize: 1,
+        unit: 'spruta',
+        supplier: 'Galderma Nordic'
       }
     ]
   },
   {
     id: 'treatment-2',
-    name: 'Professional Cleansing Solution',
-    brand: 'Dermalogica',
+    name: 'Botox Cosmetic',
+    brand: 'Allergan',
     category: 'treatment',
-    treatmentType: 'other',
-    shortDescription: 'Professionell rengöring för behandlingar',
+    treatmentType: 'injections',
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop',
+    shortDescription: 'Botulinum toxin för rynkbehandling',
     variants: [
       {
-        id: 'treatment-2-250ml',
-        name: '250ml',
-        description: 'Professionell rengöring för behandlingar',
-        pricePerUnit: 2.5,
-        packSize: 250,
-        unit: 'ml',
-        supplier: 'Dermalogica AB'
+        id: 'treatment-2-100',
+        name: '100 enheter',
+        description: 'Botulinum toxin typ A för estetiska behandlingar',
+        pricePerUnit: 4200,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'AbbVie AB'
+      }
+    ]
+  },
+  {
+    id: 'treatment-3',
+    name: 'Sculptra Aesthetic',
+    brand: 'Galderma',
+    category: 'treatment',
+    treatmentType: 'injections',
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop',
+    shortDescription: 'Poly-L-mjölksyra för kollagenstimulering',
+    variants: [
+      {
+        id: 'treatment-3-vial',
+        name: 'En flaska',
+        description: 'Stimulerar naturlig kollagenproduktion',
+        pricePerUnit: 3800,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'Galderma Nordic'
+      }
+    ]
+  },
+  {
+    id: 'treatment-4',
+    name: 'Belotero Balance',
+    brand: 'Merz',
+    category: 'treatment',
+    treatmentType: 'injections',
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop',
+    shortDescription: 'Mjuk hyaluronsyrafiller för naturliga resultat',
+    variants: [
+      {
+        id: 'treatment-4-1ml',
+        name: '1ml spruta',
+        description: 'Hyaluronsyrafiller för fina linjer',
+        pricePerUnit: 3200,
+        packSize: 1,
+        unit: 'spruta',
+        supplier: 'Merz Aesthetics'
+      }
+    ]
+  },
+  {
+    id: 'treatment-5',
+    name: 'Profhilo',
+    brand: 'IBSA',
+    category: 'treatment',
+    treatmentType: 'injections',
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop',
+    shortDescription: 'Bio-remodellering av huden',
+    variants: [
+      {
+        id: 'treatment-5-2ml',
+        name: '2ml spruta',
+        description: 'Hög och låg molekylvikt hyaluronsyra',
+        pricePerUnit: 2800,
+        packSize: 1,
+        unit: 'spruta',
+        supplier: 'IBSA Nordic'
+      }
+    ]
+  },
+  {
+    id: 'treatment-6',
+    name: 'Mesotherapy Cocktail',
+    brand: 'Mesoestetic',
+    category: 'treatment',
+    treatmentType: 'injections',
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop',
+    shortDescription: 'Vitaminkomplex för hudföryngring',
+    variants: [
+      {
+        id: 'treatment-6-1ml',
+        name: '1ml ampull',
+        description: 'Koncentrerad vitaminkocktail för mesoterapi',
+        pricePerUnit: 450,
+        packSize: 5,
+        unit: 'ampuller',
+        supplier: 'Mesoestetic Pharma'
       }
     ]
   },
 
-  // Förbrukningsmaterial
+  // Behandlingsprodukter - Apparatur
+  {
+    id: 'treatment-7',
+    name: 'IPL Cartridge',
+    brand: 'Lumenis',
+    category: 'treatment',
+    treatmentType: 'apparatus',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop',
+    shortDescription: 'IPL-patron för permanent hårborttagning',
+    variants: [
+      {
+        id: 'treatment-7-cart',
+        name: 'Standard patron',
+        description: 'IPL-patron för hårborttagning, 3000 skott',
+        pricePerUnit: 1200,
+        packSize: 1,
+        unit: 'patron',
+        supplier: 'Lumenis Nordic'
+      }
+    ]
+  },
+  {
+    id: 'treatment-8',
+    name: 'Laser Handpiece',
+    brand: 'Candela',
+    category: 'treatment',
+    treatmentType: 'apparatus',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop',
+    shortDescription: 'Alexandrit laser handstycke',
+    variants: [
+      {
+        id: 'treatment-8-hand',
+        name: '18mm spot',
+        description: 'Alexandrit laser för hårborttagning',
+        pricePerUnit: 2800,
+        packSize: 1,
+        unit: 'handstycke',
+        supplier: 'Candela Medical'
+      }
+    ]
+  },
+  {
+    id: 'treatment-9',
+    name: 'RF Microneedling Tips',
+    brand: 'Morpheus8',
+    category: 'treatment',
+    treatmentType: 'apparatus',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop',
+    shortDescription: 'Engångsspetsar för RF microneedling',
+    variants: [
+      {
+        id: 'treatment-9-tips',
+        name: '24-pin spetsar',
+        description: 'Sterila engångsspetsar för Morpheus8',
+        pricePerUnit: 180,
+        packSize: 10,
+        unit: 'spetsar',
+        supplier: 'InMode Nordic'
+      }
+    ]
+  },
+
+  // Behandlingsprodukter - Preparat
+  {
+    id: 'treatment-10',
+    name: 'Chemical Peel TCA',
+    brand: 'SkinMedica',
+    category: 'treatment',
+    treatmentType: 'preparations',
+    image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=300&fit=crop',
+    shortDescription: 'Triklorättiksyra för kemisk peeling',
+    variants: [
+      {
+        id: 'treatment-10-20ml',
+        name: '20% TCA',
+        description: 'Mediumdjup kemisk peeling för hudföryngring',
+        pricePerUnit: 850,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'Allergan Professional'
+      }
+    ]
+  },
+  {
+    id: 'treatment-11',
+    name: 'Glycolic Acid Peel',
+    brand: 'SkinCeuticals',
+    category: 'treatment',
+    treatmentType: 'preparations',
+    image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=300&fit=crop',
+    shortDescription: 'Glykolsyra för ytlig peeling',
+    variants: [
+      {
+        id: 'treatment-11-30ml',
+        name: '30% Glykolsyra',
+        description: 'Professionell glykolsyrapeeling',
+        pricePerUnit: 650,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'SkinCeuticals Professional'
+      }
+    ]
+  },
+  {
+    id: 'treatment-12',
+    name: 'PRF Kit',
+    brand: 'Regen Lab',
+    category: 'treatment',
+    treatmentType: 'preparations',
+    image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=300&fit=crop',
+    shortDescription: 'Platelet Rich Fibrin kit',
+    variants: [
+      {
+        id: 'treatment-12-kit',
+        name: 'PRF Kit',
+        description: 'Komplett kit för PRF-behandling',
+        pricePerUnit: 320,
+        packSize: 5,
+        unit: 'kit',
+        supplier: 'Regen Lab Nordic'
+      }
+    ]
+  },
+
+  // Förbrukningsvaror
   {
     id: 'consumables-1',
-    name: 'Engångslancsetter',
-    brand: 'MedSupply',
+    name: 'Engångssprutor',
+    brand: 'BD',
     category: 'consumables',
-    shortDescription: 'Sterila lancsetter för hudanalyser',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop',
+    shortDescription: 'Sterila engångssprutor för injektioner',
     variants: [
       {
         id: 'consumables-1-standard',
-        name: 'Standard 21G',
-        description: 'Sterila engångslancsetter 21G för hudanalyser',
-        pricePerUnit: 2.5,
+        name: '1ml Luer-lock',
+        description: 'Sterila engångssprutor med Luer-lock anslutning',
+        pricePerUnit: 1.25,
         packSize: 100,
         unit: 'st',
-        supplier: 'MedSupply AB'
-      },
-      {
-        id: 'consumables-1-fine',
-        name: 'Fin 23G',
-        description: 'Sterila engångslancsetter 23G för känslig hud',
-        pricePerUnit: 3.2,
-        packSize: 100,
-        unit: 'st',
-        supplier: 'MedSupply AB'
-      },
-      {
-        id: 'consumables-1-ultra',
-        name: 'Ultra fin 25G',
-        description: 'Sterila engångslancsetter 25G för mycket känslig hud',
-        pricePerUnit: 4.1,
-        packSize: 100,
-        unit: 'st',
-        supplier: 'MedSupply AB'
+        supplier: 'BD Medical'
       }
     ]
   },
   {
     id: 'consumables-2',
-    name: 'Bomullspads',
-    brand: 'CottonCare',
+    name: 'Kanyler',
+    brand: 'Terumo',
     category: 'consumables',
-    shortDescription: 'Ekologiska bomullspads för rengöring',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop',
+    shortDescription: 'Engångskanyler i olika storlekar',
     variants: [
       {
         id: 'consumables-2-round',
-        name: 'Runda pads',
-        description: 'Ekologiska runda bomullspads för rengöring',
-        pricePerUnit: 0.25,
+        name: '30G x 13mm',
+        description: 'Tunna engångskanyler för fillerinjektioner',
+        pricePerUnit: 0.85,
         packSize: 100,
         unit: 'st',
-        supplier: 'CottonCare AB'
+        supplier: 'Terumo Europe'
       },
       {
-        id: 'consumables-2-square',
-        name: 'Fyrkantiga pads',
-        description: 'Ekologiska fyrkantiga bomullspads för precision',
-        pricePerUnit: 0.32,
+        id: 'consumables-2-sharp',
+        name: '27G x 40mm',
+        description: 'Kanyler för djupare injektioner',
+        pricePerUnit: 0.95,
         packSize: 100,
         unit: 'st',
-        supplier: 'CottonCare AB'
+        supplier: 'Terumo Europe'
       }
     ]
   },
   {
     id: 'consumables-3',
-    name: 'Nitrilhandskar',
-    brand: 'SafeHands',
+    name: 'Handskar',
+    brand: 'Ansell',
     category: 'consumables',
-    shortDescription: 'Puderfria nitrilhandskar',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop',
+    shortDescription: 'Nitrilhandskar puderfria',
     variants: [
       {
         id: 'consumables-3-s',
-        name: 'Small',
-        description: 'Puderfria nitrilhandskar, storlek S',
-        pricePerUnit: 0.75,
-        packSize: 100,
+        name: 'Storlek S',
+        description: 'Nitrilhandskar puderfria, småstorlek',
+        pricePerUnit: 0.65,
+        packSize: 200,
         unit: 'st',
-        supplier: 'SafeHands Medical'
+        supplier: 'Ansell Healthcare'
       },
       {
         id: 'consumables-3-m',
-        name: 'Medium',
-        description: 'Puderfria nitrilhandskar, storlek M',
-        pricePerUnit: 0.8,
-        packSize: 100,
+        name: 'Storlek M',
+        description: 'Nitrilhandskar puderfria, mellanstorlek',
+        pricePerUnit: 0.65,
+        packSize: 200,
         unit: 'st',
-        supplier: 'SafeHands Medical'
+        supplier: 'Ansell Healthcare'
       },
       {
         id: 'consumables-3-l',
-        name: 'Large',
-        description: 'Puderfria nitrilhandskar, storlek L',
-        pricePerUnit: 0.85,
-        packSize: 100,
+        name: 'Storlek L',
+        description: 'Nitrilhandskar puderfria, stor storlek',
+        pricePerUnit: 0.65,
+        packSize: 200,
         unit: 'st',
-        supplier: 'SafeHands Medical'
-      },
-      {
-        id: 'consumables-3-xl',
-        name: 'Extra Large',
-        description: 'Puderfria nitrilhandskar, storlek XL',
-        pricePerUnit: 0.9,
-        packSize: 100,
-        unit: 'st',
-        supplier: 'SafeHands Medical'
+        supplier: 'Ansell Healthcare'
       }
     ]
   },
   {
     id: 'consumables-4',
     name: 'Desinfektionsmedel',
-    brand: 'CleanCorp',
+    brand: 'Dax',
     category: 'consumables',
-    shortDescription: 'Professionellt desinfektionsmedel',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Alkoholbaserat desinfektionsmedel',
     variants: [
       {
-        id: 'consumables-4-1l',
-        name: '1 Liter',
-        description: 'Professionellt desinfektionsmedel för ytor, 1L',
+        id: 'consumables-4-500ml',
+        name: '500ml pump',
+        description: 'Handdesinfektionsmedel 70% alkohol',
+        pricePerUnit: 85,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'Dax Hygien'
+      }
+    ]
+  },
+  {
+    id: 'consumables-5',
+    name: 'Engångshandukar',
+    brand: 'Tork',
+    category: 'consumables',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Mjuka engångshandukar för kliniken',
+    variants: [
+      {
+        id: 'consumables-5-pack',
+        name: 'Handduksrulle',
+        description: 'Mjuka engångshandukar, 150 ark per rulle',
         pricePerUnit: 45,
-        packSize: 1,
-        unit: 'liter',
-        supplier: 'CleanCorp AB'
-      },
-      {
-        id: 'consumables-4-5l',
-        name: '5 Liter',
-        description: 'Professionellt desinfektionsmedel för ytor, 5L påfyllning',
-        pricePerUnit: 38,
-        packSize: 5,
-        unit: 'liter',
-        supplier: 'CleanCorp AB'
-      }
-    ]
-  },
-
-  // Fler behandlingsprodukter för olika typer
-  {
-    id: 'treatment-3',
-    name: 'Botox Injektioner',
-    brand: 'Allergan',
-    category: 'treatment',
-    treatmentType: 'injections',
-    shortDescription: 'Botox för estetiska behandlingar',
-    variants: [
-      {
-        id: 'treatment-3-50u',
-        name: '50 Enheter',
-        description: 'Botox injektioner, 50 enheter per flaska',
-        pricePerUnit: 3200,
-        packSize: 1,
-        unit: 'flaska',
-        supplier: 'Allergan AB'
-      },
-      {
-        id: 'treatment-3-100u',
-        name: '100 Enheter',
-        description: 'Botox injektioner, 100 enheter per flaska',
-        pricePerUnit: 5800,
-        packSize: 1,
-        unit: 'flaska',
-        supplier: 'Allergan AB'
+        packSize: 6,
+        unit: 'rullar',
+        supplier: 'Essity Professional'
       }
     ]
   },
   {
-    id: 'treatment-4',
-    name: 'HydraFacial Serum',
-    brand: 'HydraFacial',
-    category: 'treatment',
-    treatmentType: 'hydrafacial',
-    shortDescription: 'Serum för HydraFacial behandlingar',
+    id: 'consumables-6',
+    name: 'Stretchtejp',
+    brand: '3M',
+    category: 'consumables',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Elastisk tejp för fixering',
     variants: [
       {
-        id: 'treatment-4-30ml',
-        name: 'Glow Serum 30ml',
-        description: 'Brightening serum för HydraFacial',
-        pricePerUnit: 850,
-        packSize: 1,
-        unit: 'flaska',
-        supplier: 'HydraFacial Sweden'
-      },
-      {
-        id: 'treatment-4-anti-aging',
-        name: 'Anti-Aging Serum 30ml',
-        description: 'Anti-aging serum för HydraFacial',
-        pricePerUnit: 950,
-        packSize: 1,
-        unit: 'flaska',
-        supplier: 'HydraFacial Sweden'
+        id: 'consumables-6-5cm',
+        name: '5cm x 4.5m',
+        description: 'Elastisk tejp för säker fixering',
+        pricePerUnit: 35,
+        packSize: 12,
+        unit: 'rullar',
+        supplier: '3M Health Care'
       }
     ]
   },
   {
-    id: 'treatment-5',
-    name: 'Laser Handpiece',
-    brand: 'Cutera',
-    category: 'treatment',
-    treatmentType: 'machines',
-    shortDescription: 'Reservdelar för lasermaskin',
+    id: 'consumables-7',
+    name: 'Kompressen',
+    brand: 'Hartmann',
+    category: 'consumables',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Sterila kompressen för sårvård',
     variants: [
       {
-        id: 'treatment-5-1064nm',
-        name: '1064nm Handpiece',
-        description: 'Handpiece för 1064nm laser',
-        pricePerUnit: 45000,
+        id: 'consumables-7-10x10',
+        name: '10x10cm',
+        description: 'Sterila kompressen för sårvård och rengöring',
+        pricePerUnit: 0.85,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'Hartmann Nordic'
+      }
+    ]
+  },
+  {
+    id: 'consumables-8',
+    name: 'Lokalbedövning',
+    brand: 'Lidocain',
+    category: 'consumables',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Lidokain 2% för lokalbedövning',
+    variants: [
+      {
+        id: 'consumables-8-50ml',
+        name: '50ml ampull',
+        description: 'Lidokain 2% utan adrenalin',
+        pricePerUnit: 25,
+        packSize: 10,
+        unit: 'ampuller',
+        supplier: 'Fresenius Kabi'
+      }
+    ]
+  },
+  {
+    id: 'consumables-9',
+    name: 'Undersökningspapper',
+    brand: 'MediQo-line',
+    category: 'consumables',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Engångspapper för behandlingsbänk',
+    variants: [
+      {
+        id: 'consumables-9-roll',
+        name: '50cm bred rulle',
+        description: 'Mjukt undersökningspapper, 100m rulle',
+        pricePerUnit: 185,
+        packSize: 1,
+        unit: 'rulle',
+        supplier: 'MediQo-line Nordic'
+      }
+    ]
+  },
+  {
+    id: 'consumables-10',
+    name: 'Skyddsglasögon',
+    brand: 'Uvex',
+    category: 'consumables',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop',
+    shortDescription: 'Skyddsglasögon för laserbehandlingar',
+    variants: [
+      {
+        id: 'consumables-10-laser',
+        name: 'Laser 755nm',
+        description: 'Skyddsglasögon för alexandrit laser',
+        pricePerUnit: 280,
         packSize: 1,
         unit: 'st',
-        supplier: 'Cutera Nordic'
-      },
-      {
-        id: 'treatment-5-532nm',
-        name: '532nm Handpiece',
-        description: 'Handpiece för 532nm laser',
-        pricePerUnit: 38000,
-        packSize: 1,
-        unit: 'st',
-        supplier: 'Cutera Nordic'
+        supplier: 'Uvex Safety'
       }
     ]
   }

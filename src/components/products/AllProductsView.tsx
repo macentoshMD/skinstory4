@@ -12,7 +12,7 @@ import { InventoryItem } from './ProductInventoryTable';
 interface AllProductsViewProps {
   items: InventoryItem[];
   category: 'sales' | 'treatment' | 'consumables';
-  treatmentType?: 'all' | 'injections' | 'machines' | 'hydrafacial' | 'other';
+  treatmentType?: 'all' | 'injections' | 'apparatus' | 'preparations' | 'other';
 }
 
 export function AllProductsView({ items, category, treatmentType = 'all' }: AllProductsViewProps) {
@@ -190,10 +190,37 @@ export function AllProductsView({ items, category, treatmentType = 'all' }: AllP
                     </Button>
                   </TableCell>
                   <TableCell onClick={() => toggleExpanded(item.id)}>
-                    <div>
-                      <div className="font-medium">{item.name}</div>
-                      <div className="text-sm text-muted-foreground">{item.brand}</div>
-                    </div>
+                     <div>
+                       <div className="font-medium text-foreground group-hover:text-primary transition-colors">
+                         <span 
+                           className="hover:underline cursor-help"
+                           onMouseEnter={(e) => {
+                             if (item.image) {
+                               const tooltip = document.createElement('div');
+                               tooltip.className = 'fixed z-50 p-2 bg-popover border rounded-md shadow-lg pointer-events-none';
+                               tooltip.innerHTML = `<img src="${item.image}" alt="${item.name}" class="w-48 h-32 object-cover rounded" />`;
+                               document.body.appendChild(tooltip);
+                               
+                               const rect = e.currentTarget.getBoundingClientRect();
+                               tooltip.style.left = `${rect.right + 10}px`;
+                               tooltip.style.top = `${rect.top}px`;
+                               
+                               e.currentTarget.setAttribute('data-tooltip', 'true');
+                             }
+                           }}
+                           onMouseLeave={(e) => {
+                             if (e.currentTarget.getAttribute('data-tooltip')) {
+                               const tooltips = document.querySelectorAll('.fixed.z-50.p-2.bg-popover');
+                               tooltips.forEach(tooltip => tooltip.remove());
+                               e.currentTarget.removeAttribute('data-tooltip');
+                             }
+                           }}
+                         >
+                           {item.name}
+                         </span>
+                       </div>
+                       <div className="text-sm text-muted-foreground">{item.brand}</div>
+                     </div>
                   </TableCell>
                   <TableCell onClick={() => toggleExpanded(item.id)}>
                     <div className="flex items-center">
