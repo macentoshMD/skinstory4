@@ -10,20 +10,35 @@ import { InventoryItem } from './ProductInventoryTable';
 
 interface FavoritesViewProps {
   items: InventoryItem[];
+  category: 'sales' | 'treatment' | 'consumables';
+  treatmentType?: 'all' | 'injections' | 'machines' | 'hydrafacial' | 'other';
 }
 
-export function FavoritesView({ items }: FavoritesViewProps) {
+export function FavoritesView({ items, category, treatmentType = 'all' }: FavoritesViewProps) {
   const { addToCart } = useOrderCart();
   const { favorites, removeFromFavorites } = useFavorites();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Get favorite items with their details
+  // Get favorite items with their details, filtered by category
   const favoriteItems = favorites.map(fav => {
     const item = items.find(item => item.id === fav.productId);
     const variant = item?.variants.find(v => v.id === fav.variantId);
     return item && variant ? { item, variant } : null;
-  }).filter(Boolean);
+  }).filter(Boolean).filter(favorite => {
+    if (!favorite) return false;
+    const { item } = favorite;
+    
+    // Filter by category
+    const matchesCategory = item.category === category;
+    
+    // Filter by treatment type if category is treatment
+    const matchesTreatmentType = category !== 'treatment' || 
+      treatmentType === 'all' || 
+      item.treatmentType === treatmentType;
+    
+    return matchesCategory && matchesTreatmentType;
+  });
 
   const filteredFavorites = favoriteItems.filter(favorite => {
     if (!favorite) return false;
@@ -75,6 +90,23 @@ export function FavoritesView({ items }: FavoritesViewProps) {
     }
   };
 
+  const getTreatmentTypeBadge = (treatmentType?: string) => {
+    if (!treatmentType) return null;
+    
+    const typeLabels = {
+      'injections': 'Injektioner',
+      'machines': 'Maskiner', 
+      'hydrafacial': 'HydraFacial',
+      'other': 'Övrigt'
+    };
+    
+    return (
+      <Badge variant="secondary" className="ml-2 text-xs">
+        {typeLabels[treatmentType as keyof typeof typeLabels]}
+      </Badge>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -97,7 +129,7 @@ export function FavoritesView({ items }: FavoritesViewProps) {
       {favoriteItems.length === 0 && (
         <div className="text-center py-12">
           <Heart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-medium mb-2">Inga vanliga beställningar ännu</h3>
+          <h3 className="text-lg font-medium mb-2">Inga vanliga beställningar i denna kategori</h3>
           <p className="text-muted-foreground mb-4">
             Lägg till produkter från "Alla artiklar" för att skapa din personliga beställningslista
           </p>
@@ -140,7 +172,10 @@ export function FavoritesView({ items }: FavoritesViewProps) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {getCategoryBadge(item.category)}
+                      <div className="flex items-center">
+                        {getCategoryBadge(item.category)}
+                        {getTreatmentTypeBadge(item.treatmentType)}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">

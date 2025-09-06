@@ -9,13 +9,10 @@ import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import { mockInventoryData } from "@/data/inventoryData";
 
 export default function Products() {
-  const [activeTab, setActiveTab] = useState("favorites");
+  const [viewType, setViewType] = useState<"favorites" | "all">("favorites");
+  const [activeCategory, setActiveCategory] = useState<"sales" | "treatment" | "consumables">("sales");
+  const [treatmentType, setTreatmentType] = useState<"all" | "injections" | "machines" | "hydrafacial" | "other">("all");
   const [cartOpen, setCartOpen] = useState(false);
-
-  const getFilteredItems = () => {
-    if (activeTab === "all") return mockInventoryData;
-    return mockInventoryData.filter(item => item.category === activeTab);
-  };
 
   return (
     <OrderCartProvider>
@@ -28,33 +25,95 @@ export default function Products() {
             </p>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="favorites">Mina vanliga beställningar</TabsTrigger>
+          {/* Top level tabs: Min lista vs Alla artiklar */}
+          <Tabs value={viewType} onValueChange={(value) => setViewType(value as "favorites" | "all")} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="favorites">Min lista</TabsTrigger>
               <TabsTrigger value="all">Alla artiklar</TabsTrigger>
-              <TabsTrigger value="sales">Försäljning</TabsTrigger>
-              <TabsTrigger value="treatment">Behandling</TabsTrigger>
-              <TabsTrigger value="consumables">Förbrukning</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="favorites" className="space-y-6 mt-6">
-              <FavoritesView items={mockInventoryData} />
+            <TabsContent value="favorites" className="space-y-6">
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Min lista:</strong> Dina vanligaste beställningar. Lägg till/ta bort produkter i "Alla artiklar".
+                </p>
+              </div>
+              
+              {/* Category tabs for favorites */}
+              <Tabs value={activeCategory} onValueChange={(value) => setActiveCategory(value as typeof activeCategory)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="sales">Försäljning</TabsTrigger>
+                  <TabsTrigger value="treatment">Behandling</TabsTrigger>
+                  <TabsTrigger value="consumables">Förbrukning</TabsTrigger>
+                </TabsList>
+
+                {/* Treatment type filter for favorites */}
+                {activeCategory === "treatment" && (
+                  <div className="flex gap-2 mt-4">
+                    <span className="text-sm font-medium">Typ:</span>
+                    <Tabs value={treatmentType} onValueChange={(value) => setTreatmentType(value as typeof treatmentType)}>
+                      <TabsList className="h-8">
+                        <TabsTrigger value="all" className="h-6 px-3 text-xs">Alla</TabsTrigger>
+                        <TabsTrigger value="injections" className="h-6 px-3 text-xs">Injektioner</TabsTrigger>
+                        <TabsTrigger value="machines" className="h-6 px-3 text-xs">Maskiner</TabsTrigger>
+                        <TabsTrigger value="hydrafacial" className="h-6 px-3 text-xs">HydraFacial</TabsTrigger>
+                        <TabsTrigger value="other" className="h-6 px-3 text-xs">Övrigt</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
+                )}
+
+                <TabsContent value="sales" className="mt-6">
+                  <FavoritesView items={mockInventoryData} category="sales" />
+                </TabsContent>
+
+                <TabsContent value="treatment" className="mt-6">
+                  <FavoritesView items={mockInventoryData} category="treatment" treatmentType={treatmentType} />
+                </TabsContent>
+
+                <TabsContent value="consumables" className="mt-6">
+                  <FavoritesView items={mockInventoryData} category="consumables" />
+                </TabsContent>
+              </Tabs>
             </TabsContent>
 
-            <TabsContent value="all" className="space-y-6 mt-6">
-              <AllProductsView items={mockInventoryData} />
-            </TabsContent>
+            <TabsContent value="all" className="space-y-6">
+              {/* Category tabs for all products */}
+              <Tabs value={activeCategory} onValueChange={(value) => setActiveCategory(value as typeof activeCategory)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="sales">Försäljning</TabsTrigger>
+                  <TabsTrigger value="treatment">Behandling</TabsTrigger>
+                  <TabsTrigger value="consumables">Förbrukning</TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="sales" className="space-y-6 mt-6">
-              <AllProductsView items={getFilteredItems()} />
-            </TabsContent>
+                {/* Treatment type filter for all products */}
+                {activeCategory === "treatment" && (
+                  <div className="flex gap-2 mt-4">
+                    <span className="text-sm font-medium">Typ:</span>
+                    <Tabs value={treatmentType} onValueChange={(value) => setTreatmentType(value as typeof treatmentType)}>
+                      <TabsList className="h-8">
+                        <TabsTrigger value="all" className="h-6 px-3 text-xs">Alla</TabsTrigger>
+                        <TabsTrigger value="injections" className="h-6 px-3 text-xs">Injektioner</TabsTrigger>
+                        <TabsTrigger value="machines" className="h-6 px-3 text-xs">Maskiner</TabsTrigger>
+                        <TabsTrigger value="hydrafacial" className="h-6 px-3 text-xs">HydraFacial</TabsTrigger>
+                        <TabsTrigger value="other" className="h-6 px-3 text-xs">Övrigt</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
+                )}
 
-            <TabsContent value="treatment" className="space-y-6 mt-6">
-              <AllProductsView items={getFilteredItems()} />
-            </TabsContent>
+                <TabsContent value="sales" className="mt-6">
+                  <AllProductsView items={mockInventoryData} category="sales" />
+                </TabsContent>
 
-            <TabsContent value="consumables" className="space-y-6 mt-6">
-              <AllProductsView items={getFilteredItems()} />
+                <TabsContent value="treatment" className="mt-6">
+                  <AllProductsView items={mockInventoryData} category="treatment" treatmentType={treatmentType} />
+                </TabsContent>
+
+                <TabsContent value="consumables" className="mt-6">
+                  <AllProductsView items={mockInventoryData} category="consumables" />
+                </TabsContent>
+              </Tabs>
             </TabsContent>
           </Tabs>
 

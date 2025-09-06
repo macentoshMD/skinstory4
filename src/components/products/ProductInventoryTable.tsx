@@ -23,6 +23,7 @@ export interface InventoryItem {
   name: string;
   brand: string;
   category: 'sales' | 'treatment' | 'consumables';
+  treatmentType?: 'injections' | 'machines' | 'hydrafacial' | 'other';
   shortDescription: string;
   variants: ProductVariant[];
 }

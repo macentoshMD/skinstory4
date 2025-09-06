@@ -11,26 +11,25 @@ import { InventoryItem } from './ProductInventoryTable';
 
 interface AllProductsViewProps {
   items: InventoryItem[];
+  category: 'sales' | 'treatment' | 'consumables';
+  treatmentType?: 'all' | 'injections' | 'machines' | 'hydrafacial' | 'other';
 }
 
-export function AllProductsView({ items }: AllProductsViewProps) {
+export function AllProductsView({ items, category, treatmentType = 'all' }: AllProductsViewProps) {
   const { addToCart } = useOrderCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
 
-  // Get unique brands and categories
-  const brands = [...new Set(items.map(item => item.brand))];
-  const categories = [
-    { value: 'sales', label: 'Försäljning' },
-    { value: 'treatment', label: 'Behandling' },
-    { value: 'consumables', label: 'Förbrukning' }
-  ];
+  // Filter items by category first
+  const categoryItems = items.filter(item => item.category === category);
 
-  const filteredItems = items.filter(item => {
+  // Get unique brands from the filtered items
+  const brands = [...new Set(categoryItems.map(item => item.brand))];
+
+  const filteredItems = categoryItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.variants.some(variant => 
@@ -38,10 +37,14 @@ export function AllProductsView({ items }: AllProductsViewProps) {
         variant.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
     const matchesBrand = selectedBrand === "all" || item.brand === selectedBrand;
     
-    return matchesSearch && matchesCategory && matchesBrand;
+    // Filter by treatment type if category is treatment
+    const matchesTreatmentType = category !== 'treatment' || 
+      treatmentType === 'all' || 
+      item.treatmentType === treatmentType;
+    
+    return matchesSearch && matchesBrand && matchesTreatmentType;
   });
 
   const handleQuantityChange = (variantId: string, value: string) => {
@@ -105,6 +108,23 @@ export function AllProductsView({ items }: AllProductsViewProps) {
     }
   };
 
+  const getTreatmentTypeBadge = (treatmentType?: string) => {
+    if (!treatmentType) return null;
+    
+    const typeLabels = {
+      'injections': 'Injektioner',
+      'machines': 'Maskiner', 
+      'hydrafacial': 'HydraFacial',
+      'other': 'Övrigt'
+    };
+    
+    return (
+      <Badge variant="secondary" className="ml-2 text-xs">
+        {typeLabels[treatmentType as keyof typeof typeLabels]}
+      </Badge>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* Filters */}
@@ -119,19 +139,6 @@ export function AllProductsView({ items }: AllProductsViewProps) {
           />
         </div>
         
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Alla kategorier" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Alla kategorier</SelectItem>
-            {categories.map(category => (
-              <SelectItem key={category.value} value={category.value}>
-                {category.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
 
         <Select value={selectedBrand} onValueChange={setSelectedBrand}>
           <SelectTrigger className="w-48">
@@ -189,7 +196,10 @@ export function AllProductsView({ items }: AllProductsViewProps) {
                     </div>
                   </TableCell>
                   <TableCell onClick={() => toggleExpanded(item.id)}>
-                    {getCategoryBadge(item.category)}
+                    <div className="flex items-center">
+                      {getCategoryBadge(item.category)}
+                      {getTreatmentTypeBadge(item.treatmentType)}
+                    </div>
                   </TableCell>
                   <TableCell onClick={() => toggleExpanded(item.id)}>
                     <div className="text-sm text-muted-foreground">

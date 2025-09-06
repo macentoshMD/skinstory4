@@ -90,6 +90,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Glycolic Acid Peel',
     brand: 'Obagi',
     category: 'treatment',
+    treatmentType: 'other',
     shortDescription: 'Professionell kemisk peeling',
     variants: [
       {
@@ -126,6 +127,7 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Professional Cleansing Solution',
     brand: 'Dermalogica',
     category: 'treatment',
+    treatmentType: 'other',
     shortDescription: 'Professionell rengöring för behandlingar',
     variants: [
       {
@@ -273,6 +275,92 @@ export const mockInventoryData: InventoryItem[] = [
         packSize: 5,
         unit: 'liter',
         supplier: 'CleanCorp AB'
+      }
+    ]
+  },
+
+  // Fler behandlingsprodukter för olika typer
+  {
+    id: 'treatment-3',
+    name: 'Botox Injektioner',
+    brand: 'Allergan',
+    category: 'treatment',
+    treatmentType: 'injections',
+    shortDescription: 'Botox för estetiska behandlingar',
+    variants: [
+      {
+        id: 'treatment-3-50u',
+        name: '50 Enheter',
+        description: 'Botox injektioner, 50 enheter per flaska',
+        pricePerUnit: 3200,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'Allergan AB'
+      },
+      {
+        id: 'treatment-3-100u',
+        name: '100 Enheter',
+        description: 'Botox injektioner, 100 enheter per flaska',
+        pricePerUnit: 5800,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'Allergan AB'
+      }
+    ]
+  },
+  {
+    id: 'treatment-4',
+    name: 'HydraFacial Serum',
+    brand: 'HydraFacial',
+    category: 'treatment',
+    treatmentType: 'hydrafacial',
+    shortDescription: 'Serum för HydraFacial behandlingar',
+    variants: [
+      {
+        id: 'treatment-4-30ml',
+        name: 'Glow Serum 30ml',
+        description: 'Brightening serum för HydraFacial',
+        pricePerUnit: 850,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'HydraFacial Sweden'
+      },
+      {
+        id: 'treatment-4-anti-aging',
+        name: 'Anti-Aging Serum 30ml',
+        description: 'Anti-aging serum för HydraFacial',
+        pricePerUnit: 950,
+        packSize: 1,
+        unit: 'flaska',
+        supplier: 'HydraFacial Sweden'
+      }
+    ]
+  },
+  {
+    id: 'treatment-5',
+    name: 'Laser Handpiece',
+    brand: 'Cutera',
+    category: 'treatment',
+    treatmentType: 'machines',
+    shortDescription: 'Reservdelar för lasermaskin',
+    variants: [
+      {
+        id: 'treatment-5-1064nm',
+        name: '1064nm Handpiece',
+        description: 'Handpiece för 1064nm laser',
+        pricePerUnit: 45000,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'Cutera Nordic'
+      },
+      {
+        id: 'treatment-5-532nm',
+        name: '532nm Handpiece',
+        description: 'Handpiece för 532nm laser',
+        pricePerUnit: 38000,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'Cutera Nordic'
       }
     ]
   }
