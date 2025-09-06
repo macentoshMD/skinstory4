@@ -100,12 +100,18 @@ export function EmployeeEconomyTab({ data = mockEmployeeEconomyData }: EmployeeE
               <TableRow>
                 <TableHead className="w-[50px]"></TableHead>
                 <TableHead>Anställd</TableHead>
-                <TableHead>Position</TableHead>
-                <TableHead>Arbetstimmar</TableHead>
-                <TableHead>Försäljning</TableHead>
-                <TableHead>Kostnader</TableHead>
-                <TableHead>Bidrag</TableHead>
-                <TableHead>Marginal</TableHead>
+                <TableHead className="text-right">Totalt tim</TableHead>
+                <TableHead className="text-right">Vardagar</TableHead>
+                <TableHead className="text-right">Helger</TableHead>
+                <TableHead className="text-right">Övertid</TableHead>
+                <TableHead className="text-right">Behandlingar</TableHead>
+                <TableHead className="text-right">Produkter</TableHead>
+                <TableHead className="text-right">Online</TableHead>
+                <TableHead className="text-right">Tot. intäkter</TableHead>
+                <TableHead className="text-right">Lönekostnader</TableHead>
+                <TableHead className="text-right">Tot. kostnader</TableHead>
+                <TableHead className="text-right">Bidrag</TableHead>
+                <TableHead className="text-right">Marginal</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -125,19 +131,70 @@ export function EmployeeEconomyTab({ data = mockEmployeeEconomyData }: EmployeeE
                         )}
                       </Button>
                     </TableCell>
-                    <TableCell className="font-medium">{employee.employeeName}</TableCell>
-                    <TableCell>{employee.position}</TableCell>
-                    <TableCell>{formatHours(employee.workHours.totalHours)}</TableCell>
-                    <TableCell className="font-medium text-green-600">
-                      {formatCurrency(employee.sales.totalRevenue)}
-                    </TableCell>
-                    <TableCell className="font-medium text-red-600">
-                      {formatCurrency(employee.costs.totalCost)}
-                    </TableCell>
-                    <TableCell className="font-medium text-blue-600">
-                      {formatCurrency(employee.profitability.contribution)}
-                    </TableCell>
                     <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{employee.employeeName}</span>
+                        <span className="text-sm text-muted-foreground">{employee.position}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className="font-medium">{formatHours(employee.workHours.totalHours)}</span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex flex-col">
+                        <span>{formatHours(employee.workHours.regularHours)}</span>
+                        <span className="text-xs text-muted-foreground">{employee.workHours.workDays} dagar</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex flex-col">
+                        <span>{formatHours(employee.workHours.weekendHours)}</span>
+                        <span className="text-xs text-muted-foreground">{employee.workHours.weekendDays} dagar</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className="text-orange-600 font-medium">{formatHours(employee.workHours.overtimeHours)}</span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{formatCurrency(employee.sales.treatments.revenue)}</span>
+                        <span className="text-xs text-muted-foreground">{employee.sales.treatments.count} st</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{formatCurrency(employee.sales.products.revenue)}</span>
+                        <span className="text-xs text-muted-foreground">{employee.sales.products.count} st</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{formatCurrency(employee.sales.online.revenue)}</span>
+                        <span className="text-xs text-muted-foreground">{employee.sales.online.count} st</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className="font-bold text-green-600">
+                        {formatCurrency(employee.sales.totalRevenue)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{formatCurrency(employee.costs.salary)}</span>
+                        <span className="text-xs text-muted-foreground">+ {formatCurrency(employee.costs.benefits)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className="font-bold text-red-600">
+                        {formatCurrency(employee.costs.totalCost)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className="font-bold text-blue-600">
+                        {formatCurrency(employee.profitability.contribution)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
                       <Badge 
                         variant={employee.profitability.margin > 30 ? 'default' : employee.profitability.margin > 20 ? 'secondary' : 'destructive'}
                       >
@@ -148,7 +205,7 @@ export function EmployeeEconomyTab({ data = mockEmployeeEconomyData }: EmployeeE
 
                   {expandedRows.has(employee.employeeId) && (
                     <TableRow>
-                      <TableCell colSpan={8} className="bg-muted/20 p-0">
+                      <TableCell colSpan={14} className="bg-muted/20 p-0">
                         <div className="p-4 space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {/* Work Hours Detail */}
