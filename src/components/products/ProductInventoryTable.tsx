@@ -1,24 +1,30 @@
-import { useState } from 'react';
-import { Search, Package, ShoppingCart, Minus, Plus, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Package, ShoppingCart, Minus, Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useOrderCart } from '@/contexts/OrderCartContext';
+
+export interface ProductVariant {
+  id: string;
+  name: string;
+  description: string;
+  pricePerUnit: number;
+  packSize: number;
+  unit: string;
+  supplier: string;
+  image?: string;
+}
 
 export interface InventoryItem {
   id: string;
   name: string;
   brand: string;
   category: 'sales' | 'treatment' | 'consumables';
-  pricePerUnit: number;
-  packSize: number;
-  unit: string;
-  currentStock: number;
-  minStock: number;
-  supplier: string;
-  description: string;
-  inStock: boolean;
+  shortDescription: string;
+  variants: ProductVariant[];
 }
 
 interface ProductInventoryTableProps {
@@ -30,40 +36,56 @@ interface ProductInventoryTableProps {
 export function ProductInventoryTable({ items, searchTerm, onSearchChange }: ProductInventoryTableProps) {
   const { addToCart } = useOrderCart();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const filteredItems = items.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.supplier.toLowerCase().includes(searchTerm.toLowerCase())
+    item.variants.some(variant => 
+      variant.supplier.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      variant.description.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   );
 
-  const handleQuantityChange = (id: string, value: string) => {
+  const handleQuantityChange = (variantId: string, value: string) => {
     const quantity = parseInt(value) || 0;
-    setQuantities(prev => ({ ...prev, [id]: quantity }));
+    setQuantities(prev => ({ ...prev, [variantId]: quantity }));
   };
 
-  const handleAddToCart = (item: InventoryItem) => {
-    const quantity = quantities[item.id] || 0;
+  const handleAddToCart = (item: InventoryItem, variant: ProductVariant) => {
+    const quantity = quantities[variant.id] || 0;
     if (quantity > 0) {
       addToCart({
-        id: item.id,
-        name: item.name,
+        id: variant.id,
+        name: `${item.name} - ${variant.name}`,
         brand: item.brand,
         category: item.category,
-        pricePerUnit: item.pricePerUnit,
-        packSize: item.packSize,
-        unit: item.unit,
+        pricePerUnit: variant.pricePerUnit,
+        packSize: variant.packSize,
+        unit: variant.unit,
       }, quantity);
       
       // Clear the quantity input
-      setQuantities(prev => ({ ...prev, [item.id]: 0 }));
+      setQuantities(prev => ({ ...prev, [variant.id]: 0 }));
     }
   };
 
-  const adjustQuantity = (id: string, delta: number) => {
-    const currentQuantity = quantities[id] || 0;
+  const adjustQuantity = (variantId: string, delta: number) => {
+    const currentQuantity = quantities[variantId] || 0;
     const newQuantity = Math.max(0, currentQuantity + delta);
-    setQuantities(prev => ({ ...prev, [id]: newQuantity }));
+    setQuantities(prev => ({ ...prev, [variantId]: newQuantity }));
+  };
+
+  const toggleExpanded = (itemId: string) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
   };
 
   const getCategoryBadge = (category: string) => {
@@ -100,97 +122,129 @@ export function ProductInventoryTable({ items, searchTerm, onSearchChange }: Pro
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-10"></TableHead>
               <TableHead>Produkt</TableHead>
               <TableHead>Kategori</TableHead>
-              <TableHead>Förpackning</TableHead>
-              <TableHead className="text-right">Pris/förp</TableHead>
-              <TableHead className="text-right">Pris/styck</TableHead>
-              <TableHead className="text-center">Lager</TableHead>
-              <TableHead className="text-center">Beställ</TableHead>
-              <TableHead className="text-center">Lägg till</TableHead>
+              <TableHead>Beskrivning</TableHead>
+              <TableHead className="text-right">Från pris</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredItems.map((item) => (
-              <TableRow key={item.id} className={!item.inStock ? "opacity-60" : ""}>
-                <TableCell>
-                  <div>
-                    <div className="font-medium">{item.name}</div>
-                    <div className="text-sm text-muted-foreground">{item.brand}</div>
-                    <div className="text-xs text-muted-foreground mt-1">{item.description}</div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {getCategoryBadge(item.category)}
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">
-                    <div>{item.packSize} {item.unit}/förp</div>
-                    <div className="text-muted-foreground">Leverantör: {item.supplier}</div>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="font-medium">{(item.pricePerUnit * item.packSize).toFixed(0)} kr</div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="text-sm">{item.pricePerUnit.toFixed(2)} kr</div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex flex-col items-center gap-1">
-                    <div className={`font-medium ${
-                      item.currentStock <= item.minStock ? 'text-destructive' : 'text-foreground'
-                    }`}>
-                      {item.currentStock}
+              <React.Fragment key={item.id}>
+                <TableRow className="cursor-pointer hover:bg-muted/50">
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => toggleExpanded(item.id)}
+                    >
+                      {expandedRows.has(item.id) ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableCell>
+                  <TableCell onClick={() => toggleExpanded(item.id)}>
+                    <div>
+                      <div className="font-medium">{item.name}</div>
+                      <div className="text-sm text-muted-foreground">{item.brand}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell onClick={() => toggleExpanded(item.id)}>
+                    {getCategoryBadge(item.category)}
+                  </TableCell>
+                  <TableCell onClick={() => toggleExpanded(item.id)}>
+                    <div className="text-sm text-muted-foreground">
+                      {item.shortDescription}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right" onClick={() => toggleExpanded(item.id)}>
+                    <div className="font-medium">
+                      {Math.min(...item.variants.map(v => v.pricePerUnit * v.packSize)).toFixed(0)} kr
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Min: {item.minStock}
+                      {item.variants.length} variant{item.variants.length !== 1 ? 'er' : ''}
                     </div>
-                    {item.currentStock <= item.minStock && (
-                      <AlertTriangle className="h-3 w-3 text-destructive" />
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center gap-1 justify-center">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 w-8 p-0"
-                      onClick={() => adjustQuantity(item.id, -1)}
-                      disabled={!quantities[item.id] || quantities[item.id] <= 0}
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <Input
-                      type="number"
-                      min="0"
-                      value={quantities[item.id] || ''}
-                      onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                      className="w-16 h-8 text-center text-sm"
-                      placeholder="0"
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 w-8 p-0"
-                      onClick={() => adjustQuantity(item.id, 1)}
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Button
-                    size="sm"
-                    onClick={() => handleAddToCart(item)}
-                    disabled={!quantities[item.id] || quantities[item.id] <= 0}
-                    className="h-8"
-                  >
-                    <ShoppingCart className="h-3 w-3 mr-1" />
-                    Lägg till
-                  </Button>
-                </TableCell>
-              </TableRow>
+                  </TableCell>
+                </TableRow>
+                
+                {expandedRows.has(item.id) && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="p-0">
+                      <div className="bg-muted/30 p-4 space-y-3">
+                        {item.variants.map((variant) => (
+                          <div 
+                            key={variant.id} 
+                            className="bg-background rounded-lg p-4 border flex items-center justify-between"
+                          >
+                            <div className="flex-1 grid grid-cols-4 gap-4 items-center">
+                              <div>
+                                <div className="font-medium">{variant.name}</div>
+                                <div className="text-sm text-muted-foreground">{variant.description}</div>
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  Leverantör: {variant.supplier}
+                                </div>
+                              </div>
+                              <div className="text-sm">
+                                <div>{variant.packSize} {variant.unit}/förp</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-medium">
+                                  {(variant.pricePerUnit * variant.packSize).toFixed(0)} kr/förp
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  {variant.pricePerUnit.toFixed(2)} kr/{variant.unit}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 w-8 p-0"
+                                    onClick={() => adjustQuantity(variant.id, -1)}
+                                    disabled={!quantities[variant.id] || quantities[variant.id] <= 0}
+                                  >
+                                    <Minus className="h-3 w-3" />
+                                  </Button>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    value={quantities[variant.id] || ''}
+                                    onChange={(e) => handleQuantityChange(variant.id, e.target.value)}
+                                    className="w-16 h-8 text-center text-sm"
+                                    placeholder="0"
+                                  />
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 w-8 p-0"
+                                    onClick={() => adjustQuantity(variant.id, 1)}
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleAddToCart(item, variant)}
+                                  disabled={!quantities[variant.id] || quantities[variant.id] <= 0}
+                                  className="h-8 ml-2"
+                                >
+                                  <ShoppingCart className="h-3 w-3 mr-1" />
+                                  Lägg till
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
             ))}
           </TableBody>
         </Table>

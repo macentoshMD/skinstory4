@@ -7,114 +7,137 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Gentle Cleansing Foam',
     brand: 'Dermalogica',
     category: 'sales',
-    pricePerUnit: 485,
-    packSize: 1,
-    unit: 'st',
-    currentStock: 12,
-    minStock: 5,
-    supplier: 'Dermalogica AB',
-    description: 'Mild rengöring för känslig hud, 150ml',
-    inStock: true
+    shortDescription: 'Mild rengöring för känslig hud',
+    variants: [
+      {
+        id: 'sales-1-150ml',
+        name: '150ml',
+        description: 'Mild rengöring för känslig hud, standardstorlek',
+        pricePerUnit: 485,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'Dermalogica AB'
+      },
+      {
+        id: 'sales-1-250ml',
+        name: '250ml',
+        description: 'Mild rengöring för känslig hud, stor storlek',
+        pricePerUnit: 695,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'Dermalogica AB'
+      }
+    ]
   },
   {
     id: 'sales-2',
     name: 'Vitamin C Serum',
     brand: 'SkinCeuticals',
     category: 'sales',
-    pricePerUnit: 1250,
-    packSize: 1,
-    unit: 'st',
-    currentStock: 8,
-    minStock: 3,
-    supplier: 'SkinCeuticals Nordic',
-    description: 'Antioxidantserum 30ml, CE Ferulic',
-    inStock: true
+    shortDescription: 'Antioxidantserum för ljusare hud',
+    variants: [
+      {
+        id: 'sales-2-30ml',
+        name: 'CE Ferulic 30ml',
+        description: 'Antioxidantserum med 15% L-askorbinsyra',
+        pricePerUnit: 1250,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'SkinCeuticals Nordic'
+      }
+    ]
   },
   {
     id: 'sales-3',
     name: 'Retinol Complex',
     brand: 'Obagi',
     category: 'sales',
-    pricePerUnit: 890,
-    packSize: 1,
-    unit: 'st',
-    currentStock: 2,
-    minStock: 4,
-    supplier: 'Obagi Medical',
-    description: '0.5% retinol kräm, 28g',
-    inStock: true
-  },
-  {
-    id: 'sales-4',
-    name: 'Hydrating Toner',
-    brand: 'Environ',
-    category: 'sales',
-    pricePerUnit: 420,
-    packSize: 1,
-    unit: 'st',
-    currentStock: 15,
-    minStock: 8,
-    supplier: 'Environ Skin Care',
-    description: 'Återfuktande toner, 200ml',
-    inStock: true
+    shortDescription: 'Retinol för anti-aging',
+    variants: [
+      {
+        id: 'sales-3-0.25',
+        name: '0.25% Retinol',
+        description: 'Mild retinol för nybörjare, 28g',
+        pricePerUnit: 650,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'Obagi Medical'
+      },
+      {
+        id: 'sales-3-0.5',
+        name: '0.5% Retinol',
+        description: 'Medium styrka retinol, 28g',
+        pricePerUnit: 890,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'Obagi Medical'
+      },
+      {
+        id: 'sales-3-1.0',
+        name: '1.0% Retinol',
+        description: 'Stark retinol för erfarna användare, 28g',
+        pricePerUnit: 1150,
+        packSize: 1,
+        unit: 'st',
+        supplier: 'Obagi Medical'
+      }
+    ]
   },
 
   // Behandlingsprodukter
   {
     id: 'treatment-1',
-    name: 'Glycolic Acid Peel 30%',
+    name: 'Glycolic Acid Peel',
     brand: 'Obagi',
     category: 'treatment',
-    pricePerUnit: 125,
-    packSize: 50,
-    unit: 'ml',
-    currentStock: 3,
-    minStock: 2,
-    supplier: 'Obagi Medical',
-    description: 'Professionell glykolsyrapeeling',
-    inStock: true
+    shortDescription: 'Professionell kemisk peeling',
+    variants: [
+      {
+        id: 'treatment-1-20',
+        name: '20% Glykolsyra',
+        description: 'Mild professionell glykolsyrapeeling, 50ml',
+        pricePerUnit: 95,
+        packSize: 50,
+        unit: 'ml',
+        supplier: 'Obagi Medical'
+      },
+      {
+        id: 'treatment-1-30',
+        name: '30% Glykolsyra',
+        description: 'Medium professionell glykolsyrapeeling, 50ml',
+        pricePerUnit: 125,
+        packSize: 50,
+        unit: 'ml',
+        supplier: 'Obagi Medical'
+      },
+      {
+        id: 'treatment-1-50',
+        name: '50% Glykolsyra',
+        description: 'Stark professionell glykolsyrapeeling, 50ml',
+        pricePerUnit: 185,
+        packSize: 50,
+        unit: 'ml',
+        supplier: 'Obagi Medical'
+      }
+    ]
   },
   {
     id: 'treatment-2',
     name: 'Professional Cleansing Solution',
     brand: 'Dermalogica',
     category: 'treatment',
-    pricePerUnit: 2.5,
-    packSize: 250,
-    unit: 'ml',
-    currentStock: 6,
-    minStock: 4,
-    supplier: 'Dermalogica AB',
-    description: 'Professionell rengöring för behandlingar',
-    inStock: true
-  },
-  {
-    id: 'treatment-3',
-    name: 'Chemical Peel Neutralizer',
-    brand: 'SkinCeuticals',
-    category: 'treatment',
-    pricePerUnit: 3.2,
-    packSize: 500,
-    unit: 'ml',
-    currentStock: 2,
-    minStock: 3,
-    supplier: 'SkinCeuticals Nordic',
-    description: 'Neutraliserande lösning för kemisk peeling',
-    inStock: true
-  },
-  {
-    id: 'treatment-4',
-    name: 'Hydrogel Mask',
-    brand: 'Environ',
-    category: 'treatment',
-    pricePerUnit: 85,
-    packSize: 5,
-    unit: 'st',
-    currentStock: 8,
-    minStock: 4,
-    supplier: 'Environ Skin Care',
-    description: 'Professionell hydrogel-mask',
-    inStock: true
+    shortDescription: 'Professionell rengöring för behandlingar',
+    variants: [
+      {
+        id: 'treatment-2-250ml',
+        name: '250ml',
+        description: 'Professionell rengöring för behandlingar',
+        pricePerUnit: 2.5,
+        packSize: 250,
+        unit: 'ml',
+        supplier: 'Dermalogica AB'
+      }
+    ]
   },
 
   // Förbrukningsmaterial
@@ -123,97 +146,134 @@ export const mockInventoryData: InventoryItem[] = [
     name: 'Engångslancsetter',
     brand: 'MedSupply',
     category: 'consumables',
-    pricePerUnit: 2.5,
-    packSize: 100,
-    unit: 'st',
-    currentStock: 45,
-    minStock: 100,
-    supplier: 'MedSupply AB',
-    description: 'Sterila engångslancsetter för hudanalyser',
-    inStock: true
+    shortDescription: 'Sterila lancsetter för hudanalyser',
+    variants: [
+      {
+        id: 'consumables-1-standard',
+        name: 'Standard 21G',
+        description: 'Sterila engångslancsetter 21G för hudanalyser',
+        pricePerUnit: 2.5,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'MedSupply AB'
+      },
+      {
+        id: 'consumables-1-fine',
+        name: 'Fin 23G',
+        description: 'Sterila engångslancsetter 23G för känslig hud',
+        pricePerUnit: 3.2,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'MedSupply AB'
+      },
+      {
+        id: 'consumables-1-ultra',
+        name: 'Ultra fin 25G',
+        description: 'Sterila engångslancsetter 25G för mycket känslig hud',
+        pricePerUnit: 4.1,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'MedSupply AB'
+      }
+    ]
   },
   {
     id: 'consumables-2',
     name: 'Bomullspads',
     brand: 'CottonCare',
     category: 'consumables',
-    pricePerUnit: 0.25,
-    packSize: 100,
-    unit: 'st',
-    currentStock: 350,
-    minStock: 200,
-    supplier: 'CottonCare AB',
-    description: 'Ekologiska bomullspads för rengöring',
-    inStock: true
+    shortDescription: 'Ekologiska bomullspads för rengöring',
+    variants: [
+      {
+        id: 'consumables-2-round',
+        name: 'Runda pads',
+        description: 'Ekologiska runda bomullspads för rengöring',
+        pricePerUnit: 0.25,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'CottonCare AB'
+      },
+      {
+        id: 'consumables-2-square',
+        name: 'Fyrkantiga pads',
+        description: 'Ekologiska fyrkantiga bomullspads för precision',
+        pricePerUnit: 0.32,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'CottonCare AB'
+      }
+    ]
   },
   {
     id: 'consumables-3',
-    name: 'Undersökningspapper',
-    brand: 'PaperPro',
+    name: 'Nitrilhandskar',
+    brand: 'SafeHands',
     category: 'consumables',
-    pricePerUnit: 35,
-    packSize: 1,
-    unit: 'rulle',
-    currentStock: 6,
-    minStock: 10,
-    supplier: 'PaperPro AB',
-    description: 'Engångsundersökningspapper 80cm bredd',
-    inStock: true
+    shortDescription: 'Puderfria nitrilhandskar',
+    variants: [
+      {
+        id: 'consumables-3-s',
+        name: 'Small',
+        description: 'Puderfria nitrilhandskar, storlek S',
+        pricePerUnit: 0.75,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'SafeHands Medical'
+      },
+      {
+        id: 'consumables-3-m',
+        name: 'Medium',
+        description: 'Puderfria nitrilhandskar, storlek M',
+        pricePerUnit: 0.8,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'SafeHands Medical'
+      },
+      {
+        id: 'consumables-3-l',
+        name: 'Large',
+        description: 'Puderfria nitrilhandskar, storlek L',
+        pricePerUnit: 0.85,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'SafeHands Medical'
+      },
+      {
+        id: 'consumables-3-xl',
+        name: 'Extra Large',
+        description: 'Puderfria nitrilhandskar, storlek XL',
+        pricePerUnit: 0.9,
+        packSize: 100,
+        unit: 'st',
+        supplier: 'SafeHands Medical'
+      }
+    ]
   },
   {
     id: 'consumables-4',
     name: 'Desinfektionsmedel',
     brand: 'CleanCorp',
     category: 'consumables',
-    pricePerUnit: 45,
-    packSize: 1,
-    unit: 'liter',
-    currentStock: 8,
-    minStock: 5,
-    supplier: 'CleanCorp AB',
-    description: 'Professionellt desinfektionsmedel för ytor',
-    inStock: true
-  },
-  {
-    id: 'consumables-5',
-    name: 'Nitrilhandskar',
-    brand: 'SafeHands',
-    category: 'consumables',
-    pricePerUnit: 0.8,
-    packSize: 100,
-    unit: 'st',
-    currentStock: 250,
-    minStock: 500,
-    supplier: 'SafeHands Medical',
-    description: 'Puderfria nitrilhandskar, storlek M',
-    inStock: true
-  },
-  {
-    id: 'consumables-6',
-    name: 'Engångsmunstycken',
-    brand: 'AirFlow',
-    category: 'consumables',
-    pricePerUnit: 12,
-    packSize: 50,
-    unit: 'st',
-    currentStock: 80,
-    minStock: 100,
-    supplier: 'AirFlow Systems',
-    description: 'Sterila engångsmunstycken för apparater',
-    inStock: true
-  },
-  {
-    id: 'consumables-7',
-    name: 'Alkoholduk',
-    brand: 'CleanWipe',
-    category: 'consumables',
-    pricePerUnit: 0.5,
-    packSize: 200,
-    unit: 'st',
-    currentStock: 150,
-    minStock: 400,
-    supplier: 'CleanWipe AB',
-    description: '70% isopropanol rengöringsdukar',
-    inStock: true
+    shortDescription: 'Professionellt desinfektionsmedel',
+    variants: [
+      {
+        id: 'consumables-4-1l',
+        name: '1 Liter',
+        description: 'Professionellt desinfektionsmedel för ytor, 1L',
+        pricePerUnit: 45,
+        packSize: 1,
+        unit: 'liter',
+        supplier: 'CleanCorp AB'
+      },
+      {
+        id: 'consumables-4-5l',
+        name: '5 Liter',
+        description: 'Professionellt desinfektionsmedel för ytor, 5L påfyllning',
+        pricePerUnit: 38,
+        packSize: 5,
+        unit: 'liter',
+        supplier: 'CleanCorp AB'
+      }
+    ]
   }
 ];
